@@ -4,14 +4,17 @@ const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
-if (!code) {
-  redirectToAuthCodeFlow(clientId)
-} else {
-  const accessToken = await getAccessToken(clientId, code);
-  const profile = await fetchProfile(accessToken);
-  console.log(profile)
-  populateUI(profile);
+export async function getStarted(){
+  if (!code) {
+    redirectToAuthCodeFlow(clientId)
+  } else {
+    const accessToken = await getAccessToken(clientId, code);
+    const profile = await fetchProfile(accessToken);
+    console.log(profile)
+    populateUI(profile);
+  }
 }
+
 
 async function fetchProfile(token: string): Promise<UserProfile> {
   const result = await fetch("https://api.spotify.com/v1/me", {

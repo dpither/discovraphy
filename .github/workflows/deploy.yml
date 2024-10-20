@@ -33,10 +33,10 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        uses: npm ci
+        run: npm ci
 
       - name: Build
-        uses: npm run build
+        run: npm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

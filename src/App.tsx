@@ -17,8 +17,8 @@ function App() {
     <div className="flex h-full flex-col justify-between">
       <Header />
       <section className="mx-4 my-8 flex flex-col items-center gap-8 md:flex-row-reverse md:justify-center">
-        <div className="flex h-full max-w-sm flex-col justify-between gap-8 md:text-left">
-          <div className="text-dark flex flex-col text-5xl font-bold leading-tight md:max-w-96 dark:text-white">
+        <div className="flex h-full w-72 md:w-96 flex-col justify-between gap-8 md:text-left">
+          <div className="text-dark flex flex-col text-3xl md:text-5xl font-bold leading-tight dark:text-white">
             <h1>
               Discover your next{" "}
               <span>
@@ -26,14 +26,14 @@ function App() {
               </span>
             </h1>
           </div>
-          <p className="text-dark max-w-sm text-2xl dark:text-white">
+          <p className="text-dark text-lg md:text-2xl dark:text-white">
             Swipe through song suggestions curated for you.
           </p>
           <div>
             <StartButton />
           </div>
         </div>
-        <div className="flex w-96 max-w-96 md:w-2/5">
+        <div className="flex w-72 max-w-96 md:w-2/5">
           <img
             className="w-full rounded-lg object-cover"
             src={catJAM}

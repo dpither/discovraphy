@@ -1,7 +1,7 @@
 export default function Logo() {
   return (
     <svg
-      className="w-96 object-cover fill-blue dark:fill-blue"
+      className="w-full object-cover fill-blue dark:fill-blue"
       viewBox="0 0 1985 305"
       xmlns="http://www.w3.org/2000/svg"
     >

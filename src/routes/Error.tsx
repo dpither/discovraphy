@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import Button from "../components/Button";
 import Header from "../components/Header";
 import SpotifyFooter from "../components/SpotifyFooter";

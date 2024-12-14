@@ -1,18 +1,24 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import Home from "./routes/Home";
-import ErrorPage from "./routes/ErrorPage";
+import Error from "./routes/Error";
 
 const routes = [
   {
       path: "/",
       element: <Home />,
-      errorElement: <ErrorPage/>,
+      errorElement: <Error/>,
 
   },
 ];
 
 const router = createBrowserRouter(routes, {
-  basename: "/discovraphy"
+  future: {
+    v7_relativeSplatPath: true,
+    v7_fetcherPersist: true,
+    v7_normalizeFormMethod: true,
+    v7_partialHydration: true,
+  },
+  basename: "/discovraphy/"
 });
 
 export default function App(){

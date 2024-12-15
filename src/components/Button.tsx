@@ -9,7 +9,7 @@ export default function Button({
 }) {
   return (
     <button
-      className="rounded-lg bg-blue px-6 py-3 text-2xl font-bold text-white hover:bg-blue-h active:brightness-75"
+      className="rounded-lg bg-blue px-4 py-2 text-xl font-semibold text-white hover:bg-blue-h active:brightness-75"
       onClick={func}
     >
       {title}

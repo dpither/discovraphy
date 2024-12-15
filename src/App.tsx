@@ -1,13 +1,18 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import Home from "./routes/Home";
 import Error from "./routes/Error";
+import Setup from "./routes/Setup";
 
 const routes = [
   {
-      path: "/",
-      element: <Home />,
-      errorElement: <Error/>,
-
+    path: "/",
+    element: <Home />,
+    errorElement: <Error />,
+  },
+  {
+    path: "/setup",
+    element: <Setup />,
+    errorElement: <Error />,
   },
 ];
 
@@ -18,9 +23,9 @@ const router = createBrowserRouter(routes, {
     v7_normalizeFormMethod: true,
     v7_partialHydration: true,
   },
-  basename: "/discovraphy/"
+  basename: "/discovraphy/",
 });
 
-export default function App(){
-  return <RouterProvider router={router}/>
+export default function App() {
+  return <RouterProvider router={router} />;
 }

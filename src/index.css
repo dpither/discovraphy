@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  /* For Firefox Browser */
+  .scrollbar {
+    scrollbar-width: thin;
+  }
+
+  /* For Chrome, EDGE, Opera, Others */
+  .scrollbar::-webkit-scrollbar {
+    width: 20px;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    background: #fff;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #000;
+  }
+}

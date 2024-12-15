@@ -1,7 +1,8 @@
-export default function Logo() {
+export default function Logo({ fill }: { fill: string }) {
   return (
     <svg
-      className="w-full fill-blue object-cover dark:fill-blue"
+      fill={fill}
+      className="w-full object-cover"
       viewBox="0 0 1985 305"
       xmlns="http://www.w3.org/2000/svg"
     >

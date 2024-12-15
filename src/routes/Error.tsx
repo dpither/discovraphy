@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import Header from "../components/Header";
 import SpotifyFooter from "../components/SpotifyFooter";
 
-export default function ErrorPage() {
+export default function Error() {
   return (
     <div className="flex h-full flex-col justify-between">
       <Header />
@@ -15,7 +15,7 @@ export default function ErrorPage() {
           We could not discover the page you were looking for. Get back on track
           by returning home.
         </p>
-        <Link to={`/`}>
+        <Link to={`../`}>
           <Button
             title="Go Home"
             func={() => {

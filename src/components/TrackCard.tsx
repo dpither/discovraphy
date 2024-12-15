@@ -20,7 +20,7 @@ export default function TrackCard({
   return (
     <div
       key={key}
-      className={` ${isSelected ? "border-black dark:border-white" : "border-transparent"} border-transparent group flex flex-col rounded border-2 p-2 text-sm text-black duration-200 hover:border-black dark:text-white hover:dark:border-white`}
+      className={` ${isSelected ? "border-black dark:border-white" : "border-transparent"} group flex flex-col rounded border-2 p-2 text-sm text-black duration-200 hover:border-black dark:text-white hover:dark:border-white`}
       onClick={onClick}
     >
       <img

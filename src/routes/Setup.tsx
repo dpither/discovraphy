@@ -1,7 +1,7 @@
 import Header from "../components/Header";
 import BasicSearch from "../components/setup_pages/BasicSearch";
 import SpotifyFooter from "../components/SpotifyFooter";
-import Stepper from "../components/Stepper";
+// import Stepper from "../components/Stepper";
 
 export default function Setup() {
   return (

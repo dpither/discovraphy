@@ -13,7 +13,7 @@ export default function DarkModeSelector() {
 
   return (
     <button
-      className="rounded-full bg-blue p-2 hover:bg-blue-h active:brightness-75"
+      className="rounded-full bg-blue p-2 hover:bg-blue-h active:brightness-75 transition"
       onClick={toggleDarkMode}
     >
       {isDark ? <IconSun /> : <IconMoon />}

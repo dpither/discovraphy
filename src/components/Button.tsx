@@ -1,18 +1,16 @@
-// import { getStarted } from "../script";
-
-export default function Button({
-  title,
-  func = () => {},
-}: {
-  title: string;
-  func?: () => void;
-}) {
+interface ButtonProps {
+  text?: string;
+  onClick?: () => void;
+  children?: React.ReactNode
+}
+export default function Button({ text, onClick , children}: ButtonProps) {
   return (
     <button
-      className="rounded-lg bg-blue px-4 py-2 text-xl font-semibold text-white hover:bg-blue-h active:brightness-75"
-      onClick={func}
+      className={`rounded-lg bg-blue ${text ? "px-4 py-2" : "p-2"} text-xl font-semibold text-white transition hover:bg-blue-h active:scale-95 active:brightness-75`}
+      onClick={onClick}
     >
-      {title}
+      {text}
+      {children}
     </button>
   );
 }

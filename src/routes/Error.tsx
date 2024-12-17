@@ -5,7 +5,7 @@ import SpotifyFooter from "../components/SpotifyFooter";
 
 export default function Error() {
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="flex flex-col justify-between h-screen">
       <Header />
       <div className="mx-4 my-4 flex flex-col items-center gap-4 text-black dark:text-white">
         <h1 className="text-3xl font-bold md:text-5xl">
@@ -17,8 +17,8 @@ export default function Error() {
         </p>
         <Link to={`../`}>
           <Button
-            title="Go Home"
-            func={() => {
+            text="Go Home"
+            onClick={() => {
               console.log("Pressed go home");
             }}
           ></Button>

@@ -1,20 +1,16 @@
-interface TrackCardProps {
-  img: string;
-  name: string;
-  artist: string;
-  album: string;
+import { SimplifiedAlbum } from "@spotify/web-api-ts-sdk";
+
+interface AlbumCardProps {
+  album: SimplifiedAlbum;
   isSelected: boolean;
   onClick: () => void;
 }
 
-export default function TrackCard({
-  img,
-  name,
-  artist,
+export default function AlbumCard({
   album,
   isSelected,
   onClick,
-}: TrackCardProps) {
+}: AlbumCardProps) {
   return (
     <div
       className={` ${isSelected ? "border-black dark:border-white" : "border-transparent"} group flex flex-col rounded border-2 p-2 text-sm text-black transition hover:border-black dark:text-white hover:dark:border-white`}
@@ -26,7 +22,7 @@ export default function TrackCard({
       />
       <div className="ml-1 flex flex-col text-left">
         <p className="line-clamp-1">{name}</p>
-        <p className="line-clamp-1">{artist}</p>
+        <p className="line-clamp-1">{artists}</p>
         <p className="line-clamp-1">{album}</p>
       </div>
     </div>

@@ -1,13 +1,16 @@
 import Header from "../components/Header";
-import BasicSearch from "../components/setup_pages/BasicSearch";
+import ArtistSearch from "../components/setup_pages/ArtistSearch";
 import SpotifyFooter from "../components/SpotifyFooter";
 // import Stepper from "../components/Stepper";
 
 export default function Setup() {
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="flex flex-col justify-between">
       <Header />
-      <BasicSearch />
+      <div className="flex justify-center">
+        <ArtistSearch />
+      </div>
+
       {/* <Stepper></Stepper> */}
       <SpotifyFooter />
     </div>

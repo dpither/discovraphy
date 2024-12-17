@@ -2,7 +2,7 @@ export default function Logo({ fill }: { fill: string }) {
   return (
     <svg
       fill={fill}
-      className="w-full object-cover"
+      className="object-cover w-full"
       viewBox="0 0 1985 305"
       xmlns="http://www.w3.org/2000/svg"
     >

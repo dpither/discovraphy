@@ -2,44 +2,19 @@ import Icon from "../../assets/Icon";
 import tailwindConfig from "../../../tailwind.config";
 import { useState } from "react";
 import Button from "../Button";
-import { Artist, SpotifyApi } from "@spotify/web-api-ts-sdk";
-import ArtistCard from "../ArtistCard";
+import Artists from "../Artists";
 
 export default function ArtistSearch() {
-  const [selectedId, setSelectedId] = useState(-1);
   const [searchInput, setSearchInput] = useState("");
-  const [artists, setArtists] = useState<Artist[]>();
-
-  function handleSelectArtist(key: number) {
-    selectedId === key ? setSelectedId(-1) : setSelectedId(key);
-  }
+  const [query, setQuery] = useState("");
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    search();
+    setQuery(searchInput)
   }
 
   function handleSearchChange(event: React.FormEvent<HTMLInputElement>) {
     setSearchInput(event.currentTarget.value);
-  }
-
-  const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-  const scopes = ["user-read-private", "user-read-email"];
-
-  const sdk = SpotifyApi.withUserAuthorization(
-    clientId,
-    "http://localhost:3000/discovraphy/setup",
-    scopes,
-  );
-
-  async function search() {
-    if (searchInput.trim() == "") {
-      return;
-    }
-    console.log("Searching for:" + searchInput);
-    const res = await sdk.search(searchInput, ["artist"]);
-    console.log(res.artists.items);
-    setArtists(res.artists.items);
   }
 
   return (
@@ -63,18 +38,8 @@ export default function ArtistSearch() {
           Select the artist you want to hear more of.
         </p>
       </div>
-      <div className="flex max-h-80 w-full max-w-2xl rounded-lg border-2 border-black dark:border-white">
-        <div className="no-scrollbar grid grid-cols-2 gap-2 overflow-y-scroll p-4 md:grid-cols-4">
-          {artists?.map((artist, i) => (
-            <ArtistCard
-              artist={artist}
-              isSelected={selectedId === i}
-              onClick={() => {
-                handleSelectArtist(i);
-              }}
-            />
-          ))}
-        </div>
+      <div className="flex h-screen max-h-80 w-full max-w-2xl rounded-lg border-2 border-black dark:border-white">
+        <Artists query={query} />
       </div>
     </div>
   );

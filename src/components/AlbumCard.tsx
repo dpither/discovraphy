@@ -18,12 +18,10 @@ export default function AlbumCard({
     >
       <img
         className="aspect-square w-full rounded object-cover transition group-active:scale-95 group-hover:scale-105"
-        src={img}
+        src={album.images[0].url}
       />
       <div className="ml-1 flex flex-col text-left">
-        <p className="line-clamp-1">{name}</p>
-        <p className="line-clamp-1">{artists}</p>
-        <p className="line-clamp-1">{album}</p>
+
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import SpotifyFooter from "../components/SpotifyFooter";
 import catJAM from "../assets/catJAM.gif";
 import Textra from "react-textra";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
 export default function Home() {

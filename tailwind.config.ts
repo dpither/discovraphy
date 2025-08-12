@@ -9,7 +9,9 @@ export default {
       white: "#ffffff",
       green: "#1ed760",
       blue: "#3772ff",
-      "blue-h": "#185cff",
+      hoverBlue: "#185cff",
+      disabledGrey: "#a9a9a9",
+      lightGrey: "#e5e4e2",
     },
     extend: {
     },

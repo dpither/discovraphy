@@ -1,6 +1,6 @@
 import Button from "../components/Button";
-import Header from "../components/Header";
-import SpotifyFooter from "../components/SpotifyFooter";
+import Header from "../layouts/Header";
+import SpotifyFooter from "../layouts/SpotifyFooter";
 import catJAM from "../assets/catJAM.gif";
 import Textra from "react-textra";
 import { useNavigate } from "react-router";
@@ -36,7 +36,7 @@ export default function Home() {
   return (
     <div className="flex h-screen flex-col justify-between">
       <Header />
-      <section className="m-4 flex flex-col items-center gap-4 md:flex-row-reverse md:justify-center">
+      <div className="m-4 flex flex-col items-center gap-4 md:flex-row-reverse md:justify-center">
         <div className="flex h-full w-72 flex-col justify-between gap-4 md:w-96 md:text-left">
           <div className="text-black flex flex-col text-3xl font-bold leading-tight md:text-5xl dark:text-white">
             <h1>
@@ -59,7 +59,7 @@ export default function Home() {
             src={catJAM}
           />
         </div>
-      </section>
+      </div>
       <SpotifyFooter />
     </div>
   );

@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import Button from "../components/Button";
-import Header from "../components/Header";
-import SpotifyFooter from "../components/SpotifyFooter";
+import Header from "../layouts/Header";
+import SpotifyFooter from "../layouts/SpotifyFooter";
 
 export default function Error() {
   return (

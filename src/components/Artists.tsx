@@ -19,7 +19,7 @@ export default function Artists({ artists, isLoading, selectedId, onClickArtist 
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2 overflow-y-auto p-4 md:grid-cols-4">
+    <div className="h-full overflow-y-auto grid grid-cols-2 gap-2 p-4 sm:grid-cols-4 2xl:grid-cols-6">
       {artists?.map((artist, i) => (
         <ArtistCard
           artist={artist}

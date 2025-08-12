@@ -56,27 +56,23 @@ export default function Setup() {
   return (
     <div className="flex h-screen flex-col">
       <Header />
-      <div className="flex flex-1 flex-col items-center">
-        <form className="flex flex-1 w-full max-w-2xl flex-col" onSubmit={onSubmit}>
-          {/* <p className="absolute bottom-2 right-1/2 text-sm text-black md:text-lg dark:text-white">
-            {currentStepIndex + 1}/{steps.length}
-          </p> */}
-          <div className="flex flex-1">{currentStep}</div>
-          <div className="mt-4 flex justify-center">
-            {isFirstStep ? (
-              <div></div>
-            ) : (
-              <Button text="Back" onClick={back} type="button" />
-            )}
-            <Button
-              text={isLastStep ? "Start" : "Next"}
-              type="button"
-              disabled={false}
-              onClick={next}
-            />
-          </div>
-        </form>
-      </div>
+      <form className="flex flex-col min-h-0 flex-1 my-4 mx-4 gap-4 lg:mx-32" onSubmit={onSubmit}>
+        {currentStep}
+        <div className="flex justify-end gap-4 items-center">
+          {isFirstStep ? (
+            <div></div>
+          ) : (
+            <Button text="Back" onClick={back} type="button" />
+          )}
+          <p className="flex text-sm text-black md:text-lg dark:text-white">{currentStepIndex + 1}/{steps.length}</p>
+          <Button
+            text={isLastStep ? "Start" : "Next"}
+            type="button"
+            disabled={false}
+            onClick={next}
+          />
+        </div>
+      </form>
     </div>
   );
 }

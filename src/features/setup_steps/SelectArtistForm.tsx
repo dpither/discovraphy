@@ -56,11 +56,11 @@ export default function SelectArtistForm({
   };
 
   return (
-    <div className="flex w-full max-w-2xl flex-col gap-4">
+    <div className="flex flex-1 flex-col gap-4 min-h-0">
       <h1 className="text-3xl font-bold text-black dark:text-white">
         Select an Artist
       </h1>
-      <div className="relative w-full max-w-2xl">
+      <div className="relative">
         <input
           type="search"
           className="w-full rounded-lg border border-black bg-black bg-opacity-0 p-4 pe-16 text-sm md:text-base dark:border-white dark:text-white"
@@ -76,7 +76,7 @@ export default function SelectArtistForm({
       {/* <div
         className={`flex flex-col gap-4 transition-opacity duration-500 ${showResultComponent ? "opacity-100" : "opacity-0"}`}>
       </div> */}
-      <div className="flex flex-1 w-full max-w-2xl rounded-lg border border-black dark:border-white">
+      <div className="flex-1 min-h-0 rounded-lg border border-black dark:border-white">
         <Artists
           artists={artists}
           isLoading={isLoading}

@@ -9,16 +9,14 @@ type SelectArtistData = {
   selectedArtist: Artist | null;
 };
 
-type SelectArtistFormProps = SelectArtistData & {
+interface SelectArtistFormProps {
   updateSetupData: (fields: Partial<SelectArtistData>) => void;
-};
+}
 
 export default function SelectArtistForm({
-  selectedArtist,
   updateSetupData,
 }: SelectArtistFormProps) {
   const [searchInput, setSearchInput] = useState("");
-  // const [showResultComponent, setShowResultComponent] = useState(false);
   const [selectedId, setSelectedId] = useState<number>(-1);
   const [artists, setArtists] = useState<Artist[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,17 +25,18 @@ export default function SelectArtistForm({
     if (searchInput.trim() === "") {
       return;
     }
-    // setShowResultComponent(true);
     searchArtists();
   }
 
   function handleSelectArtist(key: number) {
-    if (selectedId === key) {
+    if (key === selectedId) {
       setSelectedId(-1);
       updateSetupData({ selectedArtist: null });
+      console.log("Unselecting.")
     } else {
       setSelectedId(key);
-      updateSetupData({ selectedArtist: artists[selectedId] });
+      updateSetupData({ selectedArtist: artists[key] });
+      console.log("Selected:" + artists[key].name)
     }
   }
 
@@ -56,14 +55,14 @@ export default function SelectArtistForm({
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-4 min-h-0">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
       <h1 className="text-3xl font-bold text-black dark:text-white">
         Select an Artist
       </h1>
       <div className="relative">
         <input
           type="search"
-          className="w-full rounded-lg border border-black bg-black bg-opacity-0 p-4 pe-16 text-sm md:text-base dark:border-white dark:text-white"
+          className="w-full rounded-lg border border-black bg-black bg-opacity-0 p-4 pe-16 text-sm placeholder-subTextLight md:text-base dark:border-white dark:text-white dark:placeholder-subTextDark"
           placeholder="Which artist intrigues you?"
           onChange={(e) => setSearchInput(e.currentTarget.value)}
         />
@@ -73,10 +72,7 @@ export default function SelectArtistForm({
           </Button>
         </div>
       </div>
-      {/* <div
-        className={`flex flex-col gap-4 transition-opacity duration-500 ${showResultComponent ? "opacity-100" : "opacity-0"}`}>
-      </div> */}
-      <div className="flex-1 min-h-0 rounded-lg border border-black dark:border-white">
+      <div className="min-h-0 flex-1 rounded-lg border border-black dark:border-white">
         <Artists
           artists={artists}
           isLoading={isLoading}

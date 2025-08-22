@@ -14,7 +14,7 @@ export default function ArtistCard({
 }: ArtistCardProps) {
   return (
     <div
-      className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} select-none group flex flex-col gap-2 rounded border p-2 text-sm text-black transition hover:border-black dark:text-white hover:dark:border-white`}
+      className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} group flex select-none flex-col gap-2 rounded border p-2 text-sm text-black transition hover:border-black dark:text-white hover:dark:border-white`}
       onClick={onClick}
     >
       <img
@@ -24,7 +24,7 @@ export default function ArtistCard({
       />
       <div className="ml-1 flex flex-col text-left">
         <p className="line-clamp-1">{artist.name}</p>
-        <p className="line-clamp-1 text-xs">
+        <p className="line-clamp-1 text-xs text-subTextLight dark:text-subTextDark">
           Followers: {artist.followers.total.toLocaleString()}
         </p>
       </div>

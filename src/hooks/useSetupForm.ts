@@ -20,7 +20,6 @@ export function useSetupForm(steps: ReactElement[]) {
   return {
     currentStepIndex,
     currentStep: steps[currentStepIndex],
-    steps,
     isFirstStep: currentStepIndex === 0,
     isLastStep: currentStepIndex === steps.length - 1,
     next,

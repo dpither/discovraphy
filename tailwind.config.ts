@@ -11,7 +11,8 @@ export default {
       blue: "#3772ff",
       hoverBlue: "#185cff",
       disabledGrey: "#a9a9a9",
-      lightGrey: "#e5e4e2",
+      subTextLight:"#6b6b6b",
+      subTextDark:"#bababa",
     },
     extend: {
     },

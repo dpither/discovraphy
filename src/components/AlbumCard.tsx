@@ -12,6 +12,12 @@ export default function AlbumCard({
   isSelected,
   onClick,
 }: AlbumCardProps) {
+  function getNumSongs() {
+    if(album.total_tracks === 1) {
+      return "1 song"
+    }
+    return album.total_tracks + " songs"
+  }
   return (
     <div
       className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} group flex select-none flex-col gap-2 rounded border p-2 text-sm text-black transition hover:border-black dark:text-white hover:dark:border-white`}
@@ -23,9 +29,9 @@ export default function AlbumCard({
         src={album.images[0] ? album.images[0].url : placeholder}
       />
       <div className="ml-1 flex flex-col text-left">
-        <p className="line-clamp-1">{album.name}</p>
-        <p className="line-clamp-1 text-xs capitalize text-subTextLight dark:text-subTextDark">
-          {album.release_date.substring(0, 4)} • {album.album_type}
+        <p className="line-clamp-2">{album.name}</p>
+        <p className="line-clamp-1 text-xs text-subTextLight dark:text-subTextDark">
+          {album.release_date.substring(0, 4)} • {album.album_type} • {getNumSongs()}
         </p>
       </div>
     </div>

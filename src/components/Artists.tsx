@@ -6,14 +6,14 @@ interface ArtistsProps {
   artists: Artist[];
   isLoading: boolean;
   selectedId: number;
-  onClickArtist: (id: number) => void;
+  onClick: (id: number) => void;
 }
 
 export default function Artists({
   artists,
   isLoading,
   selectedId,
-  onClickArtist,
+  onClick,
 }: ArtistsProps) {
   if (isLoading) {
     return (
@@ -31,7 +31,7 @@ export default function Artists({
           artist={artist}
           isSelected={selectedId === i}
           onClick={() => {
-            onClickArtist(i);
+            onClick(i);
           }}
         />
       ))}

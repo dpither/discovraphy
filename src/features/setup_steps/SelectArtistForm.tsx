@@ -28,7 +28,7 @@ export default function SelectArtistForm({
     searchArtists();
   }
 
-  function handleSelectArtist(key: number) {
+  function onSelectArtist(key: number) {
     if (key === selectedId) {
       setSelectedId(-1);
       updateSetupData({ selectedArtist: null });
@@ -77,7 +77,7 @@ export default function SelectArtistForm({
           artists={artists}
           isLoading={isLoading}
           selectedId={selectedId}
-          onClickArtist={handleSelectArtist}
+          onClick={onSelectArtist}
         />
       </div>
     </div>

@@ -23,7 +23,7 @@ export default function ArtistCard({
         draggable={false}
       />
       <div className="ml-1 flex flex-col text-left">
-        <p className="line-clamp-1">{artist.name}</p>
+        <p className="line-clamp-2">{artist.name}</p>
         <p className="line-clamp-1 text-xs text-subTextLight dark:text-subTextDark">
           Followers: {artist.followers.total.toLocaleString()}
         </p>

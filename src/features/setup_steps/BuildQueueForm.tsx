@@ -16,28 +16,30 @@ interface BuildQueueFormProps {
 export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [albums, setAlbums] = useState<SimplifiedAlbum[]>([]);
-  const [selectedAlbumIds, setSelectedAlbumIds] = useState<Set<number>>(
+  const [selectedAlbumIds, setSelectedAlbumIds] = useState<Set<SimplifiedAlbum>>(
     new Set(),
   );
-
+  const [numTracks, setNumTracks] = useState(0);
   const [filters, setFilters] = useState<Set<string>>(new Set());
 
   const filteredAlbums = useMemo(() => {
     if (filters.size === 0) {
-      return albums
+      return albums;
     }
-    return albums.filter(album => {
-      return filters.has(album.album_type)
-    })
+    return albums.filter((album) => {
+      return filters.has(album.album_type);
+    });
   }, [albums, filters]);
 
-  function onSelectAlbum(key: number) {
+  function onSelectAlbum(album: SimplifiedAlbum) {
     setSelectedAlbumIds((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
+      if (next.has(album)) {
+        next.delete(album);
+        setNumTracks(numTracks-album.total_tracks)
       } else {
-        next.add(key);
+        next.add(album);
+        setNumTracks(numTracks+album.total_tracks)
       }
       return next;
     });
@@ -52,7 +54,7 @@ export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
         next.add(name);
       }
       return next;
-    })
+    });
   }
 
   const getDiscography = async () => {
@@ -90,10 +92,31 @@ export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
         Build your Queue
       </h1>
       <div className="flex min-h-0 flex-1 flex-col rounded-lg border border-black dark:border-white">
-        <div className="flex gap-2 p-4">
-          <FilterChip text="Albums" isSelected={filters.has("Album")} onClick={()=>{onToggleFilter("Album")}} />
-          <FilterChip text="Singles" isSelected={filters.has("Single")} onClick={()=>{onToggleFilter("Single")}} />
-          <FilterChip text="EPs" isSelected={filters.has("EP")} onClick={()=>{onToggleFilter("EP")}} />
+        <div className="flex flex-col p-4 gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-2">
+            <FilterChip
+              text="Albums"
+              isSelected={filters.has("Album")}
+              onClick={() => {
+                onToggleFilter("Album");
+              }}
+            />
+            <FilterChip
+              text="Singles"
+              isSelected={filters.has("Single")}
+              onClick={() => {
+                onToggleFilter("Single");
+              }}
+            />
+            <FilterChip
+              text="EPs"
+              isSelected={filters.has("EP")}
+              onClick={() => {
+                onToggleFilter("EP");
+              }}
+            />
+          </div>
+          <p className="flex text-black dark:text-white"> {numTracks} Track{numTracks != 1 ? "s":""} selected</p>
         </div>
         <div className="flex min-h-0 flex-1">
           {isLoading && (
@@ -106,9 +129,9 @@ export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
               <AlbumCard
                 key={i}
                 album={album}
-                isSelected={selectedAlbumIds.has(i)}
+                isSelected={selectedAlbumIds.has(album)}
                 onClick={() => {
-                  onSelectAlbum(i);
+                  onSelectAlbum(album);
                 }}
               />
             ))}

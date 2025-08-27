@@ -18,9 +18,9 @@ export default function SelectArtistForm({
   selectedArtist,
   updateSetupData,
 }: SelectArtistFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [artists, setArtists] = useState<Artist[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   function search() {
     if (searchInput.trim() === "") {
@@ -75,22 +75,20 @@ export default function SelectArtistForm({
             </Button>
           </div>
         </div>
-        <div className="flex min-h-0 flex-1">
-          {isLoading && (
-            <div className="flex size-full items-center justify-center">
-              <Spinner />
+        <div className="flex min-h-0 flex-1 items-center justify-center">
+          {isLoading && <Spinner />}
+          {!isLoading && (
+            <div className="grid h-full grid-cols-2 gap-2 overflow-y-auto px-4 pb-4 sm:grid-cols-4 2xl:grid-cols-6">
+              {artists?.map((artist, i) => (
+                <ArtistCard
+                  key={i}
+                  artist={artist}
+                  isSelected={artist.id === selectedArtist?.id}
+                  onClick={() => onSelectArtist(artist)}
+                />
+              ))}
             </div>
           )}
-          <div className="grid h-full grid-cols-2 gap-2 overflow-y-auto px-4 pb-4 sm:grid-cols-4 2xl:grid-cols-6">
-            {artists?.map((artist, i) => (
-              <ArtistCard
-                key={i}
-                artist={artist}
-                isSelected={artist.id === selectedArtist?.id}
-                onClick={() => onSelectArtist(artist)}
-              />
-            ))}
-          </div>
         </div>
       </div>
     </div>

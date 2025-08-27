@@ -38,8 +38,11 @@ export default function AlbumCard({
       />
       <div className="ml-1 flex flex-col text-left">
         <p className="line-clamp-2">{album.name}</p>
-        <p className="line-clamp-1 text-xs text-subTextLight dark:text-subTextDark">
-          {album.release_date.substring(0, 4)} • {album.album_type} •{" "}
+        <p className="text-xs text-subTextLight dark:text-subTextDark">
+          {album.release_date.substring(0, 4)} • {album.album_type}
+          <span className="hidden md:inline"> • {getNumSongs()}</span>
+        </p>
+        <p className="text-xs text-subTextLight md:hidden dark:text-subTextDark">
           {getNumSongs()}
         </p>
       </div>

@@ -115,13 +115,9 @@ export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
             {numTracks} Track{numTracks != 1 ? "s" : ""} selected
           </p>
         </div>
-        <div className="flex min-h-0 flex-1">
-          {isLoading && (
-            <div className="flex size-full items-center justify-center">
-              <Spinner />
-            </div>
-          )}
-          <div className="grid h-full grid-cols-2 gap-2 overflow-y-auto px-4 pb-4 sm:grid-cols-4 2xl:grid-cols-6">
+        <div className="flex min-h-0 flex-1 items-center justify-center">
+          {isLoading && <Spinner />}
+          {!isLoading && <div className="grid h-full grid-cols-2 gap-2 overflow-y-auto px-4 pb-4 sm:grid-cols-4 2xl:grid-cols-6">
             {filteredAlbums?.map((album, i) => (
               <AlbumCard
                 key={i}
@@ -130,7 +126,7 @@ export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
                 onClick={() => onSelectAlbum(album)}
               />
             ))}
-          </div>
+          </div>}
         </div>
       </div>
     </div>

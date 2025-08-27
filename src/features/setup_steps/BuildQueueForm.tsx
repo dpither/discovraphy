@@ -16,9 +16,7 @@ interface BuildQueueFormProps {
 export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [albums, setAlbums] = useState<SimplifiedAlbum[]>([]);
-  const [selectedAlbumIds, setSelectedAlbumIds] = useState<Set<SimplifiedAlbum>>(
-    new Set(),
-  );
+  const [albumQueue, setAlbumQueue] = useState<SimplifiedAlbum[]>([]);
   const [numTracks, setNumTracks] = useState(0);
   const [filters, setFilters] = useState<Set<string>>(new Set());
 
@@ -32,19 +30,15 @@ export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
   }, [albums, filters]);
 
   function onSelectAlbum(album: SimplifiedAlbum) {
-    setSelectedAlbumIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(album)) {
-        next.delete(album);
-        setNumTracks(numTracks-album.total_tracks)
-      } else {
-        next.add(album);
-        setNumTracks(numTracks+album.total_tracks)
+    setAlbumQueue((prev) => {
+      if (prev.includes(album)) {
+        setNumTracks(numTracks - album.total_tracks);
+        return prev.filter((item) => item !== album);
       }
-      return next;
+      setNumTracks(numTracks + album.total_tracks);
+      return [...prev, album];
     });
   }
-
   function onToggleFilter(name: string) {
     setFilters((prev) => {
       const next = new Set(prev);
@@ -92,7 +86,7 @@ export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
         Build your Queue
       </h1>
       <div className="flex min-h-0 flex-1 flex-col rounded-lg border border-black dark:border-white">
-        <div className="flex flex-col p-4 gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex gap-2">
             <FilterChip
               text="Albums"
@@ -116,7 +110,10 @@ export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
               }}
             />
           </div>
-          <p className="flex text-black dark:text-white"> {numTracks} Track{numTracks != 1 ? "s":""} selected</p>
+          <p className="flex text-black dark:text-white">
+            {" "}
+            {numTracks} Track{numTracks != 1 ? "s" : ""} selected
+          </p>
         </div>
         <div className="flex min-h-0 flex-1">
           {isLoading && (
@@ -129,10 +126,8 @@ export default function BuildQueueForm({ artist }: BuildQueueFormProps) {
               <AlbumCard
                 key={i}
                 album={album}
-                isSelected={selectedAlbumIds.has(album)}
-                onClick={() => {
-                  onSelectAlbum(album);
-                }}
+                queuePosition={albumQueue.indexOf(album)}
+                onClick={() => onSelectAlbum(album)}
               />
             ))}
           </div>

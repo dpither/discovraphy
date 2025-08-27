@@ -22,7 +22,7 @@ export default function Setup() {
   const [setupData, setSetupData] = useState(INITIAL_SETUP_DATA);
 
   const steps = [
-    <SelectArtistForm updateSetupData={updateSetupData} />,
+    <SelectArtistForm selectedArtist={setupData.selectedArtist} updateSetupData={updateSetupData} />,
     <BuildQueueForm artist={setupData.selectedArtist} />,
   ];
 

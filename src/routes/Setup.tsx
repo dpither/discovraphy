@@ -5,6 +5,7 @@ import Button from "../components/Button";
 import { FormEvent, useState } from "react";
 import { Artist, Playlist, Tracks } from "@spotify/web-api-ts-sdk";
 import BuildQueueForm from "../features/setup_steps/BuildQueueForm";
+import SelectDestinationForm from "../features/setup_steps/SelectDestinationForm";
 
 type SetupData = {
   selectedArtist: Artist | null;
@@ -22,8 +23,12 @@ export default function Setup() {
   const [setupData, setSetupData] = useState(INITIAL_SETUP_DATA);
 
   const steps = [
-    <SelectArtistForm selectedArtist={setupData.selectedArtist} updateSetupData={updateSetupData} />,
+    <SelectArtistForm
+      selectedArtist={setupData.selectedArtist}
+      updateSetupData={updateSetupData}
+    />,
     <BuildQueueForm artist={setupData.selectedArtist} />,
+    <SelectDestinationForm />,
   ];
 
   function updateSetupData(fields: Partial<SetupData>) {
@@ -37,7 +42,7 @@ export default function Setup() {
       case 0:
         return setupData.selectedArtist !== null;
       case 1:
-        return false;
+        return true;
       default:
         console.error("Triggered step validation for invalid step");
         return false;

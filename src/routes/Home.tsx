@@ -9,7 +9,7 @@ import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 export default function Home() {
   const navigate = useNavigate();
   const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-  const scopes = ["user-read-private", "user-read-email"];
+  const scopes = ["user-read-private", "user-read-email", "playlist-read-private"];
 
   const sdk = SpotifyApi.withUserAuthorization(
     clientId,

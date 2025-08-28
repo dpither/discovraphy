@@ -7,26 +7,36 @@ import {
 } from "@spotify/web-api-ts-sdk";
 import PlaylistCard from "../../components/PlaylistCard";
 
-export default function SelectDestinationForm() {
+interface SelectDestinationFormData {
+  destination: SimplifiedPlaylist | "SAVE" | null;
+}
+
+interface SelectDestinationFormProps extends SelectDestinationFormData {
+  updateSetupData: (fields: Partial<SelectDestinationFormData>) => void;
+}
+
+export default function SelectDestinationForm({
+  destination,
+  updateSetupData,
+}: SelectDestinationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [ownedPlaylists, setOwnedPlaylists] = useState<SimplifiedPlaylist[]>(
     [],
   );
-  const [checked, setChecked] = useState(true);
-  const [selectedPlaylist, setSelectedPlaylist] = useState<SimplifiedPlaylist | null>(null);
 
   function onSelectCheckbox() {
-    setChecked(!checked);
-    setSelectedPlaylist(null);
+    if (destination === "SAVE") {
+      updateSetupData({ destination: null });
+    } else {
+      updateSetupData({ destination: "SAVE" });
+    }
   }
 
   function onSelectPlaylist(playlist: SimplifiedPlaylist) {
-    console.log(playlist, selectedPlaylist)
-    setChecked(false);
-    if(selectedPlaylist?.id === playlist.id) {
-      setSelectedPlaylist(null);
+    if (destination != "SAVE" && destination?.id === playlist.id) {
+      updateSetupData({ destination: null });
     } else {
-      setSelectedPlaylist(playlist)
+      updateSetupData({ destination: playlist });
     }
   }
 
@@ -51,7 +61,6 @@ export default function SelectDestinationForm() {
     getPlaylists();
   }, []);
 
-  
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       <h1 className="text-3xl font-bold text-black dark:text-white">
@@ -61,7 +70,7 @@ export default function SelectDestinationForm() {
         <input
           type="checkbox"
           className="accent-blue"
-          checked={checked}
+          checked={destination === "SAVE"}
           onChange={onSelectCheckbox}
         />
         <label>Save to liked songs</label>
@@ -75,8 +84,12 @@ export default function SelectDestinationForm() {
                 <PlaylistCard
                   key={i}
                   playlist={playlist}
-                  isSelected={selectedPlaylist?.id === playlist.id}
-                  onClick={() => {onSelectPlaylist(playlist)}}
+                  isSelected={
+                    destination != "SAVE" && destination?.id === playlist.id
+                  }
+                  onClick={() => {
+                    onSelectPlaylist(playlist);
+                  }}
                 />
               ))}
             </div>

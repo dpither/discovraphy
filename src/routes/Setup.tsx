@@ -2,34 +2,25 @@ import Header from "../layouts/Header";
 import SelectArtistForm from "../features/setup_steps/SelectArtistForm";
 import { useSetupForm } from "../hooks/useSetupForm";
 import Button from "../components/Button";
-import { FormEvent, useState } from "react";
-import { Artist, Playlist, Tracks } from "@spotify/web-api-ts-sdk";
+import { FormEvent, useMemo, useState } from "react";
+import { Artist, SimplifiedPlaylist, Tracks } from "@spotify/web-api-ts-sdk";
 import BuildQueueForm from "../features/setup_steps/BuildQueueForm";
 import SelectDestinationForm from "../features/setup_steps/SelectDestinationForm";
 
 type SetupData = {
   selectedArtist: Artist | null;
   selectedTracks: Tracks[];
-  destination: Playlist | "SAVE" | null;
+  destination: SimplifiedPlaylist | "SAVE" | null;
 };
 
 const INITIAL_SETUP_DATA: SetupData = {
   selectedArtist: null,
   selectedTracks: [],
-  destination: null,
+  destination: "SAVE",
 };
 
 export default function Setup() {
   const [setupData, setSetupData] = useState(INITIAL_SETUP_DATA);
-
-  const steps = [
-    <SelectArtistForm
-      selectedArtist={setupData.selectedArtist}
-      updateSetupData={updateSetupData}
-    />,
-    <BuildQueueForm artist={setupData.selectedArtist} />,
-    <SelectDestinationForm />,
-  ];
 
   function updateSetupData(fields: Partial<SetupData>) {
     setSetupData((prevData) => {
@@ -37,20 +28,34 @@ export default function Setup() {
     });
   }
 
-  function isStepValid(step: number) {
-    switch (step) {
+  const steps = [
+    <SelectArtistForm
+      selectedArtist={setupData.selectedArtist}
+      updateSetupData={updateSetupData}
+    />,
+    <BuildQueueForm artist={setupData.selectedArtist} />,
+    <SelectDestinationForm
+      destination={setupData.destination}
+      updateSetupData={updateSetupData}
+    />,
+  ];
+
+  const { currentStepIndex, currentStep, isFirstStep, isLastStep, next, back } =
+    useSetupForm(steps);
+
+  const isStepValid = useMemo(() => {
+    switch (currentStepIndex) {
       case 0:
         return setupData.selectedArtist !== null;
       case 1:
         return true;
+      case 2:
+        return setupData.destination !== null;
       default:
         console.error("Triggered step validation for invalid step");
         return false;
     }
-  }
-
-  const { currentStepIndex, currentStep, isFirstStep, isLastStep, next, back } =
-    useSetupForm(steps);
+  }, [currentStepIndex, setupData]);
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -76,7 +81,7 @@ export default function Setup() {
           <Button
             text={isLastStep ? "Start" : "Next"}
             type="button"
-            disabled={!isStepValid(currentStepIndex)}
+            disabled={!isStepValid}
             onClick={next}
           />
         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Spinner from "../../components/Spinner";
 import {
   Scopes,
@@ -6,42 +6,33 @@ import {
   SpotifyApi,
 } from "@spotify/web-api-ts-sdk";
 import PlaylistCard from "../../components/PlaylistCard";
+import { useSetupStore } from "./store";
 
-interface SelectDestinationFormData {
-  destination: SimplifiedPlaylist | "SAVE" | null;
-}
-
-interface SelectDestinationFormProps extends SelectDestinationFormData {
-  updateSetupData: (fields: Partial<SelectDestinationFormData>) => void;
-}
-
-export default function SelectDestinationForm({
-  destination,
-  updateSetupData,
-}: SelectDestinationFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [ownedPlaylists, setOwnedPlaylists] = useState<SimplifiedPlaylist[]>(
-    [],
-  );
+export default function SelectDestinationForm() {
+  const isLoading = useSetupStore((state) => state.isLoading);
+  const setData = useSetupStore((state) => state.setData);
+  const ownedPlaylists = useSetupStore((state) => state.ownedPlaylists);
+  const destination = useSetupStore((state) => state.destination);
 
   function onSelectCheckbox() {
     if (destination === "SAVE") {
-      updateSetupData({ destination: null });
+      setData({ destination: null });
     } else {
-      updateSetupData({ destination: "SAVE" });
+      setData({ destination: "SAVE" });
     }
   }
 
   function onSelectPlaylist(playlist: SimplifiedPlaylist) {
-    if (destination != "SAVE" && destination?.id === playlist.id) {
-      updateSetupData({ destination: null });
+    if (destination === playlist.id) {
+      setData({ destination: null });
     } else {
-      updateSetupData({ destination: playlist });
+      setData({ destination: playlist.id });
     }
   }
 
+  // Abstract away maybe prefetch?
   const getPlaylists = async () => {
-    setIsLoading(true);
+    setData({ isLoading: true });
     const sdk = SpotifyApi.withUserAuthorization(
       import.meta.env.VITE_SPOTIFY_CLIENT_ID,
       import.meta.env.VITE_REDIRECT_TARGET,
@@ -49,15 +40,18 @@ export default function SelectDestinationForm({
     );
     const playlistRes = await sdk.currentUser.playlists.playlists(50);
     const profileRes = await sdk.currentUser.profile();
-    setOwnedPlaylists(
-      playlistRes.items.filter((item) => {
+    setData({
+      isLoading: false,
+      ownedPlaylists: playlistRes.items.filter((item) => {
         return item.owner.id === profileRes.id;
       }),
-    );
-    setIsLoading(false);
+    });
   };
 
   useEffect(() => {
+    if (ownedPlaylists.length > 0) {
+      return;
+    }
     getPlaylists();
   }, []);
 
@@ -84,9 +78,7 @@ export default function SelectDestinationForm({
                 <PlaylistCard
                   key={i}
                   playlist={playlist}
-                  isSelected={
-                    destination != "SAVE" && destination?.id === playlist.id
-                  }
+                  isSelected={destination === playlist.id}
                   onClick={() => {
                     onSelectPlaylist(playlist);
                   }}

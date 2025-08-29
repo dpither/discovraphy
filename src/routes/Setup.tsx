@@ -1,43 +1,20 @@
 import Header from "../layouts/Header";
-import SelectArtistForm from "../features/setup_steps/SelectArtistForm";
+import SelectArtistForm from "../features/setup/SelectArtistForm";
 import { useSetupForm } from "../hooks/useSetupForm";
 import Button from "../components/Button";
-import { FormEvent, useMemo, useState } from "react";
-import { Artist, SimplifiedPlaylist, Tracks } from "@spotify/web-api-ts-sdk";
-import BuildQueueForm from "../features/setup_steps/BuildQueueForm";
-import SelectDestinationForm from "../features/setup_steps/SelectDestinationForm";
-
-type SetupData = {
-  selectedArtist: Artist | null;
-  selectedTracks: Tracks[];
-  destination: SimplifiedPlaylist | "SAVE" | null;
-};
-
-const INITIAL_SETUP_DATA: SetupData = {
-  selectedArtist: null,
-  selectedTracks: [],
-  destination: "SAVE",
-};
+import { FormEvent, useMemo } from "react";
+import BuildQueueForm from "../features/setup/BuildQueueForm";
+import SelectDestinationForm from "../features/setup/SelectDestinationForm";
+import { useSetupStore } from "../features/setup/store";
 
 export default function Setup() {
-  const [setupData, setSetupData] = useState(INITIAL_SETUP_DATA);
-
-  function updateSetupData(fields: Partial<SetupData>) {
-    setSetupData((prevData) => {
-      return { ...prevData, ...fields };
-    });
-  }
+  const selectedArtistId = useSetupStore((state) => state.selectedArtistId);
+  const destination = useSetupStore((state) => state.destination);
 
   const steps = [
-    <SelectArtistForm
-      selectedArtist={setupData.selectedArtist}
-      updateSetupData={updateSetupData}
-    />,
-    <BuildQueueForm artist={setupData.selectedArtist} />,
-    <SelectDestinationForm
-      destination={setupData.destination}
-      updateSetupData={updateSetupData}
-    />,
+    <SelectArtistForm />,
+    <BuildQueueForm />,
+    <SelectDestinationForm />,
   ];
 
   const { currentStepIndex, currentStep, isFirstStep, isLastStep, next, back } =
@@ -46,16 +23,16 @@ export default function Setup() {
   const isStepValid = useMemo(() => {
     switch (currentStepIndex) {
       case 0:
-        return setupData.selectedArtist !== null;
+        return selectedArtistId !== null;
       case 1:
         return true;
       case 2:
-        return setupData.destination !== null;
+        return destination !== null;
       default:
         console.error("Triggered step validation for invalid step");
         return false;
     }
-  }, [currentStepIndex, setupData]);
+  }, [currentStepIndex, selectedArtistId, destination]);
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();

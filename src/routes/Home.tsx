@@ -1,7 +1,7 @@
 import Button from "../components/Button";
 import Header from "../layouts/Header";
 import SpotifyFooter from "../layouts/SpotifyFooter";
-import catJAM from "../assets/catJAM.gif";
+import catJAM from "../assets/catJAM.webp";
 import Textra from "react-textra";
 import { useNavigate } from "react-router";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";

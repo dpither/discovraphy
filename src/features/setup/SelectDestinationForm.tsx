@@ -1,12 +1,9 @@
 import { useEffect } from "react";
 import Spinner from "../../components/Spinner";
-import {
-  Scopes,
-  SimplifiedPlaylist,
-  SpotifyApi,
-} from "@spotify/web-api-ts-sdk";
+import { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import PlaylistCard from "../../components/PlaylistCard";
 import { useSetupStore } from "./store";
+import { getOwnedPlaylists } from "../../lib/spotifyAPI";
 
 export default function SelectDestinationForm() {
   const isLoading = useSetupStore((state) => state.isLoading);
@@ -33,18 +30,9 @@ export default function SelectDestinationForm() {
   // Abstract away maybe prefetch?
   const getPlaylists = async () => {
     setData({ isLoading: true });
-    const sdk = SpotifyApi.withUserAuthorization(
-      import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-      import.meta.env.VITE_REDIRECT_TARGET,
-      [...Scopes.userDetails, ...Scopes.playlist],
-    );
-    const playlistRes = await sdk.currentUser.playlists.playlists(50);
-    const profileRes = await sdk.currentUser.profile();
     setData({
       isLoading: false,
-      ownedPlaylists: playlistRes.items.filter((item) => {
-        return item.owner.id === profileRes.id;
-      }),
+      ownedPlaylists: await getOwnedPlaylists(),
     });
   };
 

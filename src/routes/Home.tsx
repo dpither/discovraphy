@@ -4,18 +4,10 @@ import SpotifyFooter from "../layouts/SpotifyFooter";
 import catJAM from "../assets/catJAM.webp";
 import Textra from "react-textra";
 import { useNavigate } from "react-router";
-import { SpotifyApi } from "@spotify/web-api-ts-sdk";
+import { initSpotifyClient, sdk } from "../lib/spotifyAPI";
 
 export default function Home() {
   const navigate = useNavigate();
-  const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-  const scopes = ["user-read-private", "user-read-email", "playlist-read-private"];
-
-  const sdk = SpotifyApi.withUserAuthorization(
-    clientId,
-    "http://localhost:3000/discovraphy/setup",
-    scopes,
-  );
 
   const texts = [
     "earworm",
@@ -26,8 +18,8 @@ export default function Home() {
   ];
 
   async function authenticate() {
-    if (await sdk.getAccessToken() == null) {
-      await sdk.authenticate();
+    if ((await sdk.getAccessToken()) == null) {
+      await initSpotifyClient();
     } else {
       navigate("/setup");
     }
@@ -38,7 +30,7 @@ export default function Home() {
       <Header />
       <div className="m-4 flex flex-col items-center gap-4 md:flex-row-reverse md:justify-center">
         <div className="flex h-full w-72 flex-col justify-between gap-4 md:w-96 md:text-left">
-          <div className="text-black flex flex-col text-3xl font-bold leading-tight md:text-5xl dark:text-white">
+          <div className="flex flex-col text-3xl font-bold leading-tight text-black md:text-5xl dark:text-white">
             <h1>
               Discover your next{" "}
               <span>
@@ -46,8 +38,9 @@ export default function Home() {
               </span>
             </h1>
           </div>
-          <p className="text-black text-sm md:text-lg dark:text-white">
-            Swipe through your favourite artist's discography to discover something new.
+          <p className="text-sm text-black md:text-lg dark:text-white">
+            Swipe through your favourite artist's discography to discover
+            something new.
           </p>
           <div>
             <Button text="Get Started" onClick={authenticate} />

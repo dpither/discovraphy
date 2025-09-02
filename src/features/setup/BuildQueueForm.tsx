@@ -1,9 +1,10 @@
 import { useEffect, useMemo } from "react";
 import FilterChip from "../../components/FilterChip";
 import Spinner from "../../components/Spinner";
-import { Scopes, SimplifiedAlbum, SpotifyApi } from "@spotify/web-api-ts-sdk";
+import { SimplifiedAlbum } from "@spotify/web-api-ts-sdk";
 import AlbumCard from "../../components/AlbumCard";
 import { useSetupStore } from "./store";
+import { getArtistAlbums } from "../../lib/spotifyAPI";
 
 export default function BuildQueueForm() {
   const isLoading = useSetupStore((state) => state.isLoading);
@@ -47,35 +48,15 @@ export default function BuildQueueForm() {
 
   //TODO: Move fetching up to allow searching right after artist selection confirmation and only on change?
   const getDiscography = async () => {
-    if (selectedArtistId === null) {
-      console.log("No artist provided");
-      return;
-    }
-    setData({ isLoading: true });
-    const sdk = SpotifyApi.withUserAuthorization(
-      import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-      import.meta.env.VITE_REDIRECT_TARGET,
-      Scopes.userDetails,
-    );
-
-    const res = await sdk.artists.albums(
-      selectedArtistId,
-      undefined,
-      undefined,
-      50,
-    );
-    res.items.forEach((album) => {
-      if (album.album_type === "single") {
-        album.album_type = album.total_tracks <= 3 ? "Single" : "EP";
-      } else {
-        album.album_type = "Album";
-      }
+    if (selectedArtistId === null) return;
+    setData({ isLoading: true, numTracks: 0, selectedAlbumIds: [] });
+    setData({
+      isLoading: false,
+      albumResults: await getArtistAlbums(selectedArtistId),
     });
-    setData({ isLoading: false, albumResults: res.items });
   };
 
   useEffect(() => {
-    setData({numTracks:0, selectedAlbumIds:[]})
     getDiscography();
   }, [selectedArtistId]);
 

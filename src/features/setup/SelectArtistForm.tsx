@@ -1,10 +1,11 @@
-import { Artist, Scopes, SpotifyApi } from "@spotify/web-api-ts-sdk";
+import { Artist } from "@spotify/web-api-ts-sdk";
 import Icon from "../../assets/Icon";
 import tailwindConfig from "../../../tailwind.config";
 import Button from "../../components/Button";
 import Spinner from "../../components/Spinner";
 import ArtistCard from "../../components/ArtistCard";
 import { useSetupStore } from "./store";
+import { getArtists } from "../../lib/spotifyAPI";
 
 export default function SelectArtistForm() {
   const isLoading = useSetupStore((state) => state.isLoading);
@@ -13,12 +14,10 @@ export default function SelectArtistForm() {
   const artistResults = useSetupStore((state) => state.artistResults);
   const selectedArtistId = useSetupStore((state) => state.selectedArtistId);
 
-  function search() {
-    if (artistQuery.trim() === "") {
-      return;
-    }
-    setData({ selectedArtistId: null, artistResults: [] });
-    searchArtists();
+  async function onSearch() {
+    if (isLoading || artistQuery.trim() === "") return;
+    setData({ selectedArtistId: null, artistResults: [], isLoading:true });
+    setData({ artistResults: await getArtists(artistQuery), isLoading: false });
   }
 
   function onSelectArtist(artist: Artist) {
@@ -28,19 +27,6 @@ export default function SelectArtistForm() {
       setData({ selectedArtistId: artist.id });
     }
   }
-
-  // TODO: Abstract away
-  const searchArtists = async () => {
-    setData({ isLoading: true });
-    const sdk = SpotifyApi.withUserAuthorization(
-      import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-      import.meta.env.VITE_REDIRECT_TARGET,
-      Scopes.userDetails,
-    );
-    const res = await sdk.search(artistQuery, ["artist"]);
-    console.log(res.artists.items);
-    setData({ artistResults: res.artists.items, isLoading: false });
-  };
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
@@ -57,7 +43,7 @@ export default function SelectArtistForm() {
             onChange={(e) => setData({ artistQuery: e.currentTarget.value })}
           />
           <div className="absolute inset-y-0 end-4 place-content-center p-2">
-            <Button onClick={search}>
+            <Button onClick={onSearch}>
               <Icon fill={tailwindConfig.theme.colors.white} />
             </Button>
           </div>

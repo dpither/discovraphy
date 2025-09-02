@@ -3,7 +3,7 @@ import Spinner from "../../components/Spinner";
 import { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import PlaylistCard from "../../components/PlaylistCard";
 import { useSetupStore } from "./store";
-import { getOwnedPlaylists } from "../../lib/spotifyAPI";
+import { getOwnedPlaylists } from "../../lib/spotifyApi";
 
 export default function SelectDestinationForm() {
   const isLoading = useSetupStore((state) => state.isLoading);

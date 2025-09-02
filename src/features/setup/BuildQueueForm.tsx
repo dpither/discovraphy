@@ -4,7 +4,7 @@ import Spinner from "../../components/Spinner";
 import { SimplifiedAlbum } from "@spotify/web-api-ts-sdk";
 import AlbumCard from "../../components/AlbumCard";
 import { useSetupStore } from "./store";
-import { getArtistAlbums } from "../../lib/spotifyAPI";
+import { getArtistAlbums } from "../../lib/spotifyApi";
 
 export default function BuildQueueForm() {
   const isLoading = useSetupStore((state) => state.isLoading);

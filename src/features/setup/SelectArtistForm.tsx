@@ -5,7 +5,7 @@ import Button from "../../components/Button";
 import Spinner from "../../components/Spinner";
 import ArtistCard from "../../components/ArtistCard";
 import { useSetupStore } from "./store";
-import { getArtists } from "../../lib/spotifyAPI";
+import { getArtists } from "../../lib/spotifyApi";
 
 export default function SelectArtistForm() {
   const isLoading = useSetupStore((state) => state.isLoading);

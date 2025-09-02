@@ -4,7 +4,7 @@ import SpotifyFooter from "../layouts/SpotifyFooter";
 import catJAM from "../assets/catJAM.webp";
 import Textra from "react-textra";
 import { useNavigate } from "react-router";
-import { initSpotifyClient, sdk } from "../lib/spotifyAPI";
+import { initSpotifyClient, sdk } from "../lib/spotifyApi";
 
 export default function Home() {
   const navigate = useNavigate();

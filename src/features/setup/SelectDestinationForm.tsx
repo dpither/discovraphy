@@ -61,7 +61,7 @@ export default function SelectDestinationForm() {
         <div className="flex min-h-0 flex-1 items-center justify-center">
           {isLoading && <Spinner />}
           {!isLoading && (
-            <div className="grid h-full grid-cols-2 gap-2 overflow-y-auto p-4 sm:grid-cols-4 2xl:grid-cols-6">
+            <div className="grid h-full grid-cols-2 gap-2 overflow-y-auto p-4 sm:grid-cols-4 2xl:grid-cols-5">
               {ownedPlaylists?.map((playlist, i) => (
                 <PlaylistCard
                   key={i}

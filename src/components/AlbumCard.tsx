@@ -1,5 +1,6 @@
 import { SimplifiedAlbum } from "@spotify/web-api-ts-sdk";
 import placeholder from "../assets/artist_placeholder.png";
+import spotify_logo from "../assets/spotify_logo.svg";
 
 interface AlbumCardProps {
   album: SimplifiedAlbum;
@@ -26,13 +27,14 @@ export default function AlbumCard({
       className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} group relative flex select-none flex-col gap-2 rounded border p-2 text-sm text-black transition hover:border-black dark:text-white hover:dark:border-white`}
       onClick={onClick}
     >
+      <img className="w-20" src={spotify_logo} alt="spotify_logo" />
       {isSelected && (
         <div className="absolute bottom-3 right-3 z-10 inline-flex size-6 items-center justify-center rounded-full bg-blue text-xs font-bold text-white">
           {queuePosition + 1}
         </div>
       )}
       <img
-        className="aspect-square w-full rounded-lg object-cover transition group-hover:scale-105 group-active:scale-95"
+        className="aspect-square w-full rounded-sm object-cover transition group-hover:scale-105 group-active:scale-95"
         draggable={false}
         src={album.images[0] ? album.images[0].url : placeholder}
       />

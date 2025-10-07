@@ -1,5 +1,6 @@
 import { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import placeholder from "../assets/artist_placeholder.png";
+import spotify_logo from "../assets/spotify_logo.svg";
 
 interface PlaylistCardProps {
   playlist: SimplifiedPlaylist;
@@ -27,6 +28,7 @@ export default function PlaylistCard({
       className={`${isSelected ? "border border-black dark:border-white" : "border-transparent"} group relative flex select-none flex-col gap-2 rounded border p-2 text-sm text-black transition hover:border-black dark:text-white hover:dark:border-white`}
       onClick={onClick}
     >
+      <img className="w-20" src={spotify_logo} alt="spotify_logo" />
       <img
         className="aspect-square w-full rounded-lg object-cover transition group-hover:scale-105 group-active:scale-95"
         draggable={false}

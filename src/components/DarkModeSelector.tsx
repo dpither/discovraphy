@@ -1,6 +1,7 @@
-import IconMoon from "../assets/IconMoon";
-import IconSun from "../assets/IconSun";
+import DarkModeIcon from "../assets/dark_mode_icon.svg?react";
+import LightModeIcon from "../assets/light_mode_icon.svg?react";
 import { useState } from "react";
+import Button from "./Button";
 
 export default function DarkModeSelector() {
   const [isDark, setIsDark] = useState(localStorage.theme === "dark");
@@ -12,11 +13,14 @@ export default function DarkModeSelector() {
   }
 
   return (
-    <button
-      className="rounded-full bg-blue p-2 hover:bg-blue-h active:brightness-75 transition"
-      onClick={toggleDarkMode}
-    >
-      {isDark ? <IconSun /> : <IconMoon />}
-    </button>
+    // <button
+    //   className="bg-blue enabled:hover:bg-hover-blue rounded-full p-2 transition enabled:active:scale-95 enabled:active:brightness-75"
+    //   onClick={toggleDarkMode}
+    // >
+    //   {isDark ? <LightModeIcon /> : <DarkModeIcon/>}
+    // </button>
+    <Button onClick={toggleDarkMode}>
+      {isDark ? <LightModeIcon /> : <DarkModeIcon />}
+    </Button>
   );
 }

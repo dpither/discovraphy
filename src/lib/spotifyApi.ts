@@ -12,7 +12,7 @@ export async function initSpotifyClient() {
 }
 
 export async function getArtists(artistQuery: string) {
-  return (await sdk.search(artistQuery, ["artist"])).artists.items;
+  return (await sdk.search(artistQuery, ["artist"], undefined, 50)).artists.items;
 }
 
 export async function getArtistAlbums(artistId: string) {

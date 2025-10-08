@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import Home from "./routes/Home";
 import Error from "./routes/Error";
 import Setup from "./routes/Setup";
+import Swipe from "./routes/Swipe";
 
 const routes = [
   {
@@ -12,6 +13,11 @@ const routes = [
   {
     path: "/setup",
     element: <Setup />,
+    errorElement: <Error />,
+  },
+  {
+    path: "/swipe",
+    element: <Swipe />,
     errorElement: <Error />,
   },
 ];

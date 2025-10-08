@@ -1,10 +1,11 @@
 interface ButtonProps {
   text?: string;
-  onClick?: () => void;
+  onClick: () => void;
   disabled?: boolean;
   type?: "submit" | "reset" | "button" | undefined;
   children?: React.ReactNode;
 }
+
 export default function Button({
   text,
   onClick,
@@ -14,7 +15,7 @@ export default function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`rounded-lg bg-blue disabled:bg-disabledGrey disabled:text-lightGrey ${text ? "px-4 py-2" : "p-2"} text-xl font-semibold text-white transition enabled:hover:bg-hoverBlue enabled:active:scale-95 enabled:active:brightness-75`}
+      className={`bg-blue disabled:bg-disabled-grey disabled:text-lightGrey disabled:pointer-events-none ${text ? "rounded-sm lg:rounded-md" : "rounded-full"} ${text ? "px-4 py-2" : "p-2"} hover:bg-hover-blue text-xl font-semibold text-white transition`}
       onClick={onClick}
       disabled={disabled}
       type={type}

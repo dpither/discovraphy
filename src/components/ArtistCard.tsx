@@ -1,6 +1,6 @@
 import { Artist } from "@spotify/web-api-ts-sdk";
 import placeholder from "../assets/artist_placeholder.png";
-import spotify_logo from "../assets/spotify_logo.svg";
+import SpotifyIcon from "../assets/spotify_icon.svg?react";
 
 interface ArtistCardProps {
   artist: Artist;
@@ -15,18 +15,18 @@ export default function ArtistCard({
 }: ArtistCardProps) {
   return (
     <div
-      className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} group flex select-none flex-col gap-2 rounded border p-2 text-sm text-black transition hover:border-black dark:text-white hover:dark:border-white`}
+      className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} group ${isSelected ? "" : "hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex flex-col gap-2 rounded-sm border p-2 text-sm text-black transition select-none lg:rounded-lg dark:text-white`}
       onClick={onClick}
     >
-      <img className="w-20" src={spotify_logo} alt="spotify_logo" />
+      <SpotifyIcon className="w-6" />
       <img
-        className="aspect-square w-full rounded-full object-cover transition group-hover:scale-105 group-active:scale-95"
+        className="aspect-square w-full rounded-full object-cover transition"
         src={artist.images[0] ? artist.images[0].url : placeholder}
         draggable={false}
       />
       <div className="ml-1 flex flex-col text-left">
         <p className="line-clamp-2">{artist.name}</p>
-        <p className="line-clamp-1 text-xs text-subTextLight dark:text-subTextDark">
+        <p className="text-sub-text-light dark:text-sub-text-dark line-clamp-1 text-xs">
           Followers: {artist.followers.total.toLocaleString()}
         </p>
       </div>

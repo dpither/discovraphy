@@ -65,7 +65,7 @@ export default function BuildQueueForm() {
       <h1 className="text-3xl font-bold text-black dark:text-white">
         Build your Queue
       </h1>
-      <div className="flex min-h-0 flex-1 flex-col rounded-lg border border-black dark:border-white">
+      <div className="flex min-h-0 flex-1 flex-col rounded-sm border border-black lg:rounded-lg dark:border-white">
         <div className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex gap-2">
             <FilterChip
@@ -98,7 +98,7 @@ export default function BuildQueueForm() {
         <div className="flex min-h-0 flex-1 items-center justify-center">
           {isLoading && <Spinner />}
           {!isLoading && (
-            <div className="grid h-full grid-cols-2 gap-2 overflow-y-auto px-4 pb-4 sm:grid-cols-4 2xl:grid-cols-5">
+            <div className="no-scrollbar grid h-full grid-cols-2 gap-2 overflow-y-auto px-4 pb-4 sm:grid-cols-4 2xl:grid-cols-5">
               {filteredAlbums?.map((album, i) => (
                 <AlbumCard
                   key={i}

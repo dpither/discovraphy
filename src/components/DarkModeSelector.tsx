@@ -2,6 +2,7 @@ import DarkModeIcon from "../assets/dark_mode_icon.svg?react";
 import LightModeIcon from "../assets/light_mode_icon.svg?react";
 import { useState } from "react";
 import Button from "./Button";
+import FlatButton from "./FlatButton";
 
 export default function DarkModeSelector() {
   const [isDark, setIsDark] = useState(localStorage.theme === "dark");
@@ -19,8 +20,15 @@ export default function DarkModeSelector() {
     // >
     //   {isDark ? <LightModeIcon /> : <DarkModeIcon/>}
     // </button>
-    <Button onClick={toggleDarkMode}>
-      {isDark ? <LightModeIcon /> : <DarkModeIcon />}
-    </Button>
+    // <Button onClick={toggleDarkMode}>
+    //   {isDark ? <LightModeIcon /> : <DarkModeIcon />}
+    // </Button>
+    <FlatButton onClick={toggleDarkMode}>
+      {isDark ? (
+        <LightModeIcon className="fill-sub-text-light dark:fill-sub-text-dark hover:fill-black hover:dark:fill-white" />
+      ) : (
+        <DarkModeIcon className="fill-sub-text-light dark:fill-sub-text-dark hover:fill-black hover:dark:fill-white" />
+      )}
+    </FlatButton>
   );
 }

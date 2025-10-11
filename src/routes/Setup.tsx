@@ -5,10 +5,10 @@ import Button from "../components/Button";
 import { FormEvent, useMemo } from "react";
 import BuildQueueForm from "../features/setup/BuildQueueForm";
 import SelectDestinationForm from "../features/setup/SelectDestinationForm";
-import { useSetupStore } from "../features/setup/store";
+import { useSetupStore } from "../hooks/useSetupStore";
 
 export default function Setup() {
-  const selectedArtistId = useSetupStore((state) => state.selectedArtistId);
+  const selectedArtistId = useSetupStore((state) => state.selectedArtist);
   const destination = useSetupStore((state) => state.destination);
 
   const steps = [

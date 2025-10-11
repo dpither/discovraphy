@@ -3,16 +3,16 @@ import FilterChip from "../../components/FilterChip";
 import Spinner from "../../components/Spinner";
 import { SimplifiedAlbum } from "@spotify/web-api-ts-sdk";
 import AlbumCard from "../../components/AlbumCard";
-import { useSetupStore } from "./store";
+import { useSetupStore } from "../../hooks/useSetupStore";
 import { getArtistAlbums } from "../../lib/spotifyApi";
 
 export default function BuildQueueForm() {
   const isLoading = useSetupStore((state) => state.isLoading);
   const setData = useSetupStore((state) => state.setData);
-  const selectedArtistId = useSetupStore((state) => state.selectedArtistId);
+  const selectedArtist = useSetupStore((state) => state.selectedArtist);
   const albumResults = useSetupStore((state) => state.albumResults);
   const albumFilters = useSetupStore((state) => state.albumFilters);
-  const selectedAlbumIds = useSetupStore((state) => state.selectedAlbumIds);
+  const selectedAlbums = useSetupStore((state) => state.selectedAlbums);
   const numTracks = useSetupStore((state) => state.numTracks);
 
   const filteredAlbums = useMemo(() => {
@@ -25,14 +25,14 @@ export default function BuildQueueForm() {
   }, [albumResults, albumFilters]);
 
   function onSelectAlbum(album: SimplifiedAlbum) {
-    if (selectedAlbumIds.includes(album.id)) {
+    if (selectedAlbums.includes(album)) {
       setData({
-        selectedAlbumIds: selectedAlbumIds.filter((item) => item !== album.id),
+        selectedAlbums: selectedAlbums.filter((item) => item.id !== album.id),
         numTracks: numTracks - album.total_tracks,
       });
     } else {
       setData({
-        selectedAlbumIds: [...selectedAlbumIds, album.id],
+        selectedAlbums: [...selectedAlbums, album],
         numTracks: numTracks + album.total_tracks,
       });
     }
@@ -48,21 +48,21 @@ export default function BuildQueueForm() {
 
   //TODO: Move fetching up to allow searching right after artist selection confirmation and only on change?
   const getDiscography = async () => {
-    if (selectedArtistId === null) return;
-    setData({ isLoading: true, numTracks: 0, selectedAlbumIds: [] });
+    if (selectedArtist === null) return;
+    setData({ isLoading: true, numTracks: 0, selectedAlbums: [] });
     setData({
       isLoading: false,
-      albumResults: await getArtistAlbums(selectedArtistId),
+      albumResults: await getArtistAlbums(selectedArtist),
     });
   };
 
   useEffect(() => {
     getDiscography();
-  }, [selectedArtistId]);
+  }, [selectedArtist]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
-      <h1 className="text-3xl font-bold text-black dark:text-white">
+      <h1 className="text-3xl font-semibold text-black dark:text-white">
         Build your Queue
       </h1>
       <div className="flex min-h-0 flex-1 flex-col rounded-sm border border-black lg:rounded-lg dark:border-white">
@@ -103,7 +103,7 @@ export default function BuildQueueForm() {
                 <AlbumCard
                   key={i}
                   album={album}
-                  queuePosition={selectedAlbumIds.indexOf(album.id)}
+                  queuePosition={selectedAlbums.indexOf(album)}
                   onClick={() => onSelectAlbum(album)}
                 />
               ))}

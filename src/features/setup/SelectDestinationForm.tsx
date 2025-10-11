@@ -2,14 +2,15 @@ import { useEffect } from "react";
 import Spinner from "../../components/Spinner";
 import { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import PlaylistCard from "../../components/PlaylistCard";
-import { useSetupStore } from "./store";
-import { getOwnedPlaylists } from "../../lib/spotifyApi";
+import { useSetupStore } from "../../hooks/useSetupStore";
+import { getAlbumTracks, getOwnedPlaylists } from "../../lib/spotifyApi";
 
 export default function SelectDestinationForm() {
   const isLoading = useSetupStore((state) => state.isLoading);
   const setData = useSetupStore((state) => state.setData);
   const ownedPlaylists = useSetupStore((state) => state.ownedPlaylists);
   const destination = useSetupStore((state) => state.destination);
+  const selectedAlbums = useSetupStore((state) => state.selectedAlbums);
 
   function onSelectCheckbox() {
     if (destination === "SAVE") {
@@ -36,7 +37,14 @@ export default function SelectDestinationForm() {
     });
   };
 
+  const getTracks = async () => {
+    let temp = await getAlbumTracks(selectedAlbums);
+    console.log("????");
+    console.log(temp);
+  };
+
   useEffect(() => {
+    getTracks();
     if (ownedPlaylists.length > 0) {
       return;
     }
@@ -45,7 +53,7 @@ export default function SelectDestinationForm() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
-      <h1 className="text-3xl font-bold text-black dark:text-white">
+      <h1 className="text-3xl font-semibold text-black dark:text-white">
         Select a Destination
       </h1>
       <div className="flex items-center gap-2 text-black dark:text-white">

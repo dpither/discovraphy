@@ -6,10 +6,10 @@ interface SetupData {
   isLoading: boolean;
   artistQuery: string;
   artistResults: Artist[];
-  selectedArtistId: string | null;
+  selectedArtist: Artist | null;
   albumResults: SimplifiedAlbum[];
   albumFilters: string[];
-  selectedAlbumIds: string[];
+  selectedAlbums: SimplifiedAlbum[];
   numTracks: number;
   ownedPlaylists: SimplifiedPlaylist[];
   destination: string | null;
@@ -25,10 +25,10 @@ export const useSetupStore = create<SetupState>()(
       isLoading: false,
       artistQuery: "",
       artistResults: [],
-      selectedArtistId: null,
+      selectedArtist: null,
       albumResults: [],
       albumFilters: [],
-      selectedAlbumIds: [],
+      selectedAlbums: [],
       numTracks: 0,
       ownedPlaylists: [],
       destination: "SAVE",

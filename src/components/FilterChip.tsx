@@ -11,7 +11,7 @@ export default function FilterChip({
 }: FilterChipProps) {
   return (
     <button
-      className={`rounded-full ${isSelected ? "border border-blue bg-blue text-white " : "border border-black text-black dark:border-white dark:text-white"} px-4 py-1`}
+      className={`rounded-full border border-transparent ${isSelected ? "bg-blue hover:bg-hover-blue text-white" : "text-sub-text-light dark:text-sub-text-dark hover:border-black hover:text-black dark:hover:border-white dark:hover:text-white"} px-4 py-1`}
       onClick={onClick}
     >
       {text}

@@ -2,9 +2,9 @@ import Button from "../components/Button";
 import Header from "../layouts/Header";
 import SpotifyFooter from "../layouts/SpotifyFooter";
 import catJAM from "../assets/catJAM.webp";
-import Textra from "react-textra";
 import { useNavigate } from "react-router";
 import { initSpotifyClient, sdk } from "../lib/spotifyApi";
+import TextCarousel from "../components/TextCarousel";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -33,9 +33,7 @@ export default function Home() {
           <div className="flex flex-col text-3xl leading-tight font-semibold text-black select-none md:text-5xl dark:text-white">
             <h1>
               Discover your next{" "}
-              <span>
-                <Textra effect="downTop" stopDuration={2000} data={texts} />
-              </span>
+              <TextCarousel texts={texts} stopDuration={3000} transitionDuration={0.5} />
             </h1>
           </div>
           <p className="text-sm text-black md:text-lg dark:text-white">

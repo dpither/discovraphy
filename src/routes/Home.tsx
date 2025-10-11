@@ -30,7 +30,7 @@ export default function Home() {
       <Header />
       <div className="m-4 flex flex-col items-center gap-4 md:flex-row-reverse md:justify-center">
         <div className="flex h-full w-72 flex-col justify-between gap-4 md:w-96 md:text-left">
-          <div className="flex flex-col text-3xl leading-tight font-bold text-black select-none md:text-5xl dark:text-white">
+          <div className="flex flex-col text-3xl leading-tight font-semibold text-black select-none md:text-5xl dark:text-white">
             <h1>
               Discover your next{" "}
               <span>

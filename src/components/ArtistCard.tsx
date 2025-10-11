@@ -15,7 +15,7 @@ export default function ArtistCard({
 }: ArtistCardProps) {
   return (
     <div
-      className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} group ${isSelected ? "" : "hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex flex-col gap-2 rounded-sm border p-2 text-sm text-black transition select-none lg:rounded-lg dark:text-white`}
+      className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} ${isSelected ? "" : "hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex flex-col gap-2 rounded-sm border p-2 text-sm text-black transition select-none lg:rounded-lg dark:text-white`}
       onClick={onClick}
     >
       <SpotifyIcon className="w-6" />

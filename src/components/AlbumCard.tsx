@@ -24,7 +24,7 @@ export default function AlbumCard({
 
   return (
     <div
-      className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} group relative flex flex-col gap-2 rounded-sm border p-2 text-sm text-black transition select-none hover:border-black lg:rounded-lg dark:text-white dark:hover:border-white`}
+      className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} ${isSelected ? "" : "hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex flex-col gap-2 rounded-sm border p-2 text-sm text-black transition select-none lg:rounded-lg dark:text-white`}
       onClick={onClick}
     >
       <SpotifyIcon className="w-6" />
@@ -35,7 +35,7 @@ export default function AlbumCard({
         </div>
       )}
       <img
-        className="aspect-square w-full rounded-sm object-cover transition group-hover:scale-105 group-active:scale-95 lg:rounded-lg"
+        className="aspect-square w-full rounded-sm object-cover lg:rounded-lg"
         draggable={false}
         src={album.images[0] ? album.images[0].url : placeholder}
       />

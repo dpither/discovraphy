@@ -1,10 +1,10 @@
-import SpotifyLogo from "../assets/spotify_logo.svg?react"
+import SpotifyLogo from "../assets/spotify_logo.svg?react";
 
 export default function SpotifyFooter() {
-  return (
-    <footer className="my-2 flex justify-center items-center">
-      <p className="text-dark text-base dark:text-white">Powered by</p>
-      <SpotifyLogo className="h-6 ms-1"/>
-    </footer>
-  );
+	return (
+		<footer className="my-2 flex items-center justify-center">
+			<p className="text-base text-dark dark:text-white">Powered by</p>
+			<SpotifyLogo className="ms-1 h-6" />
+		</footer>
+	);
 }

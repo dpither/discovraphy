@@ -2,40 +2,40 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 interface TextCarouselProps {
-  texts: string[];
-  stopDuration: number;
-  transitionDuration: number;
+	texts: string[];
+	stopDuration: number;
+	transitionDuration: number;
 }
 
 export default function TextCarousel({
-  texts,
-  stopDuration,
-  transitionDuration,
+	texts,
+	stopDuration,
+	transitionDuration,
 }: TextCarouselProps) {
-  const [index, setIndex] = useState(0);
+	const [index, setIndex] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % texts.length);
-    }, stopDuration);
-    return () => clearInterval(interval);
-  }, []);
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setIndex((prev) => (prev + 1) % texts.length);
+		}, stopDuration);
+		return () => clearInterval(interval);
+	}, [stopDuration, texts.length]);
 
-  return (
-    <AnimatePresence mode="wait">
-      <motion.span
-        key={index}
-        initial={{ y: "10%", opacity: 0 }}
-        animate={{ y: "0%", opacity: 1 }}
-        exit={{ y: "10%", opacity: 0 }}
-        transition={{ duration: transitionDuration }}
-        style={{
-          position: "absolute",
-          whiteSpace: "pre",
-        }}
-      >
-        {" " + texts[index]}
-      </motion.span>
-    </AnimatePresence>
-  );
+	return (
+		<AnimatePresence mode="wait">
+			<motion.span
+				animate={{ y: "0%", opacity: 1 }}
+				exit={{ y: "10%", opacity: 0 }}
+				initial={{ y: "10%", opacity: 0 }}
+				key={index}
+				style={{
+					position: "absolute",
+					whiteSpace: "pre",
+				}}
+				transition={{ duration: transitionDuration }}
+			>
+				{` ${texts[index]}`}
+			</motion.span>
+		</AnimatePresence>
+	);
 }

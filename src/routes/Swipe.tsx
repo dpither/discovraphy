@@ -2,44 +2,51 @@ import { useEffect, useState } from "react";
 import SpotifyPlayerCard from "../components/SpotifyPlayerCard";
 import Header from "../layouts/Header";
 import { getAccessToken } from "../lib/spotifyApi";
+import testAlbumTrack from "../lib/testAlbumTrack";
 
 export default function Swipe() {
-  const [player, setPlayer] = useState<Spotify.Player | undefined>(undefined);
-  useEffect(() => {
-    if (!window.Spotify) {
-      const script = document.createElement("script");
-      script.src = "https://sdk.scdn.co/spotify-player.js";
-      script.async = true;
-      document.body.appendChild(script);
-    }
-    window.onSpotifyWebPlaybackSDKReady = () => {
-      const player = new window.Spotify.Player({
-        name: "Discovraphy Web Player",
-        getOAuthToken: (cb) => {
-          cb(getAccessToken());
-        },
-        volume: 0.01,
-      });
-      setPlayer(player);
+	const [_player, setPlayer] = useState<Spotify.Player | undefined>(undefined);
 
-      player.addListener("ready", ({ device_id }) => {
-        console.log("Ready with Device ID", device_id);
-      });
+	// Spotify player maybe extract
+	useEffect(() => {
+		if (!window.Spotify) {
+			const script = document.createElement("script");
+			script.src = "https://sdk.scdn.co/spotify-player.js";
+			script.async = true;
+			document.body.appendChild(script);
+		}
+		window.onSpotifyWebPlaybackSDKReady = () => {
+			const player = new window.Spotify.Player({
+				name: "Discovraphy Web Player",
+				getOAuthToken: (cb) => {
+					cb(getAccessToken());
+				},
+				volume: 0.01,
+			});
+			setPlayer(player);
 
-      player.addListener("not_ready", ({ device_id }) => {
-        console.log("Device ID has gone offline", device_id);
-      });
+			player.addListener("ready", ({ device_id }) => {
+				console.log("Ready with Device ID", device_id);
+			});
 
-      player.connect();
-    };
-  }, []);
+			player.addListener("not_ready", ({ device_id }) => {
+				console.log("Device ID has gone offline", device_id);
+			});
 
-  return (
-    <div className="flex h-screen flex-col">
-      <Header />
-      <div className="flex justify-center pt-10">
-        <SpotifyPlayerCard player={player}/>
-      </div>
-    </div>
-  );
+			player.connect();
+		};
+	}, []);
+
+	return (
+		<div className="flex h-screen flex-col">
+			<Header />
+			<div className="flex justify-center pt-10">
+				<SpotifyPlayerCard
+					albumTrack={testAlbumTrack}
+					onSwipeLeft={() => {}}
+					onSwipeRight={() => {}}
+				/>
+			</div>
+		</div>
+	);
 }

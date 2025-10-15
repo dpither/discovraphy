@@ -1,45 +1,47 @@
-import { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
+import type { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import placeholder from "../assets/artist_placeholder.png";
 import SpotifyIcon from "../assets/spotify_icon.svg?react";
 
 interface PlaylistCardProps {
-  playlist: SimplifiedPlaylist;
-  isSelected: boolean;
-  onClick: () => void;
+	playlist: SimplifiedPlaylist;
+	isSelected: boolean;
+	onClick: () => void;
 }
 
 export default function PlaylistCard({
-  playlist,
-  isSelected,
-  onClick,
+	playlist,
+	isSelected,
+	onClick,
 }: PlaylistCardProps) {
-  function getNumSongs() {
-    if (playlist.tracks === null) {
-      return "No songs";
-    }
+	function getNumSongs() {
+		if (playlist.tracks === null) {
+			return "No songs";
+		}
 
-    if (playlist.tracks.total === 1) {
-      return "1 song";
-    }
-    return playlist.tracks.total + " songs";
-  }
-  return (
-    <div
-      className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} ${isSelected ? "" : "hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex flex-col gap-2 rounded-sm border p-2 text-sm text-black transition select-none lg:rounded-lg dark:text-white`}
-      onClick={onClick}
-    >
-      <SpotifyIcon className="w-6" />
-      <img
-        className="aspect-square w-full rounded-sm bg-black object-cover lg:rounded-lg"
-        draggable={false}
-        src={playlist.images[0] ? playlist.images[0].url : placeholder}
-      />
-      <div className="ml-1 flex flex-col text-left">
-        <p className="line-clamp-2">{playlist.name}</p>
-        <p className="text-sub-text-light dark:text-sub-text-dark text-xs">
-          {playlist.public ? "Public" : "Private"} • {getNumSongs()}
-        </p>
-      </div>
-    </div>
-  );
+		if (playlist.tracks.total === 1) {
+			return "1 song";
+		}
+		return `${playlist.tracks.total} songs`;
+	}
+	return (
+		<button
+			className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} ${isSelected ? "" : "hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex select-none flex-col gap-2 rounded-sm border p-2 text-black text-sm transition lg:rounded-lg dark:text-white`}
+			onClick={onClick}
+			type="button"
+		>
+			<SpotifyIcon className="w-6" />
+			<img
+				alt="Playlist artwork"
+				className="aspect-square w-full rounded-sm bg-black object-cover lg:rounded-lg"
+				draggable={false}
+				src={playlist.images[0] ? playlist.images[0].url : placeholder}
+			/>
+			<div className="ml-1 flex flex-col text-left">
+				<p className="line-clamp-2">{playlist.name}</p>
+				<p className="text-sub-text-light text-xs dark:text-sub-text-dark">
+					{playlist.public ? "Public" : "Private"} • {getNumSongs()}
+				</p>
+			</div>
+		</button>
+	);
 }

@@ -1,28 +1,28 @@
-import { ReactElement, useState } from "react";
+import { type JSX, useState } from "react";
 
-export function useSetupForm(steps: ReactElement[]) {
-  const [currentStepIndex, setCurrentStepIndex] = useState(0)
+export function useSetupForm(steps: (() => JSX.Element)[]) {
+	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
-  function next() {
-    setCurrentStepIndex(i => {
-      if (i >= steps.length - 1) return i
-      return i + 1
-    });
-  }
+	function next() {
+		setCurrentStepIndex((i) => {
+			if (i >= steps.length - 1) return i;
+			return i + 1;
+		});
+	}
 
-  function back() {
-    setCurrentStepIndex(i => {
-      if (i <= 0) return i
-      return i - 1
-    });
-  }
-  
-  return {
-    currentStepIndex,
-    currentStep: steps[currentStepIndex],
-    isFirstStep: currentStepIndex === 0,
-    isLastStep: currentStepIndex === steps.length - 1,
-    next,
-    back,
-  };
-} 
+	function back() {
+		setCurrentStepIndex((i) => {
+			if (i <= 0) return i;
+			return i - 1;
+		});
+	}
+
+	return {
+		currentStepIndex,
+		CurrentStep: steps[currentStepIndex],
+		isFirstStep: currentStepIndex === 0,
+		isLastStep: currentStepIndex === steps.length - 1,
+		next,
+		back,
+	};
+}

@@ -1,34 +1,24 @@
+import { useState } from "react";
 import DarkModeIcon from "../assets/dark_mode_icon.svg?react";
 import LightModeIcon from "../assets/light_mode_icon.svg?react";
-import { useState } from "react";
-import Button from "./Button";
 import FlatButton from "./FlatButton";
 
 export default function DarkModeSelector() {
-  const [isDark, setIsDark] = useState(localStorage.theme === "dark");
+	const [isDark, setIsDark] = useState(localStorage.theme === "dark");
 
-  function toggleDarkMode() {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle("dark");
-    isDark ? (localStorage.theme = "light") : (localStorage.theme = "dark");
-  }
+	function toggleDarkMode() {
+		setIsDark(!isDark);
+		document.documentElement.classList.toggle("dark");
+		localStorage.theme = isDark ? "light" : "dark";
+	}
 
-  return (
-    // <button
-    //   className="bg-blue enabled:hover:bg-hover-blue rounded-full p-2 transition enabled:active:scale-95 enabled:active:brightness-75"
-    //   onClick={toggleDarkMode}
-    // >
-    //   {isDark ? <LightModeIcon /> : <DarkModeIcon/>}
-    // </button>
-    // <Button onClick={toggleDarkMode}>
-    //   {isDark ? <LightModeIcon /> : <DarkModeIcon />}
-    // </Button>
-    <FlatButton onClick={toggleDarkMode}>
-      {isDark ? (
-        <LightModeIcon className="fill-sub-text-light dark:fill-sub-text-dark hover:fill-black hover:dark:fill-white" />
-      ) : (
-        <DarkModeIcon className="fill-sub-text-light dark:fill-sub-text-dark hover:fill-black hover:dark:fill-white" />
-      )}
-    </FlatButton>
-  );
+	return (
+		<FlatButton onClick={toggleDarkMode}>
+			{isDark ? (
+				<LightModeIcon className="fill-sub-text-light hover:fill-black dark:fill-sub-text-dark hover:dark:fill-white" />
+			) : (
+				<DarkModeIcon className="fill-sub-text-light hover:fill-black dark:fill-sub-text-dark hover:dark:fill-white" />
+			)}
+		</FlatButton>
+	);
 }

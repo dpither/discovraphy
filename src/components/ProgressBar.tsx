@@ -17,13 +17,8 @@ export default function ProgressBar({
 	const [isDragging, setIsDragging] = useState(false);
 	const seekTarget = useRef(currentTimeMs);
 	const progressBarRef = useRef<HTMLDivElement>(null);
-
-	const percent = isDragging
-		? Math.max(
-				0,
-				Math.min(100, seekTarget.current / Math.max(durationMs, 1)) * 100,
-			)
-		: Math.max(0, Math.min(100, currentTimeMs / Math.max(durationMs, 1)) * 100);
+	const displayedTime = isDragging ? seekTarget.current : currentTimeMs;
+	const percent = (displayedTime / Math.max(durationMs, 1)) * 100;
 
 	function handlePointerDown(e: React.PointerEvent) {
 		if (e.button !== 0) return;
@@ -41,6 +36,7 @@ export default function ProgressBar({
 		newPercent = Math.max(0, Math.min(1, newPercent));
 		const newTimeMs = Math.floor(newPercent * durationMs);
 		seekTarget.current = newTimeMs;
+		currentTimeMs = newTimeMs;
 		handleSeek(newTimeMs);
 	}
 
@@ -82,7 +78,7 @@ export default function ProgressBar({
 			</div>
 			{/* time labels */}
 			<div className="flex justify-between text-sub-text-light text-xs dark:text-sub-text-dark">
-				<span>{formatTimeMs(currentTimeMs)}</span>
+				<span>{formatTimeMs(displayedTime)}</span>
 				<span>{formatTimeMs(durationMs)}</span>
 			</div>
 		</div>

@@ -50,7 +50,7 @@ export default function SelectArtistForm() {
 				<div className="flex min-h-0 flex-1 items-center justify-center">
 					{isLoading && <Spinner />}
 					{!isLoading && (
-						<div className="no-scrollbar grid h-full grid-cols-2 gap-2 overflow-y-auto px-4 pb-4 sm:grid-cols-4 2xl:grid-cols-5">
+						<div className="no-scrollbar grid size-full grid-cols-2 gap-2 overflow-y-auto p-4 sm:grid-cols-4 2xl:grid-cols-5">
 							{artistResults?.map((artist) => (
 								<ArtistCard
 									artist={artist}

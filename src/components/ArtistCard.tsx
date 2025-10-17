@@ -20,12 +20,14 @@ export default function ArtistCard({
 			type="button"
 		>
 			<SpotifyIcon className="w-6" />
-			<img
-				alt="Artist portrait"
-				className="aspect-square w-full rounded-full object-cover transition"
-				draggable={false}
-				src={artist.images[0] ? artist.images[0].url : placeholder}
-			/>
+			<div className="aspect-square w-full text-white dark:text-black">
+				<img
+					alt="Artist portrait"
+					className="size-full rounded-full object-cover transition"
+					draggable={false}
+					src={artist.images[0] ? artist.images[0].url : placeholder}
+				/>
+			</div>
 			<div className="ml-1 flex flex-col text-left">
 				<p className="line-clamp-2">{artist.name}</p>
 				<p className="line-clamp-1 text-sub-text-light text-xs dark:text-sub-text-dark">

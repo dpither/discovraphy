@@ -3,6 +3,7 @@ import Home from "./routes/Home";
 import PageNotFound from "./routes/PageNotFound";
 import Setup from "./routes/Setup";
 import Swipe from "./routes/Swipe";
+import { swipeLoader } from "./routes/swipeLoader";
 
 const routes = [
 	{
@@ -19,6 +20,7 @@ const routes = [
 		path: "/swipe",
 		element: <Swipe />,
 		errorElement: <PageNotFound />,
+		loader: swipeLoader,
 	},
 ];
 

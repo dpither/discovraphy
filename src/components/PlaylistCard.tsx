@@ -30,12 +30,15 @@ export default function PlaylistCard({
 			type="button"
 		>
 			<SpotifyIcon className="w-6" />
-			<img
-				alt="Playlist artwork"
-				className="aspect-square w-full rounded-sm bg-black object-cover lg:rounded-lg"
-				draggable={false}
-				src={playlist.images[0] ? playlist.images[0].url : placeholder}
-			/>
+			<div className="aspect-square w-full text-white dark:text-black">
+				<img
+					alt="Playlist artwork"
+					className="size-full rounded-sm bg-black object-cover lg:rounded-lg"
+					draggable={false}
+					src={playlist.images[0] ? playlist.images[0].url : placeholder}
+				/>
+			</div>
+
 			<div className="ml-1 flex flex-col text-left">
 				<p className="line-clamp-2">{playlist.name}</p>
 				<p className="text-sub-text-light text-xs dark:text-sub-text-dark">

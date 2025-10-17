@@ -2,6 +2,7 @@ import type { SimplifiedAlbum } from "@spotify/web-api-ts-sdk";
 import { useCallback, useEffect, useMemo } from "react";
 import AlbumCard from "../../components/AlbumCard";
 import FilterChip from "../../components/FilterChip";
+import ResultContainer from "../../components/ResultContainer";
 import Spinner from "../../components/Spinner";
 import { useSetupStore } from "../../hooks/useSetupStore";
 import { getArtistAlbums } from "../../lib/spotifyApi";
@@ -98,7 +99,7 @@ export default function BuildQueueForm() {
 				<div className="flex min-h-0 flex-1 items-center justify-center">
 					{isLoading && <Spinner />}
 					{!isLoading && (
-						<div className="no-scrollbar grid size-full grid-cols-2 gap-2 overflow-y-auto p-4 sm:grid-cols-4 2xl:grid-cols-5">
+						<ResultContainer>
 							{filteredAlbums?.map((album) => (
 								<AlbumCard
 									album={album}
@@ -107,7 +108,7 @@ export default function BuildQueueForm() {
 									queuePosition={selectedAlbums.indexOf(album)}
 								/>
 							))}
-						</div>
+						</ResultContainer>
 					)}
 				</div>
 			</div>

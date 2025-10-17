@@ -35,12 +35,14 @@ export default function AlbumCard({
 					{queuePosition + 1}
 				</div>
 			)}
-			<img
-				alt="Album artwork"
-				className="aspect-square w-full rounded-sm object-cover lg:rounded-lg"
-				draggable={false}
-				src={album.images[0] ? album.images[0].url : placeholder}
-			/>
+			<div className="aspect-square w-full text-white dark:text-black">
+				<img
+					alt="Album artwork"
+					className="size-full rounded-sm object-cover lg:rounded-lg"
+					draggable={false}
+					src={album.images[0] ? album.images[0].url : placeholder}
+				/>
+			</div>
 			<div className="ml-1 flex flex-col text-left">
 				<p className="line-clamp-2">{album.name}</p>
 				<p className="text-sub-text-light text-xs dark:text-sub-text-dark">

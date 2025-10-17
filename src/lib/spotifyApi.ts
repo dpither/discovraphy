@@ -1,4 +1,5 @@
 import {
+	type AccessToken,
 	type Artist,
 	DefaultResponseValidator,
 	DocumentLocationRedirectionStrategy,
@@ -38,15 +39,17 @@ const config: SdkConfiguration = {
 		: new InMemoryCachingStrategy(),
 };
 
-export const sdk = SpotifyApi.withUserAuthorization(
+const sdk = SpotifyApi.withUserAuthorization(
 	clientId,
 	redirectUri,
 	scopes,
 	config,
 );
+
 export let currentUser: UserProfile | null = null;
 
 export async function initSpotifyClient() {
+	await sdk.authenticate();
 	currentUser = await sdk.currentUser.profile();
 }
 
@@ -93,18 +96,8 @@ export async function getAlbumTracks(
 	return albumTrackArrays.flat();
 }
 
-export function getAccessToken(): string {
-	const data = localStorage.getItem(
-		"spotify-sdk:AuthorizationCodeWithPKCEStrategy:token",
-	);
-	let accessToken = "";
-
-	if (data) {
-		const tokenObject = JSON.parse(data);
-		accessToken = tokenObject.access_token;
-	}
-
-	return accessToken;
+export async function getAccessToken(): Promise<AccessToken | null> {
+	return await sdk.getAccessToken();
 }
 
 export async function start(deviceId: string = "", trackUris: string[]) {
@@ -129,4 +122,26 @@ export async function prev(deviceId: string = "") {
 
 export async function seek(device_id: string = "", timeMs: number) {
 	await sdk.player.seekToPosition(timeMs, device_id);
+}
+
+export async function saveTrack(trackId: string) {
+	await sdk.currentUser.tracks.saveTracks([trackId]);
+}
+
+export async function unsaveTrack(trackId: string) {
+	await sdk.currentUser.tracks.removeSavedTracks([trackId]);
+}
+
+export async function addTrackToPlaylist(playlistId: string, trackUri: string) {
+	await sdk.playlists.addItemsToPlaylist(playlistId, [trackUri]);
+}
+
+export async function removeTrackFromPlaylist(
+	playlistId: string,
+	trackUri: string,
+) {
+	const request = {
+		tracks: [{ uri: trackUri }],
+	};
+	await sdk.playlists.removeItemsFromPlaylist(playlistId, request);
 }

@@ -4,7 +4,7 @@ import Button from "../components/Button";
 import TextCarousel from "../components/TextCarousel";
 import Header from "../layouts/Header";
 import SpotifyFooter from "../layouts/SpotifyFooter";
-import { initSpotifyClient, sdk } from "../lib/spotifyApi";
+import { getAccessToken, initSpotifyClient } from "../lib/spotifyApi";
 
 export default function Home() {
 	const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function Home() {
 	];
 
 	async function authenticate() {
-		if ((await sdk.getAccessToken()) == null) {
+		if ((await getAccessToken()) == null) {
 			await initSpotifyClient();
 		} else {
 			navigate("/setup");

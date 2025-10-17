@@ -29,12 +29,11 @@ export default function TextCarousel({
 				initial={{ y: "10%", opacity: 0 }}
 				key={index}
 				style={{
-					position: "absolute",
-					whiteSpace: "pre",
+					display: "inline-block",
 				}}
 				transition={{ duration: transitionDuration }}
 			>
-				{` ${texts[index]}`}
+				{`${texts[index]}`}
 			</motion.span>
 		</AnimatePresence>
 	);

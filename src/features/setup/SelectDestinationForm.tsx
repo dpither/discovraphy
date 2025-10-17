@@ -1,6 +1,7 @@
 import type { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import { useCallback, useEffect } from "react";
 import PlaylistCard from "../../components/PlaylistCard";
+import ResultContainer from "../../components/ResultContainer";
 import Spinner from "../../components/Spinner";
 import { useSetupStore } from "../../hooks/useSetupStore";
 import { getAlbumTracks, getOwnedPlaylists } from "../../lib/spotifyApi";
@@ -58,7 +59,7 @@ export default function SelectDestinationForm() {
 			<div className="flex items-center gap-2 text-black dark:text-white">
 				<input
 					checked={destination === "SAVE"}
-					className="accent-blue"
+					className="accent-blue outline-blue outline-offset-2 focus-visible:outline-2"
 					name="checkbox"
 					onChange={onSelectCheckbox}
 					type="checkbox"
@@ -69,7 +70,7 @@ export default function SelectDestinationForm() {
 				<div className="flex min-h-0 flex-1 items-center justify-center">
 					{isLoading && <Spinner />}
 					{!isLoading && (
-						<div className="no-scrollbar grid size-full grid-cols-2 gap-2 overflow-y-auto p-4 sm:grid-cols-4 2xl:grid-cols-5">
+						<ResultContainer>
 							{ownedPlaylists?.map((playlist) => (
 								<PlaylistCard
 									isSelected={destination === playlist.id}
@@ -80,7 +81,7 @@ export default function SelectDestinationForm() {
 									playlist={playlist}
 								/>
 							))}
-						</div>
+						</ResultContainer>
 					)}
 				</div>
 			</div>

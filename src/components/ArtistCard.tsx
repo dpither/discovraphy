@@ -15,7 +15,7 @@ export default function ArtistCard({
 }: ArtistCardProps) {
 	return (
 		<button
-			className={`${isSelected ? "border-black dark:border-white" : "border-transparent"} ${isSelected ? "" : "hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex select-none flex-col gap-2 rounded-sm border p-2 text-black text-sm transition lg:rounded-lg dark:text-white`}
+			className={`${isSelected ? "border-black dark:border-white" : "border-transparent hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex select-none flex-col gap-2 rounded-sm border p-2 text-black text-sm outline-blue outline-offset-2 transition focus-visible:outline-2 lg:rounded-lg dark:text-white`}
 			onClick={onClick}
 			type="button"
 		>

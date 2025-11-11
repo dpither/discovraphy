@@ -100,25 +100,25 @@ export async function getAccessToken(): Promise<AccessToken | null> {
 	return await sdk.getAccessToken();
 }
 
-export async function start(deviceId: string = "", trackUris: string[]) {
-	await sdk.player.startResumePlayback(deviceId, undefined, trackUris);
-}
-
-export async function play(deviceId: string = "") {
-	await sdk.player.startResumePlayback(deviceId, undefined, undefined);
+export async function play(deviceId: string = "", trackUri: string = "") {
+	if (trackUri) {
+		await sdk.player.startResumePlayback(deviceId, undefined, [trackUri]);
+	} else {
+		await sdk.player.startResumePlayback(deviceId, undefined, undefined);
+	}
 }
 
 export async function pause(deviceId: string = "") {
 	await sdk.player.pausePlayback(deviceId);
 }
 
-export async function next(deviceId: string = "") {
-	await sdk.player.skipToNext(deviceId);
-}
+// export async function next(deviceId: string = "") {
+// 	await sdk.player.skipToNext(deviceId);
+// }
 
-export async function prev(deviceId: string = "") {
-	await sdk.player.skipToPrevious(deviceId);
-}
+// export async function prev(deviceId: string = "") {
+// 	await sdk.player.skipToPrevious(deviceId);
+// }
 
 export async function seek(device_id: string = "", timeMs: number) {
 	await sdk.player.seekToPosition(timeMs, device_id);
@@ -144,4 +144,8 @@ export async function removeTrackFromPlaylist(
 		tracks: [{ uri: trackUri }],
 	};
 	await sdk.playlists.removeItemsFromPlaylist(playlistId, request);
+}
+
+export async function setPlaybackVolume(volume: number, deviceId: string = "") {
+	sdk.player.setPlaybackVolume(volume, deviceId);
 }

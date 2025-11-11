@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -6,14 +7,16 @@
 	--color-\*: initial;
 	--color-transparent: transparent;
 	--color-black: #121212;
-	--color-white: #ffffff;
+	--color-white: #f2f2f2;
 	--color-green: #1ed760;
 	--color-blue: #3772ff;
-	--color-hover-blue: #185cff;
+	--color-hover-blue: #0550ff;
 	--color-disabled-grey: #808080;
-	--color-sub-text-light: #686868;
-	--color-sub-text-dark: #979797;
+	--color-sub-text-light: #4d4d4d;
+	--color-sub-text-dark: #b3b3b3;
+	--default-font-family: "Roboto"
 }
+
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
@@ -30,6 +33,16 @@
 	::backdrop,
 	::file-selector-button {
 		border-color: var(--color-gray-200, currentcolor);
+	}
+	
+	img{
+		@apply flex items-center justify-center
+	}
+}
+
+@layer components {
+	.flat-icon {
+		@apply fill-sub-text-light group-hover:fill-black dark:fill-sub-text-dark group-hover:dark:fill-white
 	}
 }
 

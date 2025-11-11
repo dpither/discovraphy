@@ -2,28 +2,12 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import SpotifyPlayerCard from "../../components/SpotifyPlayerCard";
 import { usePlayerStore } from "../../hooks/usePlayerStore";
-import testAlbumTrack from "../../lib/testAlbumTrack";
+import { useSetupStore } from "../../hooks/useSetupStore";
 
 export default function TrackQueue() {
-	const { currentTrack, currentIndex, next, prev, setQueue } = usePlayerStore();
+	const { selectedAlbums } = useSetupStore();
+	const { queue, currentIndex, next, prev, getQueue } = usePlayerStore();
 	const [direction, setDirection] = useState<"NEXT" | "PREV">("NEXT");
-
-	useEffect(() => {
-		setQueue([
-			testAlbumTrack,
-			testAlbumTrack,
-			testAlbumTrack,
-			testAlbumTrack,
-			testAlbumTrack,
-			testAlbumTrack,
-			testAlbumTrack,
-			testAlbumTrack,
-			testAlbumTrack,
-			testAlbumTrack,
-			testAlbumTrack,
-			testAlbumTrack,
-		]);
-	}, [setQueue]);
 
 	function handleNext() {
 		setDirection("NEXT");
@@ -37,11 +21,17 @@ export default function TrackQueue() {
 
 	const variants = {
 		initial: (direction: "NEXT" | "PREV") => ({
-			y: direction === "NEXT" ? "10%" : "-10%",
+			y: direction === "NEXT" ? "5%" : "-5%",
 			opacity: 0,
 		}),
 		center: { y: 0, scale: 1, opacity: 1 },
 	};
+
+	useEffect(() => {
+		if (queue.length > 0 || selectedAlbums.length === 0) return;
+
+		getQueue(selectedAlbums);
+	}, [queue, selectedAlbums, getQueue]);
 
 	return (
 		<AnimatePresence custom={direction} mode="wait">
@@ -51,12 +41,12 @@ export default function TrackQueue() {
 				custom={direction}
 				initial="initial"
 				key={currentIndex}
-				transition={{ duration: 0.3, ease: "easeInOut", bounce: 0 }}
+				transition={{ duration: 0.5, ease: "easeInOut", bounce: 0 }}
 				variants={variants}
 			>
-				{currentTrack ? (
+				{queue.length > 0 && (
 					<SpotifyPlayerCard
-						albumTrack={currentTrack}
+						albumTrack={queue[currentIndex]}
 						onNextTrack={handleNext}
 						onPrevTrack={handlePrev}
 						onSwipeLeft={() => {
@@ -68,8 +58,6 @@ export default function TrackQueue() {
 							handleNext();
 						}}
 					/>
-				) : (
-					<div>ERROR</div>
 				)}
 			</motion.div>
 		</AnimatePresence>

@@ -5,20 +5,16 @@ import FlatButton from "../../components/FlatButton";
 import ResultContainer from "../../components/ResultContainer";
 import Spinner from "../../components/Spinner";
 import { useSetupStore } from "../../hooks/useSetupStore";
-import { getArtists } from "../../lib/spotifyApi";
 
 export default function SelectArtistForm() {
-	const isLoading = useSetupStore((state) => state.isLoading);
-	const setData = useSetupStore((state) => state.setData);
-	const artistQuery = useSetupStore((state) => state.artistQuery);
-	const artistResults = useSetupStore((state) => state.artistResults);
-	const selectedArtist = useSetupStore((state) => state.selectedArtist);
-
-	async function onSearch() {
-		if (isLoading || artistQuery.trim() === "") return;
-		setData({ selectedArtist: null, artistResults: [], isLoading: true });
-		setData({ artistResults: await getArtists(artistQuery), isLoading: false });
-	}
+	const {
+		setData,
+		artistQuery,
+		selectedArtist,
+		isLoading,
+		artistResults,
+		getArtists,
+	} = useSetupStore();
 
 	function onSelectArtist(artist: Artist) {
 		if (artist.id === selectedArtist?.id) {
@@ -43,8 +39,8 @@ export default function SelectArtistForm() {
 						value={artistQuery}
 					/>
 					<div className="absolute inset-y-0 end-4 place-content-center">
-						<FlatButton onClick={onSearch}>
-							<DiscovraphyIcon className="fill-sub-text-light hover:fill-black dark:fill-sub-text-dark hover:dark:fill-white" />
+						<FlatButton onClick={getArtists}>
+							<DiscovraphyIcon className="flat-icon" />
 						</FlatButton>
 					</div>
 				</div>

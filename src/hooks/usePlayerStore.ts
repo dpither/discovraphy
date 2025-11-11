@@ -1,8 +1,9 @@
 import type { SimplifiedAlbum, SimplifiedTrack } from "@spotify/web-api-ts-sdk";
 import { create } from "zustand";
-import { pause, play, seek } from "../lib/spotifyApi";
+import { getAlbumTracks, pause, play, seek } from "../lib/spotifyApi";
 
-// TODO: Volume control
+// MOVE TO CONSTANTS FILE? since need in player too?
+const DEFAULT_VOLUME = 5;
 
 export type AlbumTrack = {
 	album: SimplifiedAlbum;
@@ -10,20 +11,23 @@ export type AlbumTrack = {
 };
 
 interface PlayerState {
+	isLoading: boolean;
 	queue: AlbumTrack[];
 	deviceId: string;
 	currentIndex: number;
-	currentTrack?: AlbumTrack;
 	isPaused: boolean;
 	currentTimeMs: number;
+	volume: number;
 
 	_lastTick: number;
 	_timer?: number;
 
-	setQueue: (tracks: AlbumTrack[]) => void;
+	getQueue: (albums: SimplifiedAlbum[]) => void;
 	setDeviceId: (deviceId: string) => void;
-	setPaused: (playing: boolean) => void;
+	setPaused: (isPaused: boolean) => void;
 	setCurrentTimeMs: (timeMs: number) => void;
+	setVolume: (volume: number) => void;
+	playTrack: () => void;
 	play: () => void;
 	pause: () => void;
 	next: () => void;
@@ -37,21 +41,26 @@ interface PlayerState {
 }
 
 export const usePlayerStore = create<PlayerState>((set, get) => ({
+	isLoading: false,
 	queue: [],
 	deviceId: "",
 	currentIndex: 0,
 	isPaused: true,
 	currentTimeMs: 0,
+	volume: DEFAULT_VOLUME,
 
 	_lastTick: Date.now(),
 
-	setQueue: (tracks: AlbumTrack[]) =>
-		set({
-			queue: tracks,
-			currentIndex: 0,
-			currentTrack: tracks[0],
-			currentTimeMs: 0,
-		}),
+	getQueue: async (albums: SimplifiedAlbum[]) => {
+		set({ currentIndex: 0, isLoading: true });
+		try {
+			const res = await getAlbumTracks(albums);
+			set({ queue: res, isLoading: false });
+		} catch (error) {
+			console.error("Error playing track", error);
+			set({ isLoading: false });
+		}
+	},
 
 	setDeviceId: (deviceId: string) => set({ deviceId: deviceId }),
 
@@ -59,57 +68,68 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 
 	setCurrentTimeMs: (timeMs: number) => set({ currentTimeMs: timeMs }),
 
+	setVolume: (volume: number) => set({ volume: volume }),
+
+	playTrack: async () => {
+		const { deviceId, queue, currentIndex } = get();
+		const track = queue[currentIndex].track;
+
+		try {
+			await play(deviceId, track.uri);
+			set({ _lastTick: Date.now() });
+		} catch (error) {
+			console.error("Error playing track", error);
+		}
+	},
+
 	play: async () => {
 		const { deviceId } = get();
 
 		try {
 			await play(deviceId);
 			set({ _lastTick: Date.now() });
-		} catch (e) {
-			console.error("Error playing track", e);
+		} catch (error) {
+			console.error("Error playing track", error);
 		}
 	},
 
 	pause: async () => {
 		const { deviceId } = get();
+
 		try {
 			await pause(deviceId);
-		} catch (e) {
-			console.error("Error pausing track", e);
+		} catch (error) {
+			console.error("Error pausing track", error);
 		}
 	},
 
 	next: async () => {
-		const { deviceId, queue, currentIndex } = get();
+		const { queue, currentIndex, playTrack } = get();
 		if (currentIndex >= queue.length - 1) return;
 
 		try {
-			// await next(deviceId);
-			const nextTrack = queue[currentIndex + 1];
 			set({
 				currentIndex: currentIndex + 1,
-				currentTrack: nextTrack,
 				currentTimeMs: 0,
 			});
-		} catch (e) {
-			console.error("Error going next track", e);
+			playTrack();
+		} catch (error) {
+			console.error("Error going next track", error);
 		}
 	},
 
 	prev: async () => {
-		const { deviceId, queue, currentIndex } = get();
+		const { currentIndex, playTrack } = get();
 		if (currentIndex === 0) return;
 
 		try {
-			// await prev(deviceId);
-			const prevTrack = queue[currentIndex - 1];
 			set({
 				currentIndex: currentIndex - 1,
-				currentTrack: prevTrack,
 				currentTimeMs: 0,
 			});
-		} catch (e) {
-			console.error("Error going prev track", e);
+			playTrack();
+		} catch (error) {
+			console.error("Error going prev track", error);
 		}
 	},
 
@@ -119,8 +139,8 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			await seek(deviceId, timeMs);
 			// TODO: REMOVE AND LET PLAYER HANDLE IT?
 			set({ currentTimeMs: timeMs });
-		} catch (e) {
-			console.error("Error seeking track", e);
+		} catch (error) {
+			console.error("Error seeking track", error);
 		}
 	},
 
@@ -134,7 +154,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 		if (_timer) return;
 
 		const tick = () => {
-			const { isPaused, currentTimeMs, _lastTick, currentTrack } = get();
+			const { isPaused, currentTimeMs, _lastTick } = get();
 			const now = Date.now();
 			const delta = now - _lastTick;
 

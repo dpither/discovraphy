@@ -28,7 +28,7 @@ export default function ArtistCard({
 					src={artist.images[0] ? artist.images[0].url : placeholder}
 				/>
 			</div>
-			<div className="ml-1 flex flex-col text-left">
+			<div className="flex flex-col text-left">
 				<p className="line-clamp-2">{artist.name}</p>
 				<p className="line-clamp-1 text-sub-text-light text-xs dark:text-sub-text-dark">
 					Followers: {artist.followers.total.toLocaleString()}

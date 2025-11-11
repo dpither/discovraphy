@@ -1,19 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { getAccessToken } from "../lib/spotifyApi";
 import { usePlayerStore } from "./usePlayerStore";
 
 export function useSpotifyPlayer() {
 	const {
 		setDeviceId,
-		setPaused: setPlaying,
+		setPaused,
 		setCurrentTimeMs,
 		startTimer,
 		stopTimer,
+		playTrack,
 	} = usePlayerStore();
 
+	const playerRef = useRef<Spotify.Player | null>(null);
+
 	useEffect(() => {
+		let script: HTMLScriptElement | null = null;
+
 		if (!window.Spotify) {
-			const script = document.createElement("script");
+			script = document.createElement("script");
 			script.src = "https://sdk.scdn.co/spotify-player.js";
 			script.async = true;
 			document.body.appendChild(script);
@@ -33,10 +38,13 @@ export function useSpotifyPlayer() {
 				volume: 0.01,
 			});
 
+			playerRef.current = player;
+
 			player.addListener("ready", ({ device_id }) => {
 				console.log("Ready with device id", device_id);
 				setDeviceId(device_id);
 				startTimer();
+				playTrack();
 			});
 
 			player.addListener("not_ready", ({ device_id }) => {
@@ -45,11 +53,29 @@ export function useSpotifyPlayer() {
 			});
 
 			player.addListener("player_state_changed", (state) => {
-				setPlaying(state.paused);
-				setCurrentTimeMs(state.position);
+				// console.log("Player state changed");
+				// console.log(state);
+				if (state) {
+					setPaused(state.paused);
+					setCurrentTimeMs(state.position);
+				}
 			});
 
 			player.connect();
 		};
-	}, [setCurrentTimeMs, setDeviceId, setPlaying, startTimer, stopTimer]);
+		return () => {
+			playerRef.current?.disconnect();
+			playerRef.current = null;
+			if (script) {
+				document.body.removeChild(script);
+			}
+		};
+	}, [
+		setCurrentTimeMs,
+		setDeviceId,
+		setPaused,
+		startTimer,
+		stopTimer,
+		playTrack,
+	]);
 }

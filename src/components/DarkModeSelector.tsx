@@ -15,9 +15,9 @@ export default function DarkModeSelector() {
 	return (
 		<FlatButton onClick={toggleDarkMode}>
 			{isDark ? (
-				<LightModeIcon className="fill-sub-text-light hover:fill-black dark:fill-sub-text-dark hover:dark:fill-white" />
+				<LightModeIcon className="flat-icon" />
 			) : (
-				<DarkModeIcon className="fill-sub-text-light hover:fill-black dark:fill-sub-text-dark hover:dark:fill-white" />
+				<DarkModeIcon className="flat-icon" />
 			)}
 		</FlatButton>
 	);

@@ -64,7 +64,7 @@ export default function ProgressBar({
 				>
 					{/* filled progress */}
 					<div
-						className="w- absolute top-0 bottom-0 left-0 rounded-full bg-blue"
+						className="absolute top-0 bottom-0 left-0 rounded-full bg-blue"
 						style={{ width: `${percent}%` }}
 					/>
 					{/* thumb */}

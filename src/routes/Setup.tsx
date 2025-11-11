@@ -1,34 +1,50 @@
-import { type FormEvent, useMemo } from "react";
+import { type FormEvent, type JSX, useMemo } from "react";
+import { useNavigate } from "react-router";
 import Button from "../components/Button";
 import BuildQueueForm from "../features/setup/BuildQueueForm";
 import SelectArtistForm from "../features/setup/SelectArtistForm";
 import SelectDestinationForm from "../features/setup/SelectDestinationForm";
-import { useSetupForm } from "../hooks/useSetupForm";
-import { useSetupStore } from "../hooks/useSetupStore";
+import { usePlayerStore } from "../hooks/usePlayerStore";
+import { SetupStep, stepOrder, useSetupStore } from "../hooks/useSetupStore";
 import Header from "../layouts/Header";
 
 export default function Setup() {
-	const selectedArtistId = useSetupStore((state) => state.selectedArtist);
-	const destination = useSetupStore((state) => state.destination);
+	const navigate = useNavigate();
 
-	const steps = [SelectArtistForm, BuildQueueForm, SelectDestinationForm];
+	const { getQueue } = usePlayerStore();
 
-	const { currentStepIndex, CurrentStep, isFirstStep, isLastStep, next, back } =
-		useSetupForm(steps);
+	const {
+		selectedArtist,
+		selectedDestination,
+		selectedAlbums,
+		currentStep,
+		getAlbums,
+		getPlaylists,
+		nextStep,
+		prevStep,
+		isFirstStep,
+		isLastStep,
+	} = useSetupStore();
+
+	const stepForms: Record<SetupStep, JSX.Element> = {
+		[SetupStep.SelectArtist]: <SelectArtistForm />,
+		[SetupStep.BuildQueue]: <BuildQueueForm />,
+		[SetupStep.SelectDestination]: <SelectDestinationForm />,
+	};
 
 	const isStepValid = useMemo(() => {
-		switch (currentStepIndex) {
-			case 0:
-				return selectedArtistId !== null;
-			case 1:
-				return true;
-			case 2:
-				return destination !== null;
+		switch (currentStep) {
+			case SetupStep.SelectArtist:
+				return selectedArtist !== null;
+			case SetupStep.BuildQueue:
+				return selectedAlbums.length > 0;
+			case SetupStep.SelectDestination:
+				return selectedDestination !== null;
 			default:
 				console.error("Triggered step validation for invalid step");
 				return false;
 		}
-	}, [currentStepIndex, selectedArtistId, destination]);
+	}, [currentStep, selectedArtist, selectedDestination, selectedAlbums]);
 
 	function onSubmit(e: FormEvent) {
 		e.preventDefault();
@@ -41,20 +57,41 @@ export default function Setup() {
 				className="mx-4 my-4 flex min-h-0 flex-1 flex-col gap-4 lg:mx-32"
 				onSubmit={onSubmit}
 			>
-				<CurrentStep />
+				{stepForms[currentStep]}
 				<div className="flex items-center justify-end gap-4">
-					{isFirstStep ? (
+					{isFirstStep() ? (
 						<div></div>
 					) : (
-						<Button onClick={back} text="Back" type="button" />
+						<Button onClick={prevStep} text="Back" type="button" />
 					)}
 					<p className="flex text-black text-sm md:text-lg dark:text-white">
-						{currentStepIndex + 1}/{steps.length}
+						{stepOrder.indexOf(currentStep) + 1}/{Object.keys(stepForms).length}
 					</p>
 					<Button
 						disabled={!isStepValid}
-						onClick={next}
-						text={isLastStep ? "Start" : "Next"}
+						onClick={() => {
+							switch (currentStep) {
+								case SetupStep.SelectArtist:
+									// Fetch albums
+									getAlbums();
+									nextStep();
+									return;
+								case SetupStep.BuildQueue:
+									// Fetch playlists and build queue
+									getPlaylists();
+									getQueue(selectedAlbums);
+									nextStep();
+									break;
+								case SetupStep.SelectDestination:
+									// Start queue
+									navigate("/swipe");
+									break;
+								default:
+									console.error("Trying to go next from invalid step.");
+									return;
+							}
+						}}
+						text={isLastStep() ? "Start" : "Next"}
 						type="button"
 					/>
 				</div>

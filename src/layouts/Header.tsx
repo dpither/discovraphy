@@ -14,7 +14,7 @@ export default function Header() {
 				>
 					<DiscovraphyLogo className="h-12 w-full fill-blue hover:fill-hover-blue" />
 				</Link>
-				<div className="flex-1 text-end pr-4">
+				<div className="flex-1 pr-4 text-end">
 					<DarkModeSelector />
 				</div>
 			</div>

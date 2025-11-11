@@ -1,15 +1,28 @@
+import Spinner from "../components/Spinner";
+import SwipeControls from "../features/swipe/SwipeControls";
 import TrackQueue from "../features/swipe/TrackQueue";
+import VolumeSlider from "../features/swipe/VolumeSlider";
+import { usePlayerStore } from "../hooks/usePlayerStore";
 import { useSpotifyPlayer } from "../hooks/useSpotifyPlayer";
 import Header from "../layouts/Header";
 
 export default function Swipe() {
 	useSpotifyPlayer();
-
+	const { isLoading } = usePlayerStore();
 	return (
 		<div className="flex h-screen flex-col">
 			<Header />
 			<div className="flex h-full items-center justify-center">
-				<TrackQueue />
+				{isLoading && <Spinner />}
+				{!isLoading && (
+					<div className="flex flex-col gap-4">
+						<TrackQueue />
+						<div className="flex w-full max-w-72 flex-col gap-2 px-4">
+							<SwipeControls />
+							<VolumeSlider />
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

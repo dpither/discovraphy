@@ -43,7 +43,7 @@ export default function AlbumCard({
 					src={album.images[0] ? album.images[0].url : placeholder}
 				/>
 			</div>
-			<div className="ml-1 flex flex-col text-left">
+			<div className="flex flex-col text-left">
 				<p className="line-clamp-2">{album.name}</p>
 				<p className="text-sub-text-light text-xs dark:text-sub-text-dark">
 					{album.release_date.substring(0, 4)} • {album.album_type}

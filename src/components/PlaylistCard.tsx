@@ -1,5 +1,5 @@
 import type { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
-import placeholder from "../assets/artist_placeholder.png";
+import placeholder from "../assets/playlist_placeholder.png";
 import SpotifyIcon from "../assets/spotify_icon.svg?react";
 
 interface PlaylistCardProps {
@@ -35,11 +35,11 @@ export default function PlaylistCard({
 					alt="Playlist artwork"
 					className="size-full rounded-sm bg-black object-cover lg:rounded-lg"
 					draggable={false}
-					src={playlist.images[0] ? playlist.images[0].url : placeholder}
+					src={playlist.images ? playlist.images[0].url : placeholder}
 				/>
 			</div>
 
-			<div className="ml-1 flex flex-col text-left">
+			<div className="flex flex-col text-left">
 				<p className="line-clamp-2">{playlist.name}</p>
 				<p className="text-sub-text-light text-xs dark:text-sub-text-dark">
 					{playlist.public ? "Public" : "Private"} • {getNumSongs()}

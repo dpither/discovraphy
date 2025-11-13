@@ -35,7 +35,7 @@ export function useSpotifyPlayer() {
 						console.log("Access token undefined");
 					}
 				},
-				volume: 0.01,
+				volume: 0.05,
 			});
 
 			playerRef.current = player;

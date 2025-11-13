@@ -1,6 +1,12 @@
 import type { SimplifiedAlbum, SimplifiedTrack } from "@spotify/web-api-ts-sdk";
 import { create } from "zustand";
-import { getAlbumTracks, pause, play, seek } from "../lib/spotifyApi";
+import {
+	getAlbumTracks,
+	pause,
+	play,
+	seek,
+	setPlaybackVolume,
+} from "../lib/spotifyApi";
 
 // MOVE TO CONSTANTS FILE? since need in player too?
 const DEFAULT_VOLUME = 5;
@@ -10,6 +16,9 @@ export type AlbumTrack = {
 	track: SimplifiedTrack;
 };
 
+export type SwipeDirection = "RIGHT" | "LEFT";
+export type QueueDirection = "NEXT" | "PREV";
+
 interface PlayerState {
 	isLoading: boolean;
 	queue: AlbumTrack[];
@@ -18,6 +27,8 @@ interface PlayerState {
 	isPaused: boolean;
 	currentTimeMs: number;
 	volume: number;
+	queueDirection: QueueDirection;
+	isSwiping: boolean;
 
 	_lastTick: number;
 	_timer?: number;
@@ -33,6 +44,8 @@ interface PlayerState {
 	next: () => void;
 	prev: () => void;
 	seek: (timeMs: number) => void;
+	setPlaybackVolume: (volume: number) => void;
+	swipe: (direction: SwipeDirection) => void;
 
 	isFirstTrack: () => boolean;
 	isLastTrack: () => boolean;
@@ -40,143 +53,179 @@ interface PlayerState {
 	stopTimer: () => void;
 }
 
-export const usePlayerStore = create<PlayerState>((set, get) => ({
-	isLoading: false,
-	queue: [],
-	deviceId: "",
-	currentIndex: 0,
-	isPaused: true,
-	currentTimeMs: 0,
-	volume: DEFAULT_VOLUME,
+interface SwipeControllerState {
+	triggerSwipe: (direction: SwipeDirection) => void;
+	onSwipe: ((direction: SwipeDirection) => void) | null;
+	registerHandler: (handler: (direction: SwipeDirection) => void) => void;
+}
 
-	_lastTick: Date.now(),
+export const usePlayerStore = create<PlayerState & SwipeControllerState>(
+	(set, get) => ({
+		// Player State
+		isLoading: false,
+		queue: [],
+		deviceId: "",
+		currentIndex: 0,
+		isPaused: true,
+		currentTimeMs: 0,
+		volume: DEFAULT_VOLUME,
+		queueDirection: "NEXT",
+		isSwiping: false,
 
-	getQueue: async (albums: SimplifiedAlbum[]) => {
-		set({ currentIndex: 0, isLoading: true });
-		try {
-			const res = await getAlbumTracks(albums);
-			set({ queue: res, isLoading: false });
-		} catch (error) {
-			console.error("Error playing track", error);
-			set({ isLoading: false });
-		}
-	},
+		_lastTick: Date.now(),
 
-	setDeviceId: (deviceId: string) => set({ deviceId: deviceId }),
-
-	setPaused: (isPaused: boolean) => set({ isPaused: isPaused }),
-
-	setCurrentTimeMs: (timeMs: number) => set({ currentTimeMs: timeMs }),
-
-	setVolume: (volume: number) => set({ volume: volume }),
-
-	playTrack: async () => {
-		const { deviceId, queue, currentIndex } = get();
-		const track = queue[currentIndex].track;
-
-		try {
-			await play(deviceId, track.uri);
-			set({ _lastTick: Date.now() });
-		} catch (error) {
-			console.error("Error playing track", error);
-		}
-	},
-
-	play: async () => {
-		const { deviceId } = get();
-
-		try {
-			await play(deviceId);
-			set({ _lastTick: Date.now() });
-		} catch (error) {
-			console.error("Error playing track", error);
-		}
-	},
-
-	pause: async () => {
-		const { deviceId } = get();
-
-		try {
-			await pause(deviceId);
-		} catch (error) {
-			console.error("Error pausing track", error);
-		}
-	},
-
-	next: async () => {
-		const { queue, currentIndex, playTrack } = get();
-		if (currentIndex >= queue.length - 1) return;
-
-		try {
-			set({
-				currentIndex: currentIndex + 1,
-				currentTimeMs: 0,
-			});
-			playTrack();
-		} catch (error) {
-			console.error("Error going next track", error);
-		}
-	},
-
-	prev: async () => {
-		const { currentIndex, playTrack } = get();
-		if (currentIndex === 0) return;
-
-		try {
-			set({
-				currentIndex: currentIndex - 1,
-				currentTimeMs: 0,
-			});
-			playTrack();
-		} catch (error) {
-			console.error("Error going prev track", error);
-		}
-	},
-
-	seek: async (timeMs: number) => {
-		const { deviceId } = get();
-		try {
-			await seek(deviceId, timeMs);
-			// TODO: REMOVE AND LET PLAYER HANDLE IT?
-			set({ currentTimeMs: timeMs });
-		} catch (error) {
-			console.error("Error seeking track", error);
-		}
-	},
-
-	isFirstTrack: () => get().currentIndex === 0,
-
-	isLastTrack: () => get().currentIndex >= get().queue.length - 1,
-
-	startTimer: () => {
-		const { _timer } = get();
-
-		if (_timer) return;
-
-		const tick = () => {
-			const { isPaused, currentTimeMs, _lastTick } = get();
-			const now = Date.now();
-			const delta = now - _lastTick;
-
-			// if (!isPaused && currentTrack?.track.duration_ms) {
-			if (!isPaused) {
-				// const nexTime = Math.min(
-				// 	currentTimeMs + delta,
-				// 	currentTrack.track.duration_ms,
-				// );
-				const nexTime = Math.min(currentTimeMs + delta, 160941);
-				set({ currentTimeMs: nexTime, _lastTick: now });
-			} else {
-				set({ _lastTick: now });
+		getQueue: async (albums: SimplifiedAlbum[]) => {
+			set({ currentIndex: 0, isLoading: true });
+			try {
+				const res = await getAlbumTracks(albums);
+				set({ queue: res, isLoading: false });
+			} catch (error) {
+				console.error("Error playing track", error);
+				set({ isLoading: false });
 			}
-		};
-		// Update every 250ms
-		const timer = window.setInterval(tick, 250);
-		set({ _timer: timer, _lastTick: Date.now() });
-	},
-	stopTimer: () => {
-		const { _timer } = get();
-		if (_timer) clearInterval(_timer);
-		set({ _timer: undefined });
-	},
-}));
+		},
+
+		setDeviceId: (deviceId: string) => set({ deviceId: deviceId }),
+
+		setPaused: (isPaused: boolean) => set({ isPaused: isPaused }),
+
+		setCurrentTimeMs: (timeMs: number) => set({ currentTimeMs: timeMs }),
+
+		setVolume: (volume: number) => set({ volume: volume }),
+
+		playTrack: async () => {
+			const { deviceId, queue, currentIndex } = get();
+			const track = queue[currentIndex].track;
+
+			try {
+				await play(deviceId, track.uri);
+				set({ _lastTick: Date.now() });
+			} catch (error) {
+				console.error("Error playing track", error);
+			}
+		},
+
+		play: async () => {
+			const { deviceId } = get();
+
+			try {
+				await play(deviceId);
+				set({ _lastTick: Date.now() });
+			} catch (error) {
+				console.error("Error playing track", error);
+			}
+		},
+
+		pause: async () => {
+			const { deviceId } = get();
+
+			try {
+				await pause(deviceId);
+			} catch (error) {
+				console.error("Error pausing track", error);
+			}
+		},
+
+		next: async () => {
+			const { queue, currentIndex, playTrack } = get();
+			if (currentIndex >= queue.length - 1) return;
+
+			try {
+				set({
+					queueDirection: "NEXT",
+					currentIndex: currentIndex + 1,
+					currentTimeMs: 0,
+				});
+				playTrack();
+			} catch (error) {
+				console.error("Error going next track", error);
+			}
+		},
+
+		prev: async () => {
+			const { currentIndex, playTrack } = get();
+			if (currentIndex === 0) return;
+
+			try {
+				set({
+					queueDirection: "PREV",
+					currentIndex: currentIndex - 1,
+					currentTimeMs: 0,
+				});
+				playTrack();
+			} catch (error) {
+				console.error("Error going prev track", error);
+			}
+		},
+
+		seek: async (timeMs: number) => {
+			const { deviceId } = get();
+			set({ currentTimeMs: timeMs });
+			try {
+				await seek(deviceId, timeMs);
+			} catch (error) {
+				console.error("Error seeking track", error);
+			}
+		},
+
+		setPlaybackVolume: async (volume: number) => {
+			const { deviceId } = get();
+			set({ volume: volume });
+			try {
+				await setPlaybackVolume(volume, deviceId);
+			} catch (error) {
+				console.error("Error setting playback volume", error);
+			}
+		},
+
+		swipe: async (direction: SwipeDirection) => {
+			const { next } = get();
+			console.log(`Swiping ${direction}`);
+			next();
+		},
+
+		isFirstTrack: () => get().currentIndex === 0,
+
+		isLastTrack: () => get().currentIndex >= get().queue.length - 1,
+
+		startTimer: () => {
+			const { _timer } = get();
+
+			if (_timer) return;
+
+			const tick = () => {
+				const { isPaused, currentTimeMs, _lastTick } = get();
+				const now = Date.now();
+				const delta = now - _lastTick;
+
+				// if (!isPaused && currentTrack?.track.duration_ms) {
+				if (!isPaused) {
+					// const nexTime = Math.min(
+					// 	currentTimeMs + delta,
+					// 	currentTrack.track.duration_ms,
+					// );
+					const nexTime = Math.min(currentTimeMs + delta, 160941);
+					set({ currentTimeMs: nexTime, _lastTick: now });
+				} else {
+					set({ _lastTick: now });
+				}
+			};
+			// Update every 250ms
+			const timer = window.setInterval(tick, 250);
+			set({ _timer: timer, _lastTick: Date.now() });
+		},
+		stopTimer: () => {
+			const { _timer } = get();
+			if (_timer) clearInterval(_timer);
+			set({ _timer: undefined });
+		},
+
+		// Swipe Controller State
+		triggerSwipe: (direction: SwipeDirection) => {
+			const { onSwipe } = get();
+			if (onSwipe) onSwipe(direction);
+		},
+		onSwipe: null,
+		registerHandler: (handler) => set({ onSwipe: handler }),
+	}),
+);

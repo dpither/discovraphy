@@ -1,26 +1,19 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
-import SpotifyPlayerCard from "../../components/SpotifyPlayerCard";
-import { usePlayerStore } from "../../hooks/usePlayerStore";
+import { useEffect } from "react";
+import TrackCard from "../../components/TrackCard";
+import {
+	type QueueDirection,
+	usePlayerStore,
+} from "../../hooks/usePlayerStore";
 import { useSetupStore } from "../../hooks/useSetupStore";
 
 export default function TrackQueue() {
 	const { selectedAlbums } = useSetupStore();
-	const { queue, currentIndex, next, prev, getQueue } = usePlayerStore();
-	const [direction, setDirection] = useState<"NEXT" | "PREV">("NEXT");
-
-	function handleNext() {
-		setDirection("NEXT");
-		next();
-	}
-
-	function handlePrev() {
-		setDirection("PREV");
-		prev();
-	}
+	const { queue, currentIndex, swipe, getQueue, queueDirection, triggerSwipe } =
+		usePlayerStore();
 
 	const variants = {
-		initial: (direction: "NEXT" | "PREV") => ({
+		initial: (direction: QueueDirection) => ({
 			y: direction === "NEXT" ? "5%" : "-5%",
 			opacity: 0,
 		}),
@@ -33,31 +26,37 @@ export default function TrackQueue() {
 		getQueue(selectedAlbums);
 	}, [queue, selectedAlbums, getQueue]);
 
+	// Keyboard Listener
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.repeat) return;
+			if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") {
+				triggerSwipe("RIGHT");
+				console.log("Swiped right with keyboard");
+			}
+			if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") {
+				triggerSwipe("LEFT");
+				console.log("Swiped left with keyboard");
+			}
+		};
+		window.addEventListener("keydown", handleKeyDown);
+
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [triggerSwipe]);
+
 	return (
-		<AnimatePresence custom={direction} mode="wait">
+		<AnimatePresence custom={queueDirection} mode="wait">
 			<motion.div
 				animate="center"
 				className="origin-bottom"
-				custom={direction}
+				custom={queueDirection}
 				initial="initial"
 				key={currentIndex}
 				transition={{ duration: 0.5, ease: "easeInOut", bounce: 0 }}
 				variants={variants}
 			>
 				{queue.length > 0 && (
-					<SpotifyPlayerCard
-						albumTrack={queue[currentIndex]}
-						onNextTrack={handleNext}
-						onPrevTrack={handlePrev}
-						onSwipeLeft={() => {
-							console.log("Swiped left");
-							handleNext();
-						}}
-						onSwipeRight={() => {
-							console.log("Swiped right");
-							handleNext();
-						}}
-					/>
+					<TrackCard albumTrack={queue[currentIndex]} onSwipe={swipe} />
 				)}
 			</motion.div>
 		</AnimatePresence>

@@ -1,6 +1,5 @@
 import type { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import placeholder from "../assets/playlist_placeholder.png";
-import SpotifyIcon from "../assets/spotify_icon.svg?react";
 
 interface PlaylistCardProps {
 	playlist: SimplifiedPlaylist;
@@ -25,11 +24,10 @@ export default function PlaylistCard({
 	}
 	return (
 		<button
-			className={`${isSelected ? "border-black dark:border-white" : "border-transparent hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex select-none flex-col gap-2 rounded-sm border p-2 text-black text-sm outline-blue outline-offset-2 transition focus-visible:outline-2 lg:rounded-lg dark:text-white`}
+			className={`${isSelected ? "border-black dark:border-white" : "border-transparent hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex cursor-pointer select-none flex-col gap-2 rounded-sm border p-2 text-black text-sm outline-blue outline-offset-2 transition focus-visible:outline-2 lg:rounded-lg dark:text-white`}
 			onClick={onClick}
 			type="button"
 		>
-			<SpotifyIcon className="w-6" />
 			<div className="aspect-square w-full text-white dark:text-black">
 				<img
 					alt="Playlist artwork"
@@ -38,7 +36,6 @@ export default function PlaylistCard({
 					src={playlist.images ? playlist.images[0].url : placeholder}
 				/>
 			</div>
-
 			<div className="flex flex-col text-left">
 				<p className="line-clamp-2">{playlist.name}</p>
 				<p className="text-sub-text-light text-xs dark:text-sub-text-dark">

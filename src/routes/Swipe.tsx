@@ -4,6 +4,7 @@ import TrackQueue from "../features/swipe/TrackQueue";
 import VolumeSlider from "../features/swipe/VolumeSlider";
 import { usePlayerStore } from "../hooks/usePlayerStore";
 import { useSpotifyPlayer } from "../hooks/useSpotifyPlayer";
+
 import Header from "../layouts/Header";
 
 export default function Swipe() {

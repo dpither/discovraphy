@@ -47,7 +47,7 @@ export default function Slider({
 	return (
 		<div
 			className="group relative flex w-full cursor-pointer py-1"
-			onPointerDown={handlePointerDown}
+			onPointerDownCapture={handlePointerDown}
 		>
 			{/* Full Bar */}
 			<div

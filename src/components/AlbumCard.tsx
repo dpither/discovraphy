@@ -1,6 +1,5 @@
 import type { SimplifiedAlbum } from "@spotify/web-api-ts-sdk";
 import placeholder from "../assets/artist_placeholder.png";
-import SpotifyIcon from "../assets/spotify_icon.svg?react";
 
 interface AlbumCardProps {
 	album: SimplifiedAlbum;
@@ -24,12 +23,10 @@ export default function AlbumCard({
 
 	return (
 		<button
-			className={`${isSelected ? "border-black dark:border-white" : "border-transparent hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex select-none flex-col gap-2 rounded-sm border p-2 text-black text-sm outline-blue outline-offset-2 transition focus-visible:outline-2 lg:rounded-lg dark:text-white`}
+			className={`${isSelected ? "border-black dark:border-white" : "border-transparent hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex cursor-pointer select-none flex-col gap-2 rounded-sm border p-2 text-black text-sm outline-blue outline-offset-2 transition focus-visible:outline-2 lg:rounded-lg dark:text-white`}
 			onClick={onClick}
 			type="button"
 		>
-			<SpotifyIcon className="w-6" />
-
 			{isSelected && (
 				<div className="absolute right-3 bottom-3 z-10 inline-flex size-6 items-center justify-center rounded-full bg-blue font-bold text-white text-xs">
 					{queuePosition + 1}

@@ -52,8 +52,8 @@ export default function BuildQueueForm() {
 			<h1 className="font-semibold text-3xl text-black dark:text-white">
 				Build your Queue
 			</h1>
-			<div className="flex min-h-0 flex-1 flex-col rounded-sm border border-black lg:rounded-lg dark:border-white">
-				<div className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+			<div className="flex min-h-0 flex-1 flex-col rounded-sm border border-black lg:rounded-lg dark:border-white px-4 pt-4 gap-4">
+				<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 					<div className="flex gap-2">
 						<FilterChip
 							isSelected={albumFilters.includes("Album")}

@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
+import Callback from "./routes/Callback";
 import Home from "./routes/Home";
 import PageNotFound from "./routes/PageNotFound";
 import Setup from "./routes/Setup";
@@ -21,6 +22,11 @@ const routes = [
 		element: <Swipe />,
 		errorElement: <PageNotFound />,
 		loader: swipeLoader,
+	},
+	{
+		path: "/callback",
+		element: <Callback />,
+		errorElement: <PageNotFound />,
 	},
 ];
 

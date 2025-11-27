@@ -28,7 +28,6 @@ interface PlayerState {
 	currentTimeMs: number;
 	volume: number;
 	queueDirection: QueueDirection;
-	isSwiping: boolean;
 
 	_lastTick: number;
 	_timer?: number;
@@ -70,7 +69,6 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 		currentTimeMs: 0,
 		volume: DEFAULT_VOLUME,
 		queueDirection: "NEXT",
-		isSwiping: false,
 
 		_lastTick: Date.now(),
 
@@ -181,6 +179,13 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 		swipe: async (direction: SwipeDirection) => {
 			const { next } = get();
 			console.log(`Swiping ${direction}`);
+
+			// Liked
+			if (direction === "RIGHT") {
+			}
+			// Disliked
+			else {
+			}
 			next();
 		},
 
@@ -194,18 +199,15 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 			if (_timer) return;
 
 			const tick = () => {
-				const { isPaused, currentTimeMs, _lastTick } = get();
+				const { isPaused, currentTimeMs, _lastTick, queue, currentIndex } =
+					get();
 				const now = Date.now();
 				const delta = now - _lastTick;
+				const track = queue[currentIndex].track;
 
-				// if (!isPaused && currentTrack?.track.duration_ms) {
 				if (!isPaused) {
-					// const nexTime = Math.min(
-					// 	currentTimeMs + delta,
-					// 	currentTrack.track.duration_ms,
-					// );
-					const nexTime = Math.min(currentTimeMs + delta, 160941);
-					set({ currentTimeMs: nexTime, _lastTick: now });
+					const nextTime = Math.min(currentTimeMs + delta, track.duration_ms);
+					set({ currentTimeMs: nextTime, _lastTick: now });
 				} else {
 					set({ _lastTick: now });
 				}

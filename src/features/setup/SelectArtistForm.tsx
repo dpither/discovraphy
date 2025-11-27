@@ -6,7 +6,6 @@ import ResultContainer from "../../components/ResultContainer";
 import Spinner from "../../components/Spinner";
 import Tooltip from "../../components/Tooltip";
 import { useSetupStore } from "../../hooks/useSetupStore";
-import SpotifyLogo from "../assets/spotify_logo.svg?react";
 
 export default function SelectArtistForm() {
 	const {

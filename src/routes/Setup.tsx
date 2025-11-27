@@ -58,7 +58,7 @@ export default function Setup() {
 				onSubmit={onSubmit}
 			>
 				{stepForms[currentStep]}
-				<div className="flex items-center justify-end gap-4">
+				<div className="flex items-center justify-end gap-4 place-self-center md:place-self-end">
 					{isFirstStep() ? (
 						<div></div>
 					) : (

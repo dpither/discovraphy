@@ -7,18 +7,18 @@ import Header from "../layouts/Header";
 import SpotifyFooter from "../layouts/SpotifyFooter";
 import { getAccessToken, initSpotifyClient } from "../lib/spotifyApi";
 
+const TEXTS = [
+	"earworm",
+	"chill vibe",
+	"club banger",
+	"hype song",
+	"hidden gem",
+];
+
 export default function Home() {
 	const navigate = useNavigate();
 
 	const { reset } = useSetupStore();
-
-	const texts = [
-		"earworm",
-		"chill vibe",
-		"club banger",
-		"hype song",
-		"hidden gem",
-	];
 
 	async function authenticate() {
 		reset();
@@ -34,12 +34,12 @@ export default function Home() {
 			<Header />
 			<div className="flex flex-col items-center gap-4 md:flex-row-reverse md:justify-center">
 				<div className="flex h-full w-72 flex-col justify-between gap-4 md:w-96 md:text-left">
-					<div className="flex select-none flex-col font-semibold text-4xl md:text-5xl">
-						<h1>
+					<div className="flex select-none flex-col">
+						<h1 className="font-semibold text-4xl md:text-5xl">
 							Discover your next{" "}
 							<TextCarousel
 								stopDuration={3000}
-								texts={texts}
+								texts={TEXTS}
 								transitionDuration={0.5}
 							/>
 						</h1>

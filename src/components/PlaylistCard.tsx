@@ -1,5 +1,5 @@
 import type { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
-import placeholder from "../assets/playlist_placeholder.png";
+import placeholder from "../assets/playlist_placeholder.svg";
 
 interface PlaylistCardProps {
 	playlist: SimplifiedPlaylist;
@@ -28,7 +28,7 @@ export default function PlaylistCard({
 			onClick={onClick}
 			type="button"
 		>
-			<div className="aspect-square w-full text-white dark:text-black">
+			<div className="aspect-square w-full bg-sub-text-light text-white dark:text-black">
 				<img
 					alt="Playlist artwork"
 					className="size-full rounded-sm bg-black object-cover lg:rounded-lg"

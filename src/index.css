@@ -38,6 +38,14 @@
 	img{
 		@apply flex items-center justify-center
 	}
+
+	h1{
+		@apply font-semibold text-3xl text-black dark:text-white
+	}
+
+	p{
+		@apply text-black dark:text-white
+	}
 }
 
 @layer components {

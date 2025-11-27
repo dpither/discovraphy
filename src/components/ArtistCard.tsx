@@ -1,5 +1,5 @@
 import type { Artist } from "@spotify/web-api-ts-sdk";
-import placeholder from "../assets/artist_placeholder.png";
+import placeholder from "../assets/artist_placeholder.svg";
 
 interface ArtistCardProps {
 	artist: Artist;

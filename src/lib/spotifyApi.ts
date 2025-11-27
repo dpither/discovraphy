@@ -18,7 +18,8 @@ import type { AlbumTrack } from "../hooks/usePlayerStore";
 import CustomResponseDeserializer from "./CustomResponseDeserializer";
 
 const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
-const redirectUri = import.meta.env.VITE_REDIRECT_TARGET;
+// const redirectUri = import.meta.env.VITE_REDIRECT_TARGET;
+const redirectUri = `${window.location.origin}/discovraphy/callback`;
 const scopes = [
 	...Scopes.playlist,
 	...Scopes.userLibraryRead,
@@ -39,6 +40,8 @@ const config: SdkConfiguration = {
 		: new InMemoryCachingStrategy(),
 };
 
+console.log(redirectUri);
+
 const sdk = SpotifyApi.withUserAuthorization(
 	clientId,
 	redirectUri,
@@ -46,11 +49,18 @@ const sdk = SpotifyApi.withUserAuthorization(
 	config,
 );
 
-export let currentUser: UserProfile | null = null;
+let currentUser: UserProfile | null = null;
 
 export async function initSpotifyClient() {
 	await sdk.authenticate();
 	currentUser = await sdk.currentUser.profile();
+}
+
+export async function getUser(): Promise<UserProfile> {
+	if (currentUser === null) {
+		currentUser = await sdk.currentUser.profile();
+	}
+	return currentUser;
 }
 
 export async function getArtists(artistQuery: string): Promise<Artist[]> {
@@ -75,7 +85,7 @@ export async function getArtistAlbums(
 
 export async function getOwnedPlaylists(): Promise<SimplifiedPlaylist[]> {
 	if (currentUser === null) {
-		currentUser = await sdk.currentUser.profile();
+		await getUser();
 	}
 	const playlists = (await sdk.currentUser.playlists.playlists(50)).items;
 	return playlists.filter((playlist) => {
@@ -111,14 +121,6 @@ export async function play(deviceId: string = "", trackUri: string = "") {
 export async function pause(deviceId: string = "") {
 	await sdk.player.pausePlayback(deviceId);
 }
-
-// export async function next(deviceId: string = "") {
-// 	await sdk.player.skipToNext(deviceId);
-// }
-
-// export async function prev(deviceId: string = "") {
-// 	await sdk.player.skipToPrevious(deviceId);
-// }
 
 export async function seek(device_id: string = "", timeMs: number) {
 	await sdk.player.seekToPosition(timeMs, device_id);

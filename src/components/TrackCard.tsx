@@ -18,8 +18,14 @@ interface TrackCardProps {
 const X_BOUND = 100;
 
 export default function TrackCard({ albumTrack, onSwipe }: TrackCardProps) {
-	const { currentTimeMs, setCurrentTimeMs, seek, registerHandler } =
-		usePlayerStore();
+	const {
+		currentTimeMs,
+		setCurrentTimeMs,
+		seek,
+		registerHandler,
+		startTimer,
+		stopTimer,
+	} = usePlayerStore();
 
 	const [scope, animate] = useAnimate();
 	const x = useMotionValue(0);
@@ -85,9 +91,11 @@ export default function TrackCard({ albumTrack, onSwipe }: TrackCardProps) {
 				<Slider
 					maxValue={albumTrack.track.duration_ms}
 					onValueChange={(value) => {
+						stopTimer();
 						setCurrentTimeMs(value);
 					}}
 					onValueChangeFinished={(value) => {
+						startTimer();
 						seek(value);
 					}}
 					value={currentTimeMs}

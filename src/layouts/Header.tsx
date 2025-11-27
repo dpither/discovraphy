@@ -4,7 +4,7 @@ import DarkModeSelector from "../components/DarkModeSelector";
 
 export default function Header() {
 	return (
-		<header className="sticky top-0 z-50 border-black border-b bg-white dark:border-white dark:bg-black">
+		<header className="sticky top-0 z-50 border-black border-b bg-white transition-all dark:border-white dark:bg-black">
 			<div className="flex items-center justify-between">
 				<div className="md:flex-1 md:pl-4"></div>
 				<Link

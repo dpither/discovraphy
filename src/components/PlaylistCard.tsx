@@ -28,10 +28,10 @@ export default function PlaylistCard({
 			onClick={onClick}
 			type="button"
 		>
-			<div className="aspect-square w-full bg-sub-text-light text-white dark:text-black">
+			<div className="aspect-square w-full text-white dark:text-black">
 				<img
 					alt="Playlist artwork"
-					className="size-full rounded-sm bg-black object-cover lg:rounded-lg"
+					className="size-full rounded-sm object-cover lg:rounded-lg"
 					draggable={false}
 					src={playlist.images ? playlist.images[0].url : placeholder}
 				/>

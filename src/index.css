@@ -43,6 +43,10 @@
 		@apply font-semibold text-3xl text-black dark:text-white
 	}
 
+	h2{
+		@apply font-semibold text-xl text-black dark:text-white
+	}
+
 	p{
 		@apply text-black dark:text-white
 	}

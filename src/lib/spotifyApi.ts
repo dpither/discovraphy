@@ -17,9 +17,13 @@ import { isBrowser } from "motion/react";
 import type { AlbumTrack } from "../hooks/usePlayerStore";
 import CustomResponseDeserializer from "./CustomResponseDeserializer";
 
+export const MAX_VOLUME = 100;
+export const DEFAULT_VOLUME = 5;
+
 const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 // const redirectUri = import.meta.env.VITE_REDIRECT_TARGET;
 const redirectUri = `${window.location.origin}/discovraphy/callback`;
+
 const scopes = [
 	...Scopes.playlist,
 	...Scopes.userLibraryRead,

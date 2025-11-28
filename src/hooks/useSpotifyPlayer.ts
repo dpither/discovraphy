@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { getAccessToken } from "../lib/spotifyApi";
+import { DEFAULT_VOLUME, getAccessToken, MAX_VOLUME } from "../lib/spotifyApi";
 import { usePlayerStore } from "./usePlayerStore";
 
 export function useSpotifyPlayer() {
@@ -35,7 +35,7 @@ export function useSpotifyPlayer() {
 						console.log("Access token undefined");
 					}
 				},
-				volume: 0.05,
+				volume: DEFAULT_VOLUME / MAX_VOLUME,
 			});
 
 			playerRef.current = player;

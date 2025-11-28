@@ -10,9 +10,24 @@ export function useSpotifyPlayer() {
 		startTimer,
 		stopTimer,
 		playTrack,
+		currentPlaybackId,
+		playbackIdCache,
+		setCurrentPlaybackId,
+		cachePlaybackId,
+		next,
 	} = usePlayerStore();
 
 	const playerRef = useRef<Spotify.Player | null>(null);
+	const currentPlaybackIdRef = useRef(currentPlaybackId);
+	const playbackIdCacheRef = useRef(playbackIdCache);
+
+	useEffect(() => {
+		currentPlaybackIdRef.current = currentPlaybackId;
+	}, [currentPlaybackId]);
+
+	useEffect(() => {
+		playbackIdCacheRef.current = playbackIdCache;
+	}, [playbackIdCache]);
 
 	useEffect(() => {
 		let script: HTMLScriptElement | null = null;
@@ -53,16 +68,31 @@ export function useSpotifyPlayer() {
 			});
 
 			player.addListener("player_state_changed", (state) => {
-				// console.log("Player state changed");
+				if (!state) return;
+				const { paused, position, playback_id } = state;
+				// Ignore updates after navigating away
+				if (playbackIdCacheRef.current.has(playback_id)) return;
+
 				// console.log(state);
-				if (state) {
-					setPaused(state.paused);
-					setCurrentTimeMs(state.position);
+				// console.log("Player state changed");
+				// console.log(currentPlaybackIdRef.current, playbackIdCacheRef.current);
+				setPaused(paused);
+				setCurrentTimeMs(position);
+
+				if (currentPlaybackIdRef.current === "") {
+					setCurrentPlaybackId(playback_id);
+				}
+				// TRACK ENDED
+				else if (playback_id !== currentPlaybackIdRef.current) {
+					cachePlaybackId(playback_id);
+					// console.log("PLAYER CALLING NEXT");
+					next();
 				}
 			});
 
 			player.connect();
 		};
+
 		return () => {
 			playerRef.current?.disconnect();
 			playerRef.current = null;
@@ -77,5 +107,8 @@ export function useSpotifyPlayer() {
 		startTimer,
 		stopTimer,
 		playTrack,
+		setCurrentPlaybackId,
+		cachePlaybackId,
+		next,
 	]);
 }

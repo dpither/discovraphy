@@ -5,11 +5,9 @@ import {
 	type QueueDirection,
 	usePlayerStore,
 } from "../../hooks/usePlayerStore";
-import { useSetupStore } from "../../hooks/useSetupStore";
 
 export default function TrackQueue() {
-	const { selectedAlbums } = useSetupStore();
-	const { queue, currentIndex, swipe, getQueue, queueDirection, triggerSwipe } =
+	const { queue, currentIndex, swipe, queueDirection, triggerSwipe } =
 		usePlayerStore();
 
 	const variants = {
@@ -19,12 +17,6 @@ export default function TrackQueue() {
 		}),
 		center: { y: 0, scale: 1, opacity: 1 },
 	};
-
-	useEffect(() => {
-		if (queue.length > 0 || selectedAlbums.length === 0) return;
-
-		getQueue(selectedAlbums);
-	}, [queue, selectedAlbums, getQueue]);
 
 	// Keyboard Listener
 	useEffect(() => {

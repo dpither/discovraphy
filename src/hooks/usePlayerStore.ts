@@ -9,6 +9,8 @@ import {
 	setPlaybackVolume,
 } from "../lib/spotifyApi";
 
+const PLAYBACK_ID_CACHE_SIZE = 32;
+
 export type AlbumTrack = {
 	album: SimplifiedAlbum;
 	track: SimplifiedTrack;
@@ -25,6 +27,8 @@ interface PlayerState {
 	isPaused: boolean;
 	currentTimeMs: number;
 	volume: number;
+	playbackIdCache: Set<string>;
+	currentPlaybackId: string;
 	queueDirection: QueueDirection;
 
 	_lastTick: number;
@@ -42,6 +46,8 @@ interface PlayerState {
 	prev: () => void;
 	seek: (timeMs: number) => void;
 	setPlaybackVolume: (volume: number) => void;
+	setCurrentPlaybackId: (id: string) => void;
+	cachePlaybackId: (id: string) => void;
 	swipe: (direction: SwipeDirection) => void;
 
 	isFirstTrack: () => boolean;
@@ -67,7 +73,8 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 		currentTimeMs: 0,
 		volume: DEFAULT_VOLUME,
 		queueDirection: "NEXT",
-
+		playbackIdCache: new Set<string>(),
+		currentPlaybackId: "",
 		_lastTick: Date.now(),
 
 		getQueue: async (albums: SimplifiedAlbum[]) => {
@@ -123,14 +130,23 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 		},
 
 		next: async () => {
-			const { queue, currentIndex, playTrack } = get();
+			// console.log("CALLING NEXT");
+			const {
+				queue,
+				currentIndex,
+				playTrack,
+				currentPlaybackId,
+				cachePlaybackId,
+			} = get();
 			if (currentIndex >= queue.length - 1) return;
+			cachePlaybackId(currentPlaybackId);
 
 			try {
 				set({
 					queueDirection: "NEXT",
 					currentIndex: currentIndex + 1,
 					currentTimeMs: 0,
+					currentPlaybackId: "",
 				});
 				playTrack();
 			} catch (error) {
@@ -139,14 +155,19 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 		},
 
 		prev: async () => {
-			const { currentIndex, playTrack } = get();
+			// console.log("CALLING PREV");
+			const { currentIndex, playTrack, currentPlaybackId, cachePlaybackId } =
+				get();
 			if (currentIndex === 0) return;
+
+			cachePlaybackId(currentPlaybackId);
 
 			try {
 				set({
 					queueDirection: "PREV",
 					currentIndex: currentIndex - 1,
 					currentTimeMs: 0,
+					currentPlaybackId: "",
 				});
 				playTrack();
 			} catch (error) {
@@ -171,6 +192,18 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 				await setPlaybackVolume(volume, deviceId);
 			} catch (error) {
 				console.error("Error setting playback volume", error);
+			}
+		},
+
+		setCurrentPlaybackId: (id: string) => set({ currentPlaybackId: id }),
+
+		cachePlaybackId: (id: string) => {
+			const { playbackIdCache } = get();
+			playbackIdCache.add(id);
+
+			if (playbackIdCache.size > PLAYBACK_ID_CACHE_SIZE) {
+				const first = playbackIdCache.values().next().value;
+				if (first) playbackIdCache.delete(first);
 			}
 		},
 
@@ -206,6 +239,9 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 				if (!isPaused) {
 					const nextTime = Math.min(currentTimeMs + delta, track.duration_ms);
 					set({ currentTimeMs: nextTime, _lastTick: now });
+					// if (nextTime === track.duration_ms) {
+					// 	console.log("TRACK ENDED");
+					// }
 				} else {
 					set({ _lastTick: now });
 				}

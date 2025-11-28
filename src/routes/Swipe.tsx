@@ -1,16 +1,24 @@
+import { useEffect } from "react";
 import Spinner from "../components/Spinner";
 import HelpModal from "../features/swipe/HelpModal";
 import SwipeControls from "../features/swipe/SwipeControls";
 import TrackQueue from "../features/swipe/TrackQueue";
 import VolumeSlider from "../features/swipe/VolumeSlider";
 import { usePlayerStore } from "../hooks/usePlayerStore";
+import { useSetupStore } from "../hooks/useSetupStore";
 import { useSpotifyPlayer } from "../hooks/useSpotifyPlayer";
-
 import Header from "../layouts/Header";
 
 export default function Swipe() {
 	useSpotifyPlayer();
-	const { isLoading } = usePlayerStore();
+	const { selectedAlbums } = useSetupStore();
+
+	const { isLoading, getQueue } = usePlayerStore();
+
+	useEffect(() => {
+		getQueue(selectedAlbums);
+	}, [selectedAlbums, getQueue]);
+
 	return (
 		<div className="flex h-screen flex-col">
 			<Header />

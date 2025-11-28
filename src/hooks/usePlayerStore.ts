@@ -1,15 +1,13 @@
 import type { SimplifiedAlbum, SimplifiedTrack } from "@spotify/web-api-ts-sdk";
 import { create } from "zustand";
 import {
+	DEFAULT_VOLUME,
 	getAlbumTracks,
 	pause,
 	play,
 	seek,
 	setPlaybackVolume,
 } from "../lib/spotifyApi";
-
-// MOVE TO CONSTANTS FILE? since need in player too?
-const DEFAULT_VOLUME = 5;
 
 export type AlbumTrack = {
 	album: SimplifiedAlbum;

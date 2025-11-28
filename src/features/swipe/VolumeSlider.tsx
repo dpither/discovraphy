@@ -6,8 +6,7 @@ import FlatButton from "../../components/FlatButton";
 import Slider from "../../components/Slider";
 import Tooltip from "../../components/Tooltip";
 import { usePlayerStore } from "../../hooks/usePlayerStore";
-
-const MAX_VOLUME = 100;
+import { MAX_VOLUME } from "../../lib/spotifyApi";
 
 export default function VolumeSlider() {
 	const { volume, setVolume, setPlaybackVolume } = usePlayerStore();
@@ -23,7 +22,7 @@ export default function VolumeSlider() {
 	// Auto fetch the current volume?
 	return (
 		<div className="flex w-full items-center gap-2">
-			<Tooltip text={volume !== 0 ? "Mute" : "Unmute"}>
+			<Tooltip position="TOP" text={volume !== 0 ? "Mute" : "Unmute"}>
 				<FlatButton
 					onClick={() => {
 						if (volume !== 0) {

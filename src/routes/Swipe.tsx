@@ -1,4 +1,5 @@
 import Spinner from "../components/Spinner";
+import HelpModal from "../features/swipe/HelpModal";
 import SwipeControls from "../features/swipe/SwipeControls";
 import TrackQueue from "../features/swipe/TrackQueue";
 import VolumeSlider from "../features/swipe/VolumeSlider";
@@ -18,12 +19,17 @@ export default function Swipe() {
 				{!isLoading && (
 					<div className="flex flex-col gap-4">
 						<TrackQueue />
-						<div className="flex w-full max-w-72 flex-col gap-2 px-4">
-							<SwipeControls />
-							<VolumeSlider />
-						</div>
 					</div>
 				)}
+			</div>
+			<div className="flex w-full justify-center pb-2.5">
+				<div className="flex w-full max-w-72 flex-col gap-2 px-4">
+					<SwipeControls />
+					<div className="flex gap-2">
+						<VolumeSlider />
+						<HelpModal />
+					</div>
+				</div>
 			</div>
 		</div>
 	);

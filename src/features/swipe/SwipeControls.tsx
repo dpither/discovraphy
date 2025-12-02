@@ -17,13 +17,15 @@ export default function SwipeControls() {
 		next,
 		prev,
 		isFirstTrack,
-		isLastTrack,
+		isQueueEnd,
 		triggerSwipe,
 	} = usePlayerStore();
 	return (
 		<div className="flex w-full justify-between">
-			<Tooltip position="TOP" text="Dislike">
+			{/* DISLIKE */}
+			<Tooltip disabled={isQueueEnd()} position="TOP" text="Dislike">
 				<Button
+					disabled={isQueueEnd()}
 					onClick={() => {
 						triggerSwipe("LEFT");
 					}}
@@ -31,47 +33,39 @@ export default function SwipeControls() {
 					<DislikeIcon className="fill-white" />
 				</Button>
 			</Tooltip>
-
-			{/* Track Control */}
+			{/* TRACK CONTROL */}
 			<div>
-				{!isFirstTrack() ? (
-					<Tooltip position="TOP" text="Previous">
-						<FlatButton disabled={isFirstTrack()} onClick={prev}>
-							<SkipPrevIcon className="flat-icon" />
-						</FlatButton>
-					</Tooltip>
-				) : (
+				{/* PREV */}
+				<Tooltip disabled={isFirstTrack()} position="TOP" text="Previous">
 					<FlatButton disabled={isFirstTrack()} onClick={prev}>
 						<SkipPrevIcon className="flat-icon" />
 					</FlatButton>
-				)}
+				</Tooltip>
+				{/* PLAY/PAUSE */}
 				{isPaused ? (
-					<Tooltip position="TOP" text="Play">
-						<FlatButton onClick={play}>
+					<Tooltip disabled={isQueueEnd()} position="TOP" text="Play">
+						<FlatButton disabled={isQueueEnd()} onClick={play}>
 							<PlayIcon className="flat-icon" />
 						</FlatButton>
 					</Tooltip>
 				) : (
-					<Tooltip position="TOP" text="Pause">
-						<FlatButton onClick={pause}>
+					<Tooltip disabled={isQueueEnd()} position="TOP" text="Pause">
+						<FlatButton disabled={isQueueEnd()} onClick={pause}>
 							<PauseIcon className="flat-icon" />
 						</FlatButton>
 					</Tooltip>
 				)}
-				{!isLastTrack() ? (
-					<Tooltip position="TOP" text="Next">
-						<FlatButton disabled={isLastTrack()} onClick={next}>
-							<SkipNextIcon className="flat-icon" />
-						</FlatButton>
-					</Tooltip>
-				) : (
-					<FlatButton disabled={isLastTrack()} onClick={next}>
+				{/* NEXT */}
+				<Tooltip disabled={isQueueEnd()} position="TOP" text="Next">
+					<FlatButton disabled={isQueueEnd()} onClick={next}>
 						<SkipNextIcon className="flat-icon" />
 					</FlatButton>
-				)}
+				</Tooltip>
 			</div>
-			<Tooltip position="TOP" text="Like">
+			{/* LIKE */}
+			<Tooltip disabled={isQueueEnd()} position="TOP" text="Like">
 				<Button
+					disabled={isQueueEnd()}
 					onClick={() => {
 						triggerSwipe("RIGHT");
 					}}

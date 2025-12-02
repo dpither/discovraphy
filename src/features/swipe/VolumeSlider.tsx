@@ -6,11 +6,11 @@ import FlatButton from "../../components/FlatButton";
 import Slider from "../../components/Slider";
 import Tooltip from "../../components/Tooltip";
 import { usePlayerStore } from "../../hooks/usePlayerStore";
-import { MAX_VOLUME } from "../../lib/spotifyApi";
+import { DEFAULT_VOLUME, MAX_VOLUME } from "../../lib/spotifyApi";
 
 export default function VolumeSlider() {
-	const { volume, setVolume, setPlaybackVolume } = usePlayerStore();
-	const [prevVolume, setPrevVolume] = useState(1);
+	const { volume, setVolume, setPlaybackVolume, isQueueEnd } = usePlayerStore();
+	const [prevVolume, setPrevVolume] = useState(DEFAULT_VOLUME);
 
 	function getVolumeIcon() {
 		if (volume === 0) return <VolumeMuteIcon className="flat-icon" />;
@@ -22,8 +22,13 @@ export default function VolumeSlider() {
 	// Auto fetch the current volume?
 	return (
 		<div className="flex w-full items-center gap-2">
-			<Tooltip position="TOP" text={volume !== 0 ? "Mute" : "Unmute"}>
+			<Tooltip
+				disabled={isQueueEnd()}
+				position="TOP"
+				text={volume !== 0 ? "Mute" : "Unmute"}
+			>
 				<FlatButton
+					disabled={isQueueEnd()}
 					onClick={() => {
 						if (volume !== 0) {
 							setPlaybackVolume(0);
@@ -36,6 +41,7 @@ export default function VolumeSlider() {
 				</FlatButton>
 			</Tooltip>
 			<Slider
+				disabled={isQueueEnd()}
 				maxValue={MAX_VOLUME}
 				onValueChange={(value) => {
 					setVolume(value);

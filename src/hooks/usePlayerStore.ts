@@ -52,6 +52,7 @@ interface PlayerState {
 
 	isFirstTrack: () => boolean;
 	isLastTrack: () => boolean;
+	isQueueEnd: () => boolean;
 	startTimer: () => void;
 	stopTimer: () => void;
 }
@@ -97,12 +98,12 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 		setVolume: (volume: number) => set({ volume: volume }),
 
 		playTrack: async () => {
-			const { deviceId, queue, currentIndex } = get();
+			const { deviceId, queue, currentIndex, startTimer } = get();
 			const track = queue[currentIndex].track;
-
 			try {
 				await play(deviceId, track.uri);
 				set({ _lastTick: Date.now() });
+				startTimer();
 			} catch (error) {
 				console.error("Error playing track", error);
 			}
@@ -113,7 +114,7 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 
 			try {
 				await play(deviceId);
-				set({ _lastTick: Date.now() });
+				set({ _lastTick: Date.now(), isPaused: false });
 			} catch (error) {
 				console.error("Error playing track", error);
 			}
@@ -124,6 +125,7 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 
 			try {
 				await pause(deviceId);
+				set({ isPaused: true });
 			} catch (error) {
 				console.error("Error pausing track", error);
 			}
@@ -134,21 +136,28 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 			const {
 				queue,
 				currentIndex,
-				playTrack,
+				deviceId,
 				currentPlaybackId,
 				cachePlaybackId,
+				stopTimer,
+				pause,
 			} = get();
-			if (currentIndex >= queue.length - 1) return;
+			if (currentIndex >= queue.length) return;
 			cachePlaybackId(currentPlaybackId);
-
 			try {
+				if (currentIndex + 1 >= queue.length) {
+					pause();
+					stopTimer();
+				} else {
+					const nextTrack = queue[currentIndex + 1].track;
+					await play(deviceId, nextTrack.uri);
+				}
 				set({
 					queueDirection: "NEXT",
 					currentIndex: currentIndex + 1,
 					currentTimeMs: 0,
 					currentPlaybackId: "",
 				});
-				playTrack();
 			} catch (error) {
 				console.error("Error going next track", error);
 			}
@@ -156,20 +165,26 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 
 		prev: async () => {
 			// console.log("CALLING PREV");
-			const { currentIndex, playTrack, currentPlaybackId, cachePlaybackId } =
-				get();
+			const {
+				queue,
+				currentIndex,
+				deviceId,
+				currentPlaybackId,
+				cachePlaybackId,
+			} = get();
 			if (currentIndex === 0) return;
 
-			cachePlaybackId(currentPlaybackId);
+			if (currentPlaybackId) cachePlaybackId(currentPlaybackId);
 
 			try {
+				const prevTrack = queue[currentIndex - 1].track;
+				await play(deviceId, prevTrack.uri);
 				set({
 					queueDirection: "PREV",
 					currentIndex: currentIndex - 1,
 					currentTimeMs: 0,
 					currentPlaybackId: "",
 				});
-				playTrack();
 			} catch (error) {
 				console.error("Error going prev track", error);
 			}
@@ -222,7 +237,9 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 
 		isFirstTrack: () => get().currentIndex === 0,
 
-		isLastTrack: () => get().currentIndex >= get().queue.length - 1,
+		isLastTrack: () => get().currentIndex === get().queue.length - 1,
+
+		isQueueEnd: () => get().currentIndex >= get().queue.length,
 
 		startTimer: () => {
 			const { _timer } = get();
@@ -258,7 +275,8 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 
 		// Swipe Controller State
 		triggerSwipe: (direction: SwipeDirection) => {
-			const { onSwipe } = get();
+			const { onSwipe, isQueueEnd } = get();
+			if (isQueueEnd()) return;
 			if (onSwipe) onSwipe(direction);
 		},
 		onSwipe: null,

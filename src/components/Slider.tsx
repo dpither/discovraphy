@@ -5,6 +5,7 @@ interface SliderProps {
 	value: number;
 	onValueChange: (value: number) => void;
 	onValueChangeFinished?: (value: number) => void;
+	disabled?: boolean;
 }
 
 export default function Slider({
@@ -12,6 +13,7 @@ export default function Slider({
 	value,
 	onValueChange,
 	onValueChangeFinished,
+	disabled = false,
 }: SliderProps) {
 	const sliderRef = useRef<HTMLDivElement>(null);
 	const dragValueRef = useRef(value);
@@ -19,7 +21,7 @@ export default function Slider({
 	const percent = value / maxValue;
 
 	function handlePointerDown(e: React.PointerEvent) {
-		if (e.button !== 0) return;
+		if (e.button !== 0 || disabled) return;
 		setIsDragging(true);
 		handlePointerMove(e);
 		window.addEventListener("pointermove", handlePointerMove);
@@ -46,7 +48,7 @@ export default function Slider({
 
 	return (
 		<div
-			className="group relative flex w-full cursor-pointer py-1"
+			className={`group relative flex w-full ${disabled ? "" : "cursor-pointer"} py-1`}
 			onPointerDownCapture={handlePointerDown}
 		>
 			{/* Full Bar */}
@@ -56,14 +58,16 @@ export default function Slider({
 			>
 				{/* Filled Progress */}
 				<div
-					className="absolute top-0 bottom-0 left-0 rounded-full bg-blue"
+					className={`absolute top-0 bottom-0 left-0 rounded-full ${disabled ? "bg-sub-text-dark dark:bg-sub-text-light" : "bg-blue"} transition-colors`}
 					style={{ width: `${percent * 100}%` }}
 				/>
 				{/* Thumb */}
-				<div
-					className={`-translate-y-1/2 absolute top-1/2 size-2 rounded-full ${isDragging ? "bg-hover-blue" : "bg-transparent group-hover:bg-blue"}`}
-					style={{ left: `calc(${percent * 100}% - 0.25rem)` }}
-				></div>
+				{!disabled && (
+					<div
+						className={`-translate-y-1/2 absolute top-1/2 size-2 rounded-full ${isDragging ? "bg-hover-blue" : "bg-transparent group-hover:bg-blue"}`}
+						style={{ left: `calc(${percent * 100}% - 0.25rem)` }}
+					></div>
+				)}
 			</div>
 		</div>
 	);

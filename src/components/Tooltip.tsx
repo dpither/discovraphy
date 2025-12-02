@@ -1,14 +1,19 @@
 interface TooltipProps {
 	text: string;
 	position?: "TOP" | "BOTTOM";
+	disabled?: boolean;
 	children: React.ReactNode;
 }
 
 export default function Tooltip({
 	text,
 	position = "BOTTOM",
+	disabled = false,
 	children,
 }: TooltipProps) {
+	if (disabled) {
+		return <>{children}</>;
+	}
 	return (
 		<div className="group relative inline-block">
 			{children}

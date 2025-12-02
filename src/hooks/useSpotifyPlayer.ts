@@ -7,7 +7,6 @@ export function useSpotifyPlayer() {
 		setDeviceId,
 		setPaused,
 		setCurrentTimeMs,
-		startTimer,
 		stopTimer,
 		playTrack,
 		currentPlaybackId,
@@ -32,12 +31,10 @@ export function useSpotifyPlayer() {
 	useEffect(() => {
 		let script: HTMLScriptElement | null = null;
 
-		if (!window.Spotify) {
-			script = document.createElement("script");
-			script.src = "https://sdk.scdn.co/spotify-player.js";
-			script.async = true;
-			document.body.appendChild(script);
-		}
+		script = document.createElement("script");
+		script.src = "https://sdk.scdn.co/spotify-player.js";
+		script.async = true;
+		document.body.appendChild(script);
 
 		window.onSpotifyWebPlaybackSDKReady = () => {
 			const player = new window.Spotify.Player({
@@ -58,7 +55,6 @@ export function useSpotifyPlayer() {
 			player.addListener("ready", ({ device_id }) => {
 				console.log("Ready with device id", device_id);
 				setDeviceId(device_id);
-				startTimer();
 				playTrack();
 			});
 
@@ -70,12 +66,9 @@ export function useSpotifyPlayer() {
 			player.addListener("player_state_changed", (state) => {
 				if (!state) return;
 				const { paused, position, playback_id } = state;
-				// Ignore updates after navigating away
+				// IGNORE UPDATES AFTER CACHING PLAYBACK ID
 				if (playbackIdCacheRef.current.has(playback_id)) return;
 
-				// console.log(state);
-				// console.log("Player state changed");
-				// console.log(currentPlaybackIdRef.current, playbackIdCacheRef.current);
 				setPaused(paused);
 				setCurrentTimeMs(position);
 
@@ -85,7 +78,6 @@ export function useSpotifyPlayer() {
 				// TRACK ENDED
 				else if (playback_id !== currentPlaybackIdRef.current) {
 					cachePlaybackId(playback_id);
-					// console.log("PLAYER CALLING NEXT");
 					next();
 				}
 			});
@@ -94,6 +86,12 @@ export function useSpotifyPlayer() {
 		};
 
 		return () => {
+			stopTimer();
+			setCurrentPlaybackId("");
+			setCurrentTimeMs(0);
+			playerRef.current?.removeListener("ready");
+			playerRef.current?.removeListener("not_ready");
+			playerRef.current?.removeListener("player_state_changed");
 			playerRef.current?.disconnect();
 			playerRef.current = null;
 			if (script) {
@@ -104,7 +102,6 @@ export function useSpotifyPlayer() {
 		setCurrentTimeMs,
 		setDeviceId,
 		setPaused,
-		startTimer,
 		stopTimer,
 		playTrack,
 		setCurrentPlaybackId,

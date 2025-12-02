@@ -15,7 +15,7 @@ export default function PageNotFound() {
 					The page you were looking for could not be discovered. Return home to
 					get back on track.
 				</p>
-				<Link to={`../`}>
+				<Link to={`/`}>
 					<Button
 						onClick={() => {
 							console.log("Pressed go home");

@@ -15,7 +15,7 @@ interface TrackCardProps {
 	onSwipe: (direction: SwipeDirection) => void;
 }
 
-const X_BOUND = 100;
+const X_BOUND = 125;
 
 export default function TrackCard({ albumTrack, onSwipe }: TrackCardProps) {
 	const {
@@ -49,11 +49,23 @@ export default function TrackCard({ albumTrack, onSwipe }: TrackCardProps) {
 		<motion.div
 			className="flex origin-bottom select-none flex-col gap-2 rounded-sm border border-black p-4 hover:cursor-grab hover:active:cursor-grabbing lg:rounded-lg dark:border-white"
 			drag="x"
-			dragConstraints={{ left: 0, right: 0 }}
+			dragElastic={0}
 			dragMomentum={false}
-			onDragEnd={() => {
-				if (x.get() >= X_BOUND) onSwipe("RIGHT");
-				else if (x.get() <= -X_BOUND) onSwipe("LEFT");
+			onDragEnd={(_event, info) => {
+				const offset = info.offset.x;
+				// const velocity = info.velocity.x; TUNE LATER MAYBE?
+
+				if (offset >= X_BOUND) {
+					onSwipe("RIGHT");
+				} else if (offset <= -X_BOUND) {
+					onSwipe("LEFT");
+				} else {
+					animate(
+						scope.current,
+						{ x: 0 },
+						{ duration: 0.3, ease: "easeInOut", bounce: 0 },
+					);
+				}
 			}}
 			ref={scope}
 			style={{

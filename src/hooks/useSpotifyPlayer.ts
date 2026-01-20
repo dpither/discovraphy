@@ -8,7 +8,7 @@ export function useSpotifyPlayer() {
 		setPaused,
 		setCurrentTimeMs,
 		stopTimer,
-		playTrack,
+		playCurrentTrack,
 		currentPlaybackId,
 		playbackIdCache,
 		setCurrentPlaybackId,
@@ -51,11 +51,12 @@ export function useSpotifyPlayer() {
 			});
 
 			playerRef.current = player;
+			var currentTrackId: string | null = null;
 
 			player.addListener("ready", ({ device_id }) => {
 				console.log("Ready with device id", device_id);
 				setDeviceId(device_id);
-				playTrack();
+				playCurrentTrack();
 			});
 
 			player.addListener("not_ready", ({ device_id }) => {
@@ -65,6 +66,7 @@ export function useSpotifyPlayer() {
 
 			player.addListener("player_state_changed", (state) => {
 				if (!state) return;
+				// console.log(state);
 				const { paused, position, playback_id } = state;
 				// IGNORE UPDATES AFTER CACHING PLAYBACK ID
 				if (playbackIdCacheRef.current.has(playback_id)) return;
@@ -74,9 +76,14 @@ export function useSpotifyPlayer() {
 
 				if (currentPlaybackIdRef.current === "") {
 					setCurrentPlaybackId(playback_id);
+					currentTrackId = state.track_window.current_track.id;
 				}
 				// TRACK ENDED
-				else if (playback_id !== currentPlaybackIdRef.current) {
+				else if (
+					playback_id !== currentPlaybackIdRef.current &&
+					state.track_window.current_track.id === currentTrackId
+				) {
+					console.log(`${playback_id} ${currentPlaybackIdRef.current}`);
 					cachePlaybackId(playback_id);
 					next();
 				}
@@ -103,7 +110,7 @@ export function useSpotifyPlayer() {
 		setDeviceId,
 		setPaused,
 		stopTimer,
-		playTrack,
+		playCurrentTrack,
 		setCurrentPlaybackId,
 		cachePlaybackId,
 		next,

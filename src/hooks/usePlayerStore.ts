@@ -14,10 +14,12 @@ const PLAYBACK_ID_CACHE_SIZE = 32;
 export type AlbumTrack = {
 	album: SimplifiedAlbum;
 	track: SimplifiedTrack;
+	status: TrackStatus;
 };
 
 export type SwipeDirection = "RIGHT" | "LEFT";
 export type QueueDirection = "NEXT" | "PREV";
+export type TrackStatus = "DISLIKED" | "LIKED";
 
 interface PlayerState {
 	isLoading: boolean;
@@ -39,7 +41,7 @@ interface PlayerState {
 	setPaused: (isPaused: boolean) => void;
 	setCurrentTimeMs: (timeMs: number) => void;
 	setVolume: (volume: number) => void;
-	playTrack: () => void;
+	playCurrentTrack: () => void;
 	play: () => void;
 	pause: () => void;
 	next: () => void;
@@ -51,10 +53,15 @@ interface PlayerState {
 	swipe: (direction: SwipeDirection) => void;
 
 	isFirstTrack: () => boolean;
+	// REMOVE?
 	isLastTrack: () => boolean;
 	isQueueEnd: () => boolean;
 	startTimer: () => void;
 	stopTimer: () => void;
+
+	pendingPlay: number;
+	playInflight: boolean;
+	enqueuePlay: (index: number) => void;
 }
 
 interface SwipeControllerState {
@@ -97,16 +104,9 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 
 		setVolume: (volume: number) => set({ volume: volume }),
 
-		playTrack: async () => {
-			const { deviceId, queue, currentIndex, startTimer } = get();
-			const track = queue[currentIndex].track;
-			try {
-				await play(deviceId, track.uri);
-				set({ _lastTick: Date.now() });
-				startTimer();
-			} catch (error) {
-				console.error("Error playing track", error);
-			}
+		playCurrentTrack: () => {
+			const { enqueuePlay, currentIndex } = get();
+			enqueuePlay(currentIndex);
 		},
 
 		play: async () => {
@@ -131,63 +131,57 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 			}
 		},
 
-		next: async () => {
-			// console.log("CALLING NEXT");
+		next: () => {
 			const {
 				queue,
 				currentIndex,
-				deviceId,
 				currentPlaybackId,
 				cachePlaybackId,
 				stopTimer,
+				playCurrentTrack,
 				pause,
 			} = get();
+			console.log(`CALLING NEXT FROM: ${queue[currentIndex].track.name}`);
 			if (currentIndex >= queue.length) return;
 			cachePlaybackId(currentPlaybackId);
-			try {
-				if (currentIndex + 1 >= queue.length) {
-					pause();
-					stopTimer();
-				} else {
-					const nextTrack = queue[currentIndex + 1].track;
-					await play(deviceId, nextTrack.uri);
-				}
-				set({
-					queueDirection: "NEXT",
-					currentIndex: currentIndex + 1,
-					currentTimeMs: 0,
-					currentPlaybackId: "",
-				});
-			} catch (error) {
-				console.error("Error going next track", error);
+
+			set({
+				queueDirection: "NEXT",
+				currentIndex: currentIndex + 1,
+				currentTimeMs: 0,
+				currentPlaybackId: "",
+				isPaused: true,
+			});
+
+			stopTimer();
+			if (currentIndex + 1 < queue.length) {
+				playCurrentTrack();
+			} else {
+				pause();
 			}
 		},
 
-		prev: async () => {
-			// console.log("CALLING PREV");
+		prev: () => {
 			const {
 				queue,
 				currentIndex,
-				deviceId,
 				currentPlaybackId,
 				cachePlaybackId,
+				playCurrentTrack,
 			} = get();
+			console.log(`CALLING PREV FROM ${queue[currentIndex].track.name}`);
 			if (currentIndex === 0) return;
-
 			if (currentPlaybackId) cachePlaybackId(currentPlaybackId);
 
-			try {
-				const prevTrack = queue[currentIndex - 1].track;
-				await play(deviceId, prevTrack.uri);
-				set({
-					queueDirection: "PREV",
-					currentIndex: currentIndex - 1,
-					currentTimeMs: 0,
-					currentPlaybackId: "",
-				});
-			} catch (error) {
-				console.error("Error going prev track", error);
-			}
+			set({
+				queueDirection: "PREV",
+				currentIndex: currentIndex - 1,
+				currentTimeMs: 0,
+				currentPlaybackId: "",
+				isPaused: true,
+			});
+
+			playCurrentTrack();
 		},
 
 		seek: async (timeMs: number) => {
@@ -222,16 +216,29 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 			}
 		},
 
-		swipe: async (direction: SwipeDirection) => {
-			const { next } = get();
-			console.log(`Swiping ${direction}`);
+		swipe: (direction: SwipeDirection) => {
+			const { next, currentIndex, queue } = get();
 
+			const currentAlbumTrack = queue[currentIndex];
 			// Liked
 			if (direction === "RIGHT") {
+				console.log(`SWIPED RIGHT ON: ${currentAlbumTrack.track.name}`);
+				if (currentAlbumTrack.status !== "LIKED") {
+					console.log(`ATTEMPTING TO LIKE ${currentAlbumTrack.track.name}`);
+					// TODO: Implement liking
+					queue[currentIndex].status = "LIKED";
+				}
 			}
 			// Disliked
 			else {
+				console.log(`SWIPED LEFT ON: ${currentAlbumTrack.track.name}`);
+				if (currentAlbumTrack.status !== "DISLIKED") {
+					console.log(`ATTEMPTING TO DISLIKE ${currentAlbumTrack.track.name}`);
+					// TODO: Implement dislike
+					queue[currentIndex].status = "DISLIKED";
+				}
 			}
+			console.log(queue);
 			next();
 		},
 
@@ -281,5 +288,34 @@ export const usePlayerStore = create<PlayerState & SwipeControllerState>(
 		},
 		onSwipe: null,
 		registerHandler: (handler) => set({ onSwipe: handler }),
+
+		// Request Queue
+		playInflight: false,
+		pendingPlay: -1,
+		enqueuePlay: (index: number) => {
+			set({ pendingPlay: index });
+
+			const process = async () => {
+				if (get().playInflight) return;
+				set({ playInflight: true });
+
+				while (get().pendingPlay !== -1) {
+					const { pendingPlay, queue, deviceId, startTimer } = get();
+					const track = queue[pendingPlay].track;
+					set({ pendingPlay: -1 });
+					try {
+						console.log(`SENDING PLAY REQUEST: ${track.name}`);
+						await play(deviceId, track.uri);
+						console.log(`BACK FROM REQUEST: ${track.name}`);
+						set({ _lastTick: Date.now() });
+						startTimer();
+					} catch (error) {
+						console.error("Error playing track", error);
+					}
+				}
+				set({ playInflight: false });
+			};
+			process();
+		},
 	}),
 );

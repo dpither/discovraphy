@@ -14,7 +14,7 @@ import {
 	type UserProfile,
 } from "@spotify/web-api-ts-sdk";
 import { isBrowser } from "motion/react";
-import type { AlbumTrack } from "../hooks/usePlayerStore";
+import type { AlbumTrack, TrackStatus } from "../hooks/usePlayerStore";
 import CustomResponseDeserializer from "./CustomResponseDeserializer";
 
 export const MAX_VOLUME = 100;
@@ -103,7 +103,12 @@ export async function getAlbumTracks(
 	const albumTrackArrays = await Promise.all(
 		albums.map(async (album) => {
 			const tracks = (await sdk.albums.tracks(album.id, undefined, 50)).items;
-			return tracks.map((track) => ({ album, track }));
+			const track_status: TrackStatus = "DISLIKED";
+			return tracks.map((track) => ({
+				album: album,
+				track: track,
+				status: track_status,
+			}));
 		}),
 	);
 

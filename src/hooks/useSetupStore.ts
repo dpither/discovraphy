@@ -25,9 +25,9 @@ export const stepOrder = [
 
 interface SetupData {
 	artistQuery: string;
-	selectedArtist: Artist | null;
+	selectedArtistId: string;
 	albumFilters: string[];
-	selectedAlbums: SimplifiedAlbum[];
+	selectedAlbumIds: string[];
 	numTracks: number;
 	selectedDestination: string | null;
 }
@@ -57,9 +57,9 @@ export const useSetupStore = create<SetupState>()(
 		(set, get) => ({
 			// DATA
 			artistQuery: "",
-			selectedArtist: null,
+			selectedArtistId: "",
 			albumFilters: [],
-			selectedAlbums: [],
+			selectedAlbumIds: [],
 			numTracks: 0,
 			selectedDestination: "SAVE",
 			setData: (data) => set(data),
@@ -71,7 +71,7 @@ export const useSetupStore = create<SetupState>()(
 				const { artistQuery } = get();
 				if (artistQuery.trim() === "") return;
 
-				set({ selectedArtist: null, artistResults: [], isLoading: true });
+				set({ selectedArtistId: "", artistResults: [], isLoading: true });
 				try {
 					const res = await getArtists(artistQuery);
 					set({ artistResults: res, isLoading: false });
@@ -80,20 +80,21 @@ export const useSetupStore = create<SetupState>()(
 					console.error("Error searching for artist", error);
 				}
 			},
+			albumResults: [],
 			getAlbums: async () => {
-				const { selectedArtist } = get();
+				const { selectedArtistId } = get();
 				// Error out? how are we here with no selected artist
-				if (selectedArtist === null) return;
-				set({ numTracks: 0, selectedAlbums: [], isLoading: true });
+				if (selectedArtistId === "") return;
+				set({ numTracks: 0, selectedAlbumIds: [], isLoading: true });
 				try {
-					const res = await getArtistAlbums(selectedArtist);
+					const res = await getArtistAlbums(selectedArtistId);
 					set({ albumResults: res, isLoading: false });
 				} catch (error) {
 					set({ isLoading: false });
 					console.error("Error fetch artist albums", error);
 				}
 			},
-			albumResults: [],
+			ownedPlaylists: [],
 			getPlaylists: async () => {
 				set({ isLoading: true });
 				try {
@@ -104,7 +105,6 @@ export const useSetupStore = create<SetupState>()(
 					console.error("Error fetching playlists", error);
 				}
 			},
-			ownedPlaylists: [],
 
 			// FORM NAV
 			currentStep: SetupStep.SelectArtist,

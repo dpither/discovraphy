@@ -14,11 +14,8 @@ import {
 	type UserProfile,
 } from "@spotify/web-api-ts-sdk";
 import { isBrowser } from "motion/react";
-import type { AlbumTrack, TrackStatus } from "../hooks/usePlayerStore";
+import type { QueueTrack, TrackStatus } from "../hooks/usePlayerStore";
 import CustomResponseDeserializer from "./CustomResponseDeserializer";
-
-export const MAX_VOLUME = 100;
-export const DEFAULT_VOLUME = 5;
 
 const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 // const redirectUri = import.meta.env.VITE_REDIRECT_TARGET;
@@ -44,7 +41,7 @@ const config: SdkConfiguration = {
 		: new InMemoryCachingStrategy(),
 };
 
-console.log(redirectUri);
+console.log(`Redirect URI: ${redirectUri}`);
 
 const sdk = SpotifyApi.withUserAuthorization(
 	clientId,
@@ -73,9 +70,9 @@ export async function getArtists(artistQuery: string): Promise<Artist[]> {
 }
 
 export async function getArtistAlbums(
-	artist: Artist,
+	artistId: string,
 ): Promise<SimplifiedAlbum[]> {
-	const albums = (await sdk.artists.albums(artist.id, undefined, undefined, 50))
+	const albums = (await sdk.artists.albums(artistId, undefined, undefined, 50))
 		.items;
 	albums.forEach((album) => {
 		if (album.album_type === "single") {
@@ -97,15 +94,14 @@ export async function getOwnedPlaylists(): Promise<SimplifiedPlaylist[]> {
 	});
 }
 
-export async function getAlbumTracks(
-	albums: SimplifiedAlbum[],
-): Promise<AlbumTrack[]> {
+export async function getAlbumTrackIds(
+	albumIds: string[],
+): Promise<QueueTrack[]> {
 	const albumTrackArrays = await Promise.all(
-		albums.map(async (album) => {
-			const tracks = (await sdk.albums.tracks(album.id, undefined, 50)).items;
+		albumIds.map(async (id) => {
+			const tracks = (await sdk.albums.tracks(id, undefined, 50)).items;
 			const track_status: TrackStatus = "DISLIKED";
 			return tracks.map((track) => ({
-				album: album,
 				track: track,
 				status: track_status,
 			}));
@@ -119,44 +115,30 @@ export async function getAccessToken(): Promise<AccessToken | null> {
 	return await sdk.getAccessToken();
 }
 
-export async function play(deviceId: string = "", trackUri: string = "") {
-	if (trackUri) {
-		await sdk.player.startResumePlayback(deviceId, undefined, [trackUri]);
-	} else {
-		await sdk.player.startResumePlayback(deviceId, undefined, undefined);
-	}
+export async function startQueue(deviceId: string = "", trackUris: string[]) {
+	await sdk.player.startResumePlayback(deviceId, undefined, trackUris);
 }
 
-export async function pause(deviceId: string = "") {
-	await sdk.player.pausePlayback(deviceId);
-}
+export async function likeTrack() {}
 
-export async function seek(device_id: string = "", timeMs: number) {
-	await sdk.player.seekToPosition(timeMs, device_id);
-}
+export async function dislikeTrack() {}
 
-export async function saveTrack(trackId: string) {
+async function saveTrack(trackId: string) {
 	await sdk.currentUser.tracks.saveTracks([trackId]);
 }
-
-export async function unsaveTrack(trackId: string) {
+async function unsaveTrack(trackId: string) {
 	await sdk.currentUser.tracks.removeSavedTracks([trackId]);
 }
 
-export async function addTrackToPlaylist(playlistId: string, trackUri: string) {
-	await sdk.playlists.addItemsToPlaylist(playlistId, [trackUri]);
+async function addTrackToPlaylist(playlistId: string, trackUri: string) {
+	const res = await sdk.playlists.addItemsToPlaylist(playlistId, [trackUri]);
+	console.log(res);
 }
 
-export async function removeTrackFromPlaylist(
-	playlistId: string,
-	trackUri: string,
-) {
+async function removeTrackFromPlaylist(playlistId: string, trackUri: string) {
 	const request = {
 		tracks: [{ uri: trackUri }],
 	};
-	await sdk.playlists.removeItemsFromPlaylist(playlistId, request);
-}
-
-export async function setPlaybackVolume(volume: number, deviceId: string = "") {
-	sdk.player.setPlaybackVolume(volume, deviceId);
+	const res = await sdk.playlists.removeItemsFromPlaylist(playlistId, request);
+	console.log(res);
 }

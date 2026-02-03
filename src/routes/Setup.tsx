@@ -4,19 +4,16 @@ import Button from "../components/Button";
 import BuildQueueForm from "../features/setup/BuildQueueForm";
 import SelectArtistForm from "../features/setup/SelectArtistForm";
 import SelectDestinationForm from "../features/setup/SelectDestinationForm";
-import { usePlayerStore } from "../hooks/usePlayerStore";
 import { SetupStep, stepOrder, useSetupStore } from "../hooks/useSetupStore";
 import Header from "../layouts/Header";
 
 export default function Setup() {
 	const navigate = useNavigate();
 
-	const { getQueue } = usePlayerStore();
-
 	const {
-		selectedArtist,
+		selectedArtistId,
 		selectedDestination,
-		selectedAlbums,
+		selectedAlbumIds,
 		currentStep,
 		getAlbums,
 		getPlaylists,
@@ -35,16 +32,16 @@ export default function Setup() {
 	const isStepValid = useMemo(() => {
 		switch (currentStep) {
 			case SetupStep.SelectArtist:
-				return selectedArtist !== null;
+				return selectedArtistId !== "";
 			case SetupStep.BuildQueue:
-				return selectedAlbums.length > 0;
+				return selectedAlbumIds.length > 0;
 			case SetupStep.SelectDestination:
 				return selectedDestination !== null;
 			default:
 				console.error("Triggered step validation for invalid step");
 				return false;
 		}
-	}, [currentStep, selectedArtist, selectedDestination, selectedAlbums]);
+	}, [currentStep, selectedArtistId, selectedDestination, selectedAlbumIds]);
 
 	function onSubmit(e: FormEvent) {
 		e.preventDefault();
@@ -77,9 +74,10 @@ export default function Setup() {
 									nextStep();
 									return;
 								case SetupStep.BuildQueue:
-									// Fetch playlists and build queue
+									// Fetch playlists
 									getPlaylists();
-									getQueue(selectedAlbums);
+									// We build queue when swipe is rendered atm, figure out prefetching later, maybe needs to be store in persistent storage?
+									// getTrackQueue(selectedAlbumIds);
 									nextStep();
 									break;
 								case SetupStep.SelectDestination:

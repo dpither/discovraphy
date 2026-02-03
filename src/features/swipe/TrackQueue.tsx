@@ -9,7 +9,7 @@ import {
 } from "../../hooks/usePlayerStore";
 
 export default function TrackQueue() {
-	const { queue, currentIndex, swipe, queueDirection, triggerSwipe } =
+	const { swipe, queueDirection, triggerSwipe, isQueueEnd, currentTrack } =
 		usePlayerStore();
 
 	const variants = {
@@ -21,6 +21,7 @@ export default function TrackQueue() {
 	};
 
 	// Keyboard Listener
+	// TODO: LOCKOUT/COOLDOWN/WAIT MECHANISM TO PREVENT CONFUSION
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.repeat) return;
@@ -40,33 +41,33 @@ export default function TrackQueue() {
 
 	return (
 		<AnimatePresence custom={queueDirection} mode="wait">
-			<motion.div
-				animate="center"
-				className="origin-bottom"
-				custom={queueDirection}
-				initial="initial"
-				key={currentIndex}
-				transition={{ duration: 0.5, ease: "easeInOut", bounce: 0 }}
-				variants={variants}
-			>
-				{currentIndex < queue.length && (
-					<TrackCard albumTrack={queue[currentIndex]} onSwipe={swipe} />
-				)}
-				{currentIndex >= queue.length && (
-					<div className="flex rounded-sm border-1 border-black p-4 lg:rounded-lg dark:border-white">
-						<div className="flex w-64 flex-col gap-2 text-left">
-							<h2>Expedition Complete</h2>
-							<p>You discovered 67 tracks</p>
-							<p>d</p>
-							<div className="text-center">
-								<Link to={`/setup`}>
-									<Button text="Keep Exploring"></Button>
-								</Link>
+			{currentTrack && (
+				<motion.div
+					animate="center"
+					className="origin-bottom"
+					custom={queueDirection}
+					initial="initial"
+					key={currentTrack.uri}
+					transition={{ duration: 0.5, ease: "easeInOut", bounce: 0 }}
+					variants={variants}
+				>
+					{!isQueueEnd && <TrackCard onSwipe={swipe} track={currentTrack} />}
+					{isQueueEnd && (
+						<div className="flex rounded-sm border-1 border-black p-4 lg:rounded-lg dark:border-white">
+							<div className="flex w-64 flex-col gap-2 text-left">
+								<h2>Expedition Complete</h2>
+								<p>You discovered 67 tracks</p>
+								<p>d</p>
+								<div className="text-center">
+									<Link to={`/setup`}>
+										<Button text="Keep Exploring"></Button>
+									</Link>
+								</div>
 							</div>
 						</div>
-					</div>
-				)}
-			</motion.div>
+					)}
+				</motion.div>
+			)}
 		</AnimatePresence>
 	);
 }

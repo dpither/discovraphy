@@ -10,7 +10,7 @@ export default function BuildQueueForm() {
 	const {
 		setData,
 		albumFilters,
-		selectedAlbums,
+		selectedAlbumIds,
 		numTracks,
 		isLoading,
 		albumResults,
@@ -26,14 +26,14 @@ export default function BuildQueueForm() {
 	}, [albumResults, albumFilters]);
 
 	function onSelectAlbum(album: SimplifiedAlbum) {
-		if (selectedAlbums.includes(album)) {
+		if (selectedAlbumIds.includes(album.id)) {
 			setData({
-				selectedAlbums: selectedAlbums.filter((item) => item.id !== album.id),
+				selectedAlbumIds: selectedAlbumIds.filter((id) => id !== album.id),
 				numTracks: numTracks - album.total_tracks,
 			});
 		} else {
 			setData({
-				selectedAlbums: [...selectedAlbums, album],
+				selectedAlbumIds: [...selectedAlbumIds, album.id],
 				numTracks: numTracks + album.total_tracks,
 			});
 		}
@@ -63,18 +63,18 @@ export default function BuildQueueForm() {
 							text="Albums"
 						/>
 						<FilterChip
-							isSelected={albumFilters.includes("Single")}
-							onClick={() => {
-								onToggleFilter("Single");
-							}}
-							text="Singles"
-						/>
-						<FilterChip
 							isSelected={albumFilters.includes("EP")}
 							onClick={() => {
 								onToggleFilter("EP");
 							}}
 							text="EPs"
+						/>
+						<FilterChip
+							isSelected={albumFilters.includes("Single")}
+							onClick={() => {
+								onToggleFilter("Single");
+							}}
+							text="Singles"
 						/>
 					</div>
 					<p className="flex text-black dark:text-white">
@@ -91,7 +91,7 @@ export default function BuildQueueForm() {
 									album={album}
 									key={album.id}
 									onClick={() => onSelectAlbum(album)}
-									queuePosition={selectedAlbums.indexOf(album)}
+									queuePosition={selectedAlbumIds.indexOf(album.id)}
 								/>
 							))}
 						</ResultContainer>

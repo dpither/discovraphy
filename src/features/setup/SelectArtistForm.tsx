@@ -11,17 +11,17 @@ export default function SelectArtistForm() {
 	const {
 		setData,
 		artistQuery,
-		selectedArtist,
+		selectedArtistId,
 		isLoading,
 		artistResults,
 		getArtists,
 	} = useSetupStore();
 
 	function onSelectArtist(artist: Artist) {
-		if (artist.id === selectedArtist?.id) {
-			setData({ selectedArtist: null });
+		if (artist.id === selectedArtistId) {
+			setData({ selectedArtistId: "" });
 		} else {
-			setData({ selectedArtist: artist });
+			setData({ selectedArtistId: artist.id });
 		}
 	}
 
@@ -54,7 +54,7 @@ export default function SelectArtistForm() {
 							{artistResults?.map((artist) => (
 								<ArtistCard
 									artist={artist}
-									isSelected={artist.id === selectedArtist?.id}
+									isSelected={artist.id === selectedArtistId}
 									key={artist.id}
 									onClick={() => onSelectArtist(artist)}
 								/>

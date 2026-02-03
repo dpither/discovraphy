@@ -5,11 +5,15 @@ import VolumeMuteIcon from "../../assets/volume_mute_icon.svg?react";
 import FlatButton from "../../components/FlatButton";
 import Slider from "../../components/Slider";
 import Tooltip from "../../components/Tooltip";
-import { usePlayerStore } from "../../hooks/usePlayerStore";
-import { DEFAULT_VOLUME, MAX_VOLUME } from "../../lib/spotifyApi";
+import {
+	DEFAULT_VOLUME,
+	MAX_VOLUME,
+	usePlayerStore,
+} from "../../hooks/usePlayerStore";
 
 export default function VolumeSlider() {
-	const { volume, setVolume, setPlaybackVolume, isQueueEnd } = usePlayerStore();
+	const { volume, setVisualVolume, setPlaybackVolume, isQueueEnd } =
+		usePlayerStore();
 	const [prevVolume, setPrevVolume] = useState(DEFAULT_VOLUME);
 
 	function getVolumeIcon() {
@@ -23,12 +27,12 @@ export default function VolumeSlider() {
 	return (
 		<div className="flex w-full items-center gap-2">
 			<Tooltip
-				disabled={isQueueEnd()}
+				disabled={isQueueEnd}
 				position="TOP"
 				text={volume !== 0 ? "Mute" : "Unmute"}
 			>
 				<FlatButton
-					disabled={isQueueEnd()}
+					disabled={isQueueEnd}
 					onClick={() => {
 						if (volume !== 0) {
 							setPlaybackVolume(0);
@@ -41,10 +45,10 @@ export default function VolumeSlider() {
 				</FlatButton>
 			</Tooltip>
 			<Slider
-				disabled={isQueueEnd()}
+				disabled={isQueueEnd}
 				maxValue={MAX_VOLUME}
 				onValueChange={(value) => {
-					setVolume(value);
+					setVisualVolume(value);
 				}}
 				onValueChangeFinished={(value) => {
 					setPrevVolume(Math.max(value, 1));

@@ -2,25 +2,21 @@ import { motion, useAnimate, useMotionValue, useTransform } from "motion/react";
 import { useEffect } from "react";
 import placeholder from "../assets/artist_placeholder.png";
 import SpotifyLogo from "../assets/spotify_logo.svg?react";
-import {
-	type AlbumTrack,
-	type SwipeDirection,
-	usePlayerStore,
-} from "../hooks/usePlayerStore";
+import { type SwipeDirection, usePlayerStore } from "../hooks/usePlayerStore";
 import { formatTimeMs } from "../lib/util";
 import Slider from "./Slider";
 
 interface TrackCardProps {
-	albumTrack: AlbumTrack;
+	track: Spotify.Track;
 	onSwipe: (direction: SwipeDirection) => void;
 }
 
 const X_BOUND = 125;
 
-export default function TrackCard({ albumTrack, onSwipe }: TrackCardProps) {
+export default function TrackCard({ track, onSwipe }: TrackCardProps) {
 	const {
 		currentTimeMs,
-		setCurrentTimeMs,
+		setVisualTimeMs,
 		seek,
 		registerHandler,
 		startTimer,
@@ -82,29 +78,25 @@ export default function TrackCard({ albumTrack, onSwipe }: TrackCardProps) {
 					alt="Track artwork"
 					className="size-full rounded-sm lg:rounded-lg"
 					draggable={false}
-					src={
-						albumTrack.album.images[0]
-							? albumTrack.album.images[0].url
-							: placeholder
-					}
+					src={track.album.images[0] ? track.album.images[0].url : placeholder}
 				/>
 			</div>
 			{/* Info */}
 			<div className="flex w-64 flex-col text-left">
 				<p className="line-clamp-1 font-semibold text-black dark:text-white">
-					{albumTrack.track.name}
+					{track.name}
 				</p>
 				<p className="line-clamp-1 text-sm text-sub-text-light dark:text-sub-text-dark">
-					{albumTrack.track.artists.map((artist) => artist.name).join(", ")}
+					{track.artists.map((artist) => artist.name).join(", ")}
 				</p>
 			</div>
 			{/* Progress Bar */}
 			<div className="flex w-full flex-col">
 				<Slider
-					maxValue={albumTrack.track.duration_ms}
+					maxValue={track.duration_ms}
 					onValueChange={(value) => {
 						stopTimer();
-						setCurrentTimeMs(value);
+						setVisualTimeMs(value);
 					}}
 					onValueChangeFinished={(value) => {
 						startTimer();
@@ -114,7 +106,7 @@ export default function TrackCard({ albumTrack, onSwipe }: TrackCardProps) {
 				/>
 				<div className="flex justify-between text-sub-text-light text-xs dark:text-sub-text-dark">
 					<span>{formatTimeMs(currentTimeMs)}</span>
-					<span>{formatTimeMs(albumTrack.track.duration_ms)}</span>
+					<span>{formatTimeMs(track.duration_ms)}</span>
 				</div>
 			</div>
 		</motion.div>

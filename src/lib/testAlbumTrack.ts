@@ -1,5 +1,5 @@
 import type { SimplifiedAlbum, SimplifiedTrack } from "@spotify/web-api-ts-sdk";
-import type { AlbumTrack } from "../hooks/usePlayerStore";
+import type { QueueTrack } from "../hooks/usePlayerStore";
 
 const testAlbum: SimplifiedAlbum = {
 	album_type: "Album",
@@ -97,9 +97,9 @@ const testTrack: SimplifiedTrack = {
 	track: false,
 };
 
-const testAlbumTrack: AlbumTrack = {
-	album: testAlbum,
+const testAlbumTrack: QueueTrack = {
 	track: testTrack,
+	status: "LIKED",
 };
 
 export default testAlbumTrack;

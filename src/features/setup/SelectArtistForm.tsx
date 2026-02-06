@@ -29,14 +29,16 @@ export default function SelectArtistForm() {
 		<div className="flex min-h-0 flex-1 flex-col gap-4">
 			<h1>Select an Artist</h1>
 			<div className="flex min-h-0 flex-1 flex-col gap-2 rounded-sm border border-black px-2 pt-2 lg:rounded-lg dark:border-white">
-				<p className="relative">
-					<input
-						className="h-10 w-full rounded-sm border border-black bg-opacity-0 p-2 pe-10 placeholder-sub-text-light outline-blue outline-offset-2 focus-visible:outline-2 md:text-base lg:rounded-lg dark:border-white dark:placeholder-sub-text-dark"
-						onChange={(e) => setData({ artistQuery: e.currentTarget.value })}
-						placeholder="Which artist intrigues you?"
-						type="search"
-						value={artistQuery}
-					/>
+				<div className="relative">
+					<p>
+						<input
+							className="h-10 w-full rounded-sm border border-black bg-opacity-0 p-2 pe-10 placeholder-sub-text-light outline-blue outline-offset-2 focus-visible:outline-2 md:text-base lg:rounded-lg dark:border-white dark:placeholder-sub-text-dark"
+							onChange={(e) => setData({ artistQuery: e.currentTarget.value })}
+							placeholder="Which artist intrigues you?"
+							type="search"
+							value={artistQuery}
+						/>
+					</p>
 					<div className="absolute inset-y-0 end-0 place-content-center">
 						<Tooltip text="Search">
 							<FlatButton onClick={getArtists}>
@@ -44,7 +46,7 @@ export default function SelectArtistForm() {
 							</FlatButton>
 						</Tooltip>
 					</div>
-				</p>
+				</div>
 				<div className="flex min-h-0 flex-1 items-center justify-center">
 					{isLoading && <Spinner />}
 					{!isLoading && artistResults.length > 0 && (

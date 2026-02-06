@@ -30,7 +30,6 @@ interface PlayerState {
 	setPaused: (isPaused: boolean) => void;
 	setVisualTimeMs: (timeMs: number) => void;
 	setVisualVolume: (volume: number) => void;
-	swipe: (direction: SwipeDirection) => void;
 
 	// SPOTIFY PLAYER
 	player?: Spotify.Player;
@@ -41,12 +40,12 @@ interface PlayerState {
 	isLastTrack: boolean;
 	volume: number;
 	initPlayer: () => void;
-	play: () => void;
-	pause: () => void;
-	next: () => void;
-	prev: () => void;
-	seek: (timeMs: number) => void;
-	setPlaybackVolume: (volume: number) => void;
+	play: () => Promise<void>;
+	pause: () => Promise<void>;
+	next: () => Promise<void>;
+	prev: () => Promise<void>;
+	seek: (timeMs: number) => Promise<void>;
+	setPlaybackVolume: (volume: number) => Promise<void>;
 
 	//TIMER
 	_lastTick: number;
@@ -55,9 +54,15 @@ interface PlayerState {
 	stopTimer: () => void;
 
 	// SWIPING
-	triggerSwipe: (direction: SwipeDirection) => void;
-	onSwipe: ((direction: SwipeDirection) => void) | null;
-	registerHandler: (handler: (direction: SwipeDirection) => void) => void;
+	isSwiping: boolean;
+	startSwipe: () => void;
+	endSwipe: () => void;
+	playSwipe: (direction: SwipeDirection) => void;
+	onPlaySwipe: ((direction: SwipeDirection) => void) | null;
+	registerPlaySwipeHandler: (
+		handler: (direction: SwipeDirection) => void,
+	) => void;
+	swipe: (direction: SwipeDirection) => void;
 
 	reset: () => void;
 }
@@ -93,43 +98,6 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	setVisualTimeMs: (timeMs: number) => set({ currentTimeMs: timeMs }),
 
 	setVisualVolume: (volume: number) => set({ volume: volume }),
-
-	swipe: (direction: SwipeDirection) => {
-		const { next, currentIndex, queue } = get();
-		if (currentIndex < -1) {
-			console.log(`CURRENT INDEX -1`);
-			return;
-		}
-		const target = queue[currentIndex];
-		// Liked
-		if (direction === "RIGHT") {
-			console.log(`SWIPED RIGHT ON: ${target.track.name}`);
-			if (target.status !== "LIKED") {
-				console.log(`ATTEMPTING TO LIKE: ${target.track.name}`);
-				// TODO: Implement liking
-				set({
-					queue: queue.map((item, i) =>
-						i === currentIndex ? { ...item, status: "LIKED" } : item,
-					),
-				});
-			}
-		}
-		// Disliked
-		else {
-			console.log(`SWIPED LEFT ON: ${target.track.name}`);
-			if (target.status !== "DISLIKED") {
-				console.log(`ATTEMPTING TO DISLIKE: ${target.track.name}`);
-				// TODO: Implement dislike
-				set({
-					queue: queue.map((item, i) =>
-						i === currentIndex ? { ...item, status: "DISLIKED" } : item,
-					),
-				});
-			}
-		}
-		console.log(get().queue);
-		next();
-	},
 
 	// SPOTIFY PLAYER
 	player: undefined,
@@ -193,6 +161,11 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 				const queueIndex = get().queue.findIndex(
 					(item) => item.track.id === track_window.current_track.id,
 				);
+				// Reached end of queue
+				if (get().currentIndex === get().queue.length - 1 && queueIndex === 0) {
+					console.log("END OF QUEUE");
+					set({ isQueueEnd: true });
+				}
 				set({
 					isPaused: paused,
 					currentTimeMs: position,
@@ -201,13 +174,10 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 					isFirstTrack: track_window.previous_tracks.length === 0,
 					isLastTrack: track_window.next_tracks.length === 0,
 				});
-				console.log(state.playback_id, state);
-				// if (get().isLastTrack) console.log(state);
-
-				if (paused === true && position === 0) {
-					// set({ isQueueEnd: true });
-					console.log("END??");
-				}
+				console.log(
+					`${state.playback_id} ${state.track_window.current_track.name} ${queueIndex}`,
+				);
+				// console.log(state);
 			});
 
 			player.connect();
@@ -215,36 +185,36 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 		};
 	},
 
-	play: () => {
+	play: async () => {
 		const { currentTrack, currentTimeMs } = get();
 		if (currentTimeMs === currentTrack?.duration_ms) {
-			get().next();
+			await get().next();
 		} else {
-			get().player?.resume();
+			await get().player?.resume();
 		}
 	},
 
-	pause: () => {
-		get().player?.pause();
+	pause: async () => {
+		await get().player?.pause();
 	},
 
-	next: () => {
+	next: async () => {
 		set({ queueDirection: "NEXT" });
-		get().player?.nextTrack();
+		await get().player?.nextTrack();
 	},
 
-	prev: () => {
+	prev: async () => {
 		set({ queueDirection: "PREV" });
-		get().player?.previousTrack();
+		await get().player?.previousTrack();
 	},
 
-	seek: (timeMs: number) => {
-		get().player?.seek(timeMs);
+	seek: async (timeMs: number) => {
+		await get().player?.seek(timeMs);
 	},
 
 	setPlaybackVolume: async (volume: number) => {
 		set({ volume: volume });
-		get().player?.setVolume(volume / 100);
+		await get().player?.setVolume(volume / 100);
 	},
 
 	// TIMER
@@ -280,13 +250,54 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	},
 
 	// SWIPING
-	triggerSwipe: (direction: SwipeDirection) => {
-		const { onSwipe, isQueueEnd } = get();
-		if (isQueueEnd) return;
-		if (onSwipe) onSwipe(direction);
+	isSwiping: false,
+	startSwipe: () => set({ isSwiping: true }),
+	endSwipe: () => set({ isSwiping: false }),
+	playSwipe: (direction: SwipeDirection) => {
+		const { onPlaySwipe, isQueueEnd, isSwiping } = get();
+		if (isQueueEnd || isSwiping) return;
+		if (onPlaySwipe) onPlaySwipe(direction);
 	},
-	onSwipe: null,
-	registerHandler: (handler) => set({ onSwipe: handler }),
+	onPlaySwipe: null,
+	registerPlaySwipeHandler: (handler) => set({ onPlaySwipe: handler }),
+	swipe: async (direction: SwipeDirection) => {
+		set({ isSwiping: true });
+		const { next, currentIndex, queue } = get();
+		if (currentIndex < -1) {
+			console.log(`CURRENT INDEX -1`);
+			return;
+		}
+		const target = queue[currentIndex];
+		// Liked
+		if (direction === "RIGHT") {
+			console.log(`SWIPED RIGHT ON: ${target.track.name}`);
+			if (target.status !== "LIKED") {
+				console.log(`ATTEMPTING TO LIKE: ${target.track.name}`);
+				// TODO: Implement liking
+				set({
+					queue: queue.map((item, i) =>
+						i === currentIndex ? { ...item, status: "LIKED" } : item,
+					),
+				});
+			}
+		}
+		// Disliked
+		else {
+			console.log(`SWIPED LEFT ON: ${target.track.name}`);
+			if (target.status !== "DISLIKED") {
+				console.log(`ATTEMPTING TO DISLIKE: ${target.track.name}`);
+				// TODO: Implement dislike
+				set({
+					queue: queue.map((item, i) =>
+						i === currentIndex ? { ...item, status: "DISLIKED" } : item,
+					),
+				});
+			}
+		}
+		console.log(get().queue);
+		await next();
+		set({ isSwiping: false });
+	},
 
 	reset: () => {
 		const { player, stopTimer } = get();

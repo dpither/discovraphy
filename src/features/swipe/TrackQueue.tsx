@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect } from "react";
 import { Link } from "react-router";
 import Button from "../../components/Button";
 import TrackCard from "../../components/TrackCard";
@@ -9,8 +8,7 @@ import {
 } from "../../hooks/usePlayerStore";
 
 export default function TrackQueue() {
-	const { swipe, queueDirection, triggerSwipe, isQueueEnd, currentTrack } =
-		usePlayerStore();
+	const { currentTrack, queueDirection, isQueueEnd } = usePlayerStore();
 
 	const variants = {
 		initial: (direction: QueueDirection) => ({
@@ -19,25 +17,6 @@ export default function TrackQueue() {
 		}),
 		center: { y: 0, scale: 1, opacity: 1 },
 	};
-
-	// Keyboard Listener
-	// TODO: LOCKOUT/COOLDOWN/WAIT MECHANISM TO PREVENT CONFUSION
-	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.repeat) return;
-			if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") {
-				triggerSwipe("RIGHT");
-				console.log("Swiped right with keyboard");
-			}
-			if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") {
-				triggerSwipe("LEFT");
-				console.log("Swiped left with keyboard");
-			}
-		};
-		window.addEventListener("keydown", handleKeyDown);
-
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [triggerSwipe]);
 
 	return (
 		<AnimatePresence custom={queueDirection} mode="wait">
@@ -51,7 +30,7 @@ export default function TrackQueue() {
 					transition={{ duration: 0.5, ease: "easeInOut", bounce: 0 }}
 					variants={variants}
 				>
-					{!isQueueEnd && <TrackCard onSwipe={swipe} track={currentTrack} />}
+					{!isQueueEnd && <TrackCard track={currentTrack} />}
 					{isQueueEnd && (
 						<div className="flex rounded-sm border-1 border-black p-4 lg:rounded-lg dark:border-white">
 							<div className="flex w-64 flex-col gap-2 text-left">

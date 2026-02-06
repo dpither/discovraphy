@@ -51,17 +51,17 @@ export default function Setup() {
 		<div className="flex h-screen flex-col">
 			<Header />
 			<form
-				className="mx-4 my-4 flex min-h-0 flex-1 flex-col gap-4 lg:mx-32"
+				className="mx-2 my-4 flex min-h-0 flex-1 flex-col gap-4 lg:mx-32"
 				onSubmit={onSubmit}
 			>
 				{stepForms[currentStep]}
 				<div className="flex items-center justify-end gap-4 place-self-center md:place-self-end">
 					{isFirstStep() ? (
-						<div></div>
+						<div className="min-w-32"></div>
 					) : (
 						<Button onClick={prevStep} text="Back" type="button" />
 					)}
-					<p className="flex text-black text-sm md:text-lg dark:text-white">
+					<p className="flex">
 						{stepOrder.indexOf(currentStep) + 1}/{Object.keys(stepForms).length}
 					</p>
 					<Button

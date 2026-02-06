@@ -28,10 +28,8 @@ export default function SelectDestinationForm() {
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col gap-4">
-			<h1 className="font-semibold text-3xl text-black dark:text-white">
-				Select a Destination
-			</h1>
-			<div className="flex items-center gap-2 text-black dark:text-white">
+			<h1>Select a Destination</h1>
+			<p className="flex items-center gap-2">
 				<input
 					checked={selectedDestination === "SAVE"}
 					className="accent-blue outline-blue outline-offset-2 focus-visible:outline-2"
@@ -40,8 +38,8 @@ export default function SelectDestinationForm() {
 					type="checkbox"
 				/>
 				<label htmlFor="checkbox">Save to liked songs</label>
-			</div>
-			<div className="flex min-h-0 flex-1 flex-col rounded-sm border border-black px-4 pt-4 lg:rounded-lg dark:border-white">
+			</p>
+			<div className="flex min-h-0 flex-1 flex-col rounded-sm border border-black px-2 pt-2 lg:rounded-lg dark:border-white">
 				<div className="flex min-h-0 flex-1 items-center justify-center">
 					{isLoading && <Spinner />}
 					{!isLoading && (

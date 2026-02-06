@@ -30,12 +30,12 @@ export default function Home() {
 	}
 
 	return (
-		<div className="flex h-screen flex-col justify-between text-black dark:text-white">
+		<div className="flex h-screen flex-col justify-between">
 			<Header />
 			<div className="flex flex-col items-center gap-4 md:flex-row-reverse md:justify-center">
 				<div className="flex h-full w-72 flex-col justify-between gap-4 md:w-96 md:text-left">
 					<div className="flex select-none flex-col">
-						<h1 className="font-semibold text-4xl md:text-5xl">
+						<h1 className="text-4xl md:text-5xl">
 							Discover your next{" "}
 							<TextCarousel
 								stopDuration={3000}

@@ -11,7 +11,7 @@ export default function FilterChip({
 }: FilterChipProps) {
 	return (
 		<button
-			className={`${isSelected ? "bg-blue text-white hover:bg-hover-blue" : "text-sub-text-light hover:border-black hover:text-black dark:text-sub-text-dark dark:hover:border-white dark:hover:text-white"} cursor-pointer rounded-full border border-transparent px-4 py-1 outline-blue outline-offset-2 focus-visible:outline-2`}
+			className={`${isSelected ? "border-transparent bg-blue text-white hover:bg-hover-blue" : "sub-text hover:border-black hover:text-black dark:hover:border-white dark:hover:text-white"} cursor-pointer rounded-full border px-4 py-1 outline-blue outline-offset-2 focus-visible:outline-2`}
 			onClick={onClick}
 			type="button"
 		>

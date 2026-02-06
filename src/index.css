@@ -56,6 +56,9 @@
 	.flat-icon {
 		@apply fill-sub-text-light group-hover:fill-black dark:fill-sub-text-dark group-hover:dark:fill-white
 	}
+	.sub-text {
+		@apply text-sub-text-light dark:text-sub-text-dark
+	}
 }
 
 @utility scrollbar {

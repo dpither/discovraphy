@@ -23,7 +23,7 @@ export default function AlbumCard({
 
 	return (
 		<button
-			className={`${isSelected ? "border-black dark:border-white" : "border-transparent hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex cursor-pointer select-none flex-col gap-2 rounded-sm border p-2 text-black text-sm outline-blue outline-offset-2 transition focus-visible:outline-2 lg:rounded-lg dark:text-white`}
+			className={`${isSelected ? "border-black dark:border-white" : "border-transparent hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex cursor-pointer select-none flex-col gap-2 rounded-sm border p-2 outline-blue outline-offset-2 transition focus-visible:outline-2 lg:rounded-lg`}
 			onClick={onClick}
 			type="button"
 		>
@@ -42,13 +42,11 @@ export default function AlbumCard({
 			</div>
 			<div className="flex flex-col text-left">
 				<p className="line-clamp-2">{album.name}</p>
-				<p className="text-sub-text-light text-xs dark:text-sub-text-dark">
+				<p className="sub-text text-xs">
 					{album.release_date.substring(0, 4)} • {album.album_type}
 					<span className="hidden md:inline"> • {getNumSongs()}</span>
 				</p>
-				<p className="text-sub-text-light text-xs md:hidden dark:text-sub-text-dark">
-					{getNumSongs()}
-				</p>
+				<p className="sub-text text-xs md:hidden">{getNumSongs()}</p>
 			</div>
 		</button>
 	);

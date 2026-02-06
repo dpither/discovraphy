@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import PauseIcon from "../../assets/pause_icon.svg?react";
 import PlayIcon from "../../assets/play_icon.svg?react";
 import SkipNextIcon from "../../assets/skip_next_icon.svg?react";
@@ -12,23 +13,45 @@ import { usePlayerStore } from "../../hooks/usePlayerStore";
 export default function SwipeControls() {
 	const {
 		isPaused,
+		isSwiping,
 		play,
 		pause,
 		next,
 		prev,
 		isFirstTrack,
 		isQueueEnd,
-		triggerSwipe,
+		playSwipe,
 	} = usePlayerStore();
+
+	useEffect(() => {
+		// TODO: LOCKOUT/COOLDOWN/WAIT MECHANISM TO PREVENT CONFUSION
+		// Keyboard Listener
+		const handleKeyDown = (e: KeyboardEvent) => {
+			const { isSwiping, playSwipe } = usePlayerStore.getState();
+			if (e.repeat || isSwiping) return;
+			if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") {
+				console.log(`SWIPING RIGHT WITH KEYBOARD: ${e.key}`);
+				playSwipe("RIGHT");
+			}
+			if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") {
+				console.log(`SWIPING LEFT WITH KEYBOARD: ${e.key}`);
+				playSwipe("LEFT");
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, []);
 
 	return (
 		<div className="flex w-full justify-between">
 			{/* DISLIKE */}
-			<Tooltip disabled={isQueueEnd} position="TOP" text="Dislike">
+			<Tooltip disabled={isQueueEnd || isSwiping} position="TOP" text="Dislike">
 				<Button
-					disabled={isQueueEnd}
+					disabled={isQueueEnd || isSwiping}
 					onClick={() => {
-						triggerSwipe("LEFT");
+						console.log(`SWIPING LEFT WITH BUTTON`);
+						playSwipe("LEFT");
 					}}
 				>
 					<DislikeIcon className="fill-white" />
@@ -69,11 +92,12 @@ export default function SwipeControls() {
 				</Tooltip>
 			</div>
 			{/* LIKE */}
-			<Tooltip disabled={isQueueEnd} position="TOP" text="Like">
+			<Tooltip disabled={isQueueEnd || isSwiping} position="TOP" text="Like">
 				<Button
-					disabled={isQueueEnd}
+					disabled={isQueueEnd || isSwiping}
 					onClick={() => {
-						triggerSwipe("RIGHT");
+						console.log(`SWIPING RIGHT WITH BUTTON`);
+						playSwipe("RIGHT");
 					}}
 				>
 					<LikeIcon className="fill-white" />

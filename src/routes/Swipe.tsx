@@ -9,9 +9,8 @@ import { useSetupStore } from "../hooks/useSetupStore";
 import Header from "../layouts/Header";
 
 export default function Swipe() {
-	const { selectedAlbumIds, numTracks } = useSetupStore();
-	const { isLoading, getTrackQueue, initPlayer, isQueueEnd, currentIndex } =
-		usePlayerStore();
+	const { selectedAlbumIds } = useSetupStore();
+	const { isLoading, getTrackQueue, initPlayer, isQueueEnd } = usePlayerStore();
 
 	useEffect(() => {
 		initPlayer();
@@ -39,10 +38,6 @@ export default function Swipe() {
 						<div className="flex gap-2">
 							<VolumeSlider />
 							<HelpModal />
-							{
-								`${currentIndex + 1}/${numTracks}`
-								// REMOVE
-							}
 						</div>
 					</div>
 				</div>

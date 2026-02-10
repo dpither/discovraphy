@@ -28,11 +28,11 @@ export default function SelectArtistForm() {
 	return (
 		<div className="flex min-h-0 flex-1 flex-col gap-4">
 			<h1>Select an Artist</h1>
-			<div className="flex min-h-0 flex-1 flex-col gap-2 rounded-sm border border-black px-2 pt-2 lg:rounded-lg dark:border-white">
+			<div className="flex min-h-0 flex-1 flex-col gap-4 rounded-sm border border-black px-4 pt-4 lg:rounded-lg dark:border-white">
 				<div className="relative">
 					<p>
 						<input
-							className="h-10 w-full rounded-sm border border-black bg-opacity-0 p-2 pe-10 placeholder-sub-text-light outline-blue outline-offset-2 focus-visible:outline-2 md:text-base lg:rounded-lg dark:border-white dark:placeholder-sub-text-dark"
+							className="h-10 w-full rounded-sm border border-black bg-opacity-0 p-2 pe-10 placeholder-sub-text-light outline-blue outline-offset-2 focus-visible:outline-2 lg:rounded-lg dark:border-white dark:placeholder-sub-text-dark"
 							onChange={(e) => setData({ artistQuery: e.currentTarget.value })}
 							placeholder="Which artist intrigues you?"
 							type="search"

@@ -4,13 +4,13 @@ import DarkModeSelector from "../components/DarkModeSelector";
 
 export default function Header() {
 	return (
-		<header className="sticky top-0 z-50 border-black  bg-white transition-all dark:border-white dark:bg-black">
+		<header className="sticky top-0 z-50 border-black bg-white transition-all dark:border-white dark:bg-black">
 			<div className="flex items-center justify-between">
 				<div className="md:flex-1 md:pl-4"></div>
 				<Link
 					className="flex px-4 pt-2.5 outline-blue outline-offset focus-visible:outline-2"
 					draggable={false}
-					to={`../`}
+					to="/"
 				>
 					<DiscovraphyLogo className="h-12 w-full fill-blue hover:fill-hover-blue" />
 				</Link>

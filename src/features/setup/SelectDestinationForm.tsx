@@ -39,7 +39,7 @@ export default function SelectDestinationForm() {
 				/>
 				<label htmlFor="checkbox">Save to liked songs</label>
 			</p>
-			<div className="flex min-h-0 flex-1 flex-col rounded-sm border border-black px-2 pt-2 lg:rounded-lg dark:border-white">
+			<div className="flex min-h-0 flex-1 flex-col rounded-sm border border-black px-4 pt-4 lg:rounded-lg dark:border-white">
 				<div className="flex min-h-0 flex-1 items-center justify-center">
 					{isLoading && <Spinner />}
 					{!isLoading && (

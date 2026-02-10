@@ -131,14 +131,15 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			player.addListener("ready", ({ device_id }) => {
 				console.log("Ready with device id", device_id);
 				set({ deviceId: device_id });
+				player.getVolume().then((volume) => {
+					set({ volume: volume * 100 });
+				});
+				if (get().queue.length <= 0) return;
 				get().startTimer();
 				startQueue(
 					device_id,
 					get().queue.map((albumTrack) => albumTrack.track.uri),
 				);
-				player.getVolume().then((volume) => {
-					set({ volume: volume * 100 });
-				});
 			});
 
 			player.addListener("not_ready", ({ device_id }) => {
@@ -306,6 +307,17 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 		player?.removeListener("not_ready");
 		player?.removeListener("player_state_changed");
 		player?.disconnect();
+		if (script) {
+			document.body.removeChild(script);
+			const iframes = document.getElementsByTagName("iframe");
+			for (var iframe of iframes) {
+				if (
+					iframe.attributes.getNamedItem("alt")?.nodeValue ===
+					"Audio Playback Container"
+				)
+					document.body.removeChild(iframe);
+			}
+		}
 		set(usePlayerStore.getInitialState());
 	},
 }));

@@ -10,15 +10,16 @@ import Header from "../layouts/Header";
 
 export default function Swipe() {
 	const { selectedAlbumIds } = useSetupStore();
-	const { isLoading, getTrackQueue, initPlayer, isQueueEnd } = usePlayerStore();
+	const { isLoading, getTrackQueue, initPlayer, isQueueEnd, reset } =
+		usePlayerStore();
 
 	useEffect(() => {
 		initPlayer();
 		getTrackQueue(selectedAlbumIds);
 		return () => {
-			usePlayerStore.getState().reset();
+			reset();
 		};
-	}, [selectedAlbumIds, getTrackQueue, initPlayer]);
+	}, [selectedAlbumIds, getTrackQueue, initPlayer, reset]);
 
 	return (
 		<div className="flex h-screen flex-col">

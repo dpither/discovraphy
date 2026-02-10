@@ -1,10 +1,13 @@
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
+import BuildQueueForm from "./features/setup/BuildQueueForm";
+import SelectArtistForm from "./features/setup/SelectArtistForm";
+import SelectDestinationForm from "./features/setup/SelectDestinationForm";
+import { swipeLoader } from "./features/swipe/swipeLoader";
 import Callback from "./routes/Callback";
 import Home from "./routes/Home";
 import PageNotFound from "./routes/PageNotFound";
 import Setup from "./routes/Setup";
 import Swipe from "./routes/Swipe";
-import { swipeLoader } from "./routes/swipeLoader";
 
 const routes = [
 	{
@@ -15,6 +18,12 @@ const routes = [
 	{
 		path: "/setup",
 		element: <Setup />,
+		children: [
+			{ index: true, element: <Navigate replace to="select-artist" /> },
+			{ path: "select-artist", element: <SelectArtistForm /> },
+			{ path: "build-queue", element: <BuildQueueForm /> },
+			{ path: "select-destination", element: <SelectDestinationForm /> },
+		],
 		errorElement: <PageNotFound />,
 	},
 	{
@@ -31,12 +40,12 @@ const routes = [
 ];
 
 const router = createBrowserRouter(routes, {
-	future: {
-		v7_relativeSplatPath: true,
-		v7_fetcherPersist: true,
-		v7_normalizeFormMethod: true,
-		v7_partialHydration: true,
-	},
+	// future: {
+	// 	v7_relativeSplatPath: true,
+	// 	v7_fetcherPersist: true,
+	// 	v7_normalizeFormMethod: true,
+	// 	v7_partialHydration: true,
+	// },
 	basename: "/discovraphy/",
 });
 

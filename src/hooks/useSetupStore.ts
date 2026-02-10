@@ -11,19 +11,7 @@ import {
 	getOwnedPlaylists,
 } from "../lib/spotifyApi";
 
-export enum SetupStep {
-	SelectArtist = "selectArtist",
-	BuildQueue = "buildQueue",
-	SelectDestination = "selectDestination",
-}
-
-export const stepOrder = [
-	SetupStep.SelectArtist,
-	SetupStep.BuildQueue,
-	SetupStep.SelectDestination,
-];
-
-interface SetupData {
+export interface SetupData {
 	artistQuery: string;
 	selectedArtistId: string;
 	albumFilters: string[];
@@ -34,7 +22,6 @@ interface SetupData {
 
 interface SetupState extends SetupData {
 	setData: (data: Partial<SetupData>) => void;
-
 	isLoading: boolean;
 	getArtists: () => void;
 	artistResults: Artist[];
@@ -42,12 +29,6 @@ interface SetupState extends SetupData {
 	albumResults: SimplifiedAlbum[];
 	getPlaylists: () => void;
 	ownedPlaylists: SimplifiedPlaylist[];
-
-	currentStep: SetupStep;
-	nextStep: () => void;
-	prevStep: () => void;
-	isFirstStep: () => boolean;
-	isLastStep: () => boolean;
 
 	reset: () => void;
 }
@@ -105,24 +86,6 @@ export const useSetupStore = create<SetupState>()(
 					console.error("Error fetching playlists", error);
 				}
 			},
-
-			// FORM NAV
-			currentStep: SetupStep.SelectArtist,
-			nextStep: () => {
-				const currentIndex = stepOrder.indexOf(get().currentStep);
-				if (currentIndex < stepOrder.length - 1) {
-					set({ currentStep: stepOrder[currentIndex + 1] });
-				}
-			},
-			prevStep: () => {
-				const currentIndex = stepOrder.indexOf(get().currentStep);
-				if (currentIndex > 0) {
-					set({ currentStep: stepOrder[currentIndex - 1] });
-				}
-			},
-			isFirstStep: () => stepOrder.indexOf(get().currentStep) === 0,
-			isLastStep: () =>
-				stepOrder.indexOf(get().currentStep) >= stepOrder.length - 1,
 
 			reset: () => {
 				set(useSetupStore.getInitialState);

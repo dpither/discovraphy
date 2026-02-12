@@ -15,7 +15,7 @@ import {
 } from "@spotify/web-api-ts-sdk";
 import { isBrowser } from "motion/react";
 import type { QueueTrack, TrackStatus } from "../hooks/usePlayerStore";
-import CustomResponseDeserializer from "./CustomResponseDeserializer";
+import ResponseDeserializer from "./ResponseDeserializer";
 
 const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 // const redirectUri = import.meta.env.VITE_REDIRECT_TARGET;
@@ -23,16 +23,18 @@ const redirectUri = `${window.location.origin}/discovraphy/callback`;
 
 const scopes = [
 	...Scopes.playlist,
-	...Scopes.userLibraryRead,
+	...Scopes.userLibraryModify,
 	...Scopes.userPlayback,
 	...Scopes.userDetails,
 ];
 const config: SdkConfiguration = {
 	fetch: (req: RequestInfo | URL, init: RequestInit | undefined) =>
 		fetch(req, init),
-	beforeRequest: (_: string, __: RequestInit) => {},
+	beforeRequest: (url: string, request: RequestInit) => {
+		console.log("SENDING REQUEST:", url, request);
+	},
 	afterRequest: (_: string, __: RequestInit, ___: Response) => {},
-	deserializer: new CustomResponseDeserializer(),
+	deserializer: new ResponseDeserializer(),
 	responseValidator: new DefaultResponseValidator(),
 	errorHandler: new NoOpErrorHandler(),
 	redirectionStrategy: new DocumentLocationRedirectionStrategy(),
@@ -43,7 +45,7 @@ const config: SdkConfiguration = {
 
 console.log(`Redirect URI: ${redirectUri}`);
 
-const sdk = SpotifyApi.withUserAuthorization(
+export const sdk = SpotifyApi.withUserAuthorization(
 	clientId,
 	redirectUri,
 	scopes,
@@ -119,26 +121,50 @@ export async function startQueue(deviceId: string = "", trackUris: string[]) {
 	await sdk.player.startResumePlayback(deviceId, undefined, trackUris);
 }
 
-export async function likeTrack() {}
-
-export async function dislikeTrack() {}
-
-async function saveTrack(trackId: string) {
-	await sdk.currentUser.tracks.saveTracks([trackId]);
-}
-async function unsaveTrack(trackId: string) {
-	await sdk.currentUser.tracks.removeSavedTracks([trackId]);
-}
-
-async function addTrackToPlaylist(playlistId: string, trackUri: string) {
-	const res = await sdk.playlists.addItemsToPlaylist(playlistId, [trackUri]);
-	console.log(res);
+function getUrlParams(args: any) {
+	const params = new URLSearchParams();
+	for (const key of Object.getOwnPropertyNames(args)) {
+		if (
+			args[key] ||
+			args[key] === 0 ||
+			(!args[key] && typeof args[key] === "boolean")
+		) {
+			params.append(key, args[key].toString());
+		}
+	}
+	return [...params].length > 0 ? `?${params.toString()}` : "";
 }
 
-async function removeTrackFromPlaylist(playlistId: string, trackUri: string) {
-	const request = {
-		tracks: [{ uri: trackUri }],
-	};
-	const res = await sdk.playlists.removeItemsFromPlaylist(playlistId, request);
-	console.log(res);
+export function saveItemsToLibrary(uris: string) {
+	const params = getUrlParams({ uris });
+	const url = `me/library${params}`;
+	return sdk.makeRequest("PUT", url);
 }
+
+export function removeItemsFromLibrary(uris: string) {
+	const params = getUrlParams({ uris });
+	const url = `me/library${params}`;
+	return sdk.makeRequest("DELETE", url);
+}
+
+export function addItemsToPlaylist(playlist_id: string, uris: string) {
+	const url = `playlists/${playlist_id}/items`;
+	return sdk.makeRequest("POST", url, { uris });
+}
+
+export function removePlaylistItems(playlist_id: string, uris: string[]) {
+	const url = `playlists/${playlist_id}/items`;
+	const items = uris.map((uri) => {
+		return { uri };
+	});
+	console.log(items);
+	return sdk.makeRequest("DELETE", url, { items });
+}
+
+// async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+// 	// try {
+// 	// 	return await fn();
+// 	// } catch (err: unknown) {
+// 	// 	console.log(err);
+// 	// }
+// }

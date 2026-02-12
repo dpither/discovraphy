@@ -2,6 +2,8 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import BuildQueueForm from "./features/setup/BuildQueueForm";
 import SelectArtistForm from "./features/setup/SelectArtistForm";
 import SelectDestinationForm from "./features/setup/SelectDestinationForm";
+import SwipeQueue from "./features/swipe/SwipeQueue";
+import SwipeResults from "./features/swipe/SwipeResults";
 import { swipeLoader } from "./features/swipe/swipeLoader";
 import Callback from "./routes/Callback";
 import Home from "./routes/Home";
@@ -29,6 +31,10 @@ const routes = [
 	{
 		path: "/swipe",
 		element: <Swipe />,
+		children: [
+			{ index: true, element: <SwipeQueue /> },
+			{ path: "results", element: <SwipeResults /> },
+		],
 		errorElement: <PageNotFound />,
 		loader: swipeLoader,
 	},

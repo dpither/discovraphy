@@ -17,7 +17,7 @@ export interface SetupData {
 	albumFilters: string[];
 	selectedAlbumIds: string[];
 	numTracks: number;
-	selectedDestination: string | null;
+	selectedDestination: string;
 }
 
 interface SetupState extends SetupData {

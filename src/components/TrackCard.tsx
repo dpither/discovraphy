@@ -3,6 +3,7 @@ import { useCallback, useEffect } from "react";
 import placeholder from "../assets/artist_placeholder.png";
 import SpotifyLogo from "../assets/spotify_logo.svg?react";
 import { type SwipeDirection, usePlayerStore } from "../hooks/usePlayerStore";
+import { useSetupStore } from "../hooks/useSetupStore";
 import { formatTimeMs } from "../lib/util";
 import Slider from "./Slider";
 
@@ -24,6 +25,7 @@ export default function TrackCard({ track }: TrackCardProps) {
 		swipe,
 		registerPlaySwipeHandler,
 	} = usePlayerStore();
+	const { selectedDestination } = useSetupStore();
 
 	const [scope, animate] = useAnimate();
 	const x = useMotionValue(0);
@@ -33,7 +35,7 @@ export default function TrackCard({ track }: TrackCardProps) {
 	const handlePlaySwipe = useCallback(
 		async (direction: SwipeDirection) => {
 			const targetX = direction === "LEFT" ? -X_BOUND : X_BOUND;
-			swipe(direction);
+			swipe(direction, selectedDestination);
 			if (scope.current) {
 				await animate(
 					scope.current,
@@ -42,7 +44,7 @@ export default function TrackCard({ track }: TrackCardProps) {
 				);
 			}
 		},
-		[animate, scope, swipe],
+		[animate, scope, swipe, selectedDestination],
 	);
 
 	useEffect(() => {
@@ -61,10 +63,10 @@ export default function TrackCard({ track }: TrackCardProps) {
 
 				if (offset >= X_BOUND) {
 					console.log(`SWIPING RIGHT WITH GESTURE`);
-					swipe("RIGHT");
+					swipe("RIGHT", selectedDestination);
 				} else if (offset <= -X_BOUND) {
 					console.log(`SWIPING LEFT WITH GESTURE`);
-					swipe("LEFT");
+					swipe("LEFT", selectedDestination);
 				} else {
 					animate(
 						scope.current,

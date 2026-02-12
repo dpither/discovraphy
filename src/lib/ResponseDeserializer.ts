@@ -1,8 +1,6 @@
 import type { IResponseDeserializer } from "@spotify/web-api-ts-sdk";
 
-export default class CustomResponseDeserializer
-	implements IResponseDeserializer
-{
+export default class ResponseDeserializer implements IResponseDeserializer {
 	public async deserialize<TReturnType>(
 		response: Response,
 	): Promise<TReturnType> {
@@ -13,7 +11,6 @@ export default class CustomResponseDeserializer
 			const json = JSON.parse(text);
 			return json as TReturnType;
 		}
-
 		return null as TReturnType;
 	}
 }

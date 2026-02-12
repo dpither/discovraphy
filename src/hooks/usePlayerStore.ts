@@ -1,13 +1,18 @@
 import type { SimplifiedTrack } from "@spotify/web-api-ts-sdk";
 import { create } from "zustand";
 import {
+	addItemsToPlaylist,
 	getAccessToken,
 	getAlbumTrackIds,
+	removeItemsFromLibrary,
+	removePlaylistItems,
+	saveItemsToLibrary,
+	sdk,
 	startQueue,
 } from "../lib/spotifyApi";
 
 export const MAX_VOLUME = 100;
-export const DEFAULT_VOLUME = 5;
+export const DEFAULT_VOLUME = 20;
 
 export type QueueTrack = {
 	track: SimplifiedTrack;
@@ -24,7 +29,7 @@ interface PlayerState {
 	currentIndex: number;
 	deviceId: string;
 	queueDirection: QueueDirection;
-	isQueueEnd: boolean; //HOW TO FIGURE OUT? CAN USE COMB OF CHECKING CURRENT INDEX ON INDEX CHANGE (WHEN WE WRAP)
+	isQueueEnd: boolean;
 
 	getTrackQueue: (albumIds: string[]) => void;
 	setPaused: (isPaused: boolean) => void;
@@ -40,6 +45,7 @@ interface PlayerState {
 	isLastTrack: boolean;
 	volume: number;
 	initPlayer: () => void;
+	playbackId: string;
 	play: () => Promise<void>;
 	pause: () => Promise<void>;
 	next: () => Promise<void>;
@@ -62,7 +68,7 @@ interface PlayerState {
 	registerPlaySwipeHandler: (
 		handler: (direction: SwipeDirection) => void,
 	) => void;
-	swipe: (direction: SwipeDirection) => void;
+	swipe: (direction: SwipeDirection, destination: string) => void;
 
 	reset: () => void;
 }
@@ -100,6 +106,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	setVisualVolume: (volume: number) => set({ volume: volume }),
 
 	// SPOTIFY PLAYER
+	// Just save entire state?
 	player: undefined,
 	currentTrack: undefined,
 	isFirstTrack: true,
@@ -158,17 +165,23 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 
 			player.addListener("player_state_changed", (state) => {
 				if (!state) return;
-				const { paused, position, track_window } = state;
-				const queueIndex = get().queue.findIndex(
+				const { playback_id, paused, position, track_window } = state;
+				const { currentIndex, queue, playbackId } = get();
+				const queueIndex = queue.findIndex(
 					(item) => item.track.id === track_window.current_track.id,
 				);
 				// Reached end of queue
-				if (get().currentIndex === get().queue.length - 1 && queueIndex === 0) {
-					console.log("END OF QUEUE");
+				if (
+					currentIndex === queue.length - 1 &&
+					queueIndex === 0 &&
+					playbackId !== "" &&
+					playback_id !== playbackId
+				) {
 					set({ isQueueEnd: true });
 				}
 				set({
 					isPaused: paused,
+					playbackId: playback_id,
 					currentTimeMs: position,
 					currentTrack: track_window.current_track,
 					currentIndex: queueIndex,
@@ -176,16 +189,15 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 					isLastTrack: track_window.next_tracks.length === 0,
 				});
 				console.log(
-					`${state.playback_id} ${state.track_window.current_track.name} ${queueIndex}`,
+					`${state.playback_id} ${state.track_window.current_track.name} ${state.track_window.current_track.id} ${queueIndex}`,
 				);
-				// console.log(state);
 			});
 
 			player.connect();
 			set({ player: player });
 		};
 	},
-
+	playbackId: "",
 	play: async () => {
 		const { currentTrack, currentTimeMs } = get();
 		if (currentTimeMs === currentTrack?.duration_ms) {
@@ -261,7 +273,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	},
 	onPlaySwipe: null,
 	registerPlaySwipeHandler: (handler) => set({ onPlaySwipe: handler }),
-	swipe: async (direction: SwipeDirection) => {
+	swipe: async (direction: SwipeDirection, destination: string) => {
 		set({ isSwiping: true });
 		const { next, currentIndex, queue } = get();
 		if (currentIndex < -1) {
@@ -270,30 +282,44 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 		}
 		const target = queue[currentIndex];
 		// Liked
-		if (direction === "RIGHT") {
-			console.log(`SWIPED RIGHT ON: ${target.track.name}`);
-			if (target.status !== "LIKED") {
-				console.log(`ATTEMPTING TO LIKE: ${target.track.name}`);
-				// TODO: Implement liking
-				set({
-					queue: queue.map((item, i) =>
-						i === currentIndex ? { ...item, status: "LIKED" } : item,
-					),
-				});
+		try {
+			if (direction === "RIGHT") {
+				console.log(`SWIPED RIGHT ON: ${target.track.name}`);
+				if (target.status !== "LIKED") {
+					console.log(`ADDING ${target.track.name} TO ${destination}`);
+					// TODO: Implement liking, set only after success
+					set({
+						queue: queue.map((item, i) =>
+							i === currentIndex ? { ...item, status: "LIKED" } : item,
+						),
+					});
+					if (destination === "SAVE") {
+						saveItemsToLibrary(target.track.uri);
+					} else {
+						// TODO: CHECK IF ALREADY IN PLAYLIST REGARDLESS OF PREVIOUS SESSION INTERACTIONS
+						addItemsToPlaylist(destination, target.track.uri);
+					}
+				}
 			}
-		}
-		// Disliked
-		else {
-			console.log(`SWIPED LEFT ON: ${target.track.name}`);
-			if (target.status !== "DISLIKED") {
-				console.log(`ATTEMPTING TO DISLIKE: ${target.track.name}`);
-				// TODO: Implement dislike
+			// Disliked
+			else {
+				console.log(`SWIPED LEFT ON: ${target.track.name}`);
+				console.log(`REMOVING ${target.track.name} FROM ${destination}`);
+				// TODO: Implement dislike, set only after success?
 				set({
 					queue: queue.map((item, i) =>
 						i === currentIndex ? { ...item, status: "DISLIKED" } : item,
 					),
 				});
+				if (destination === "SAVE") {
+					removeItemsFromLibrary(target.track.uri);
+				} else {
+					removePlaylistItems(destination, [target.track.uri]);
+				}
 			}
+		} catch (err: unknown) {
+			// TODO: HANDLE ERRORS AND RETRY ON RATE LIMITED
+			console.error(err);
 		}
 		console.log(get().queue);
 		await next();

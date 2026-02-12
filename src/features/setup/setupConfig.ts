@@ -25,5 +25,5 @@ export const pathToStep = Object.fromEntries(
 export const stepValid: Record<SetupStep, (state: SetupData) => boolean> = {
 	[SetupStep.SelectArtist]: (state) => state.selectedArtistId !== "",
 	[SetupStep.BuildQueue]: (state) => state.selectedAlbumIds.length > 0,
-	[SetupStep.SelectDestination]: (state) => state.selectedDestination !== null,
+	[SetupStep.SelectDestination]: (state) => state.selectedDestination !== "",
 };

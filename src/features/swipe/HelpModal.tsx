@@ -71,14 +71,14 @@ export default function HelpModal() {
 									<span className="font-semibold"> RIGHT</span>.
 								</p>
 								<p>
-									<span className="font-semibold"> DISLIKE</span> to not add the
-									song to the selected destination by swiping
+									<span className="font-semibold"> DISLIKE</span> to remove the
+									song from the selected destination by swiping
 									<span className="font-semibold"> LEFT</span>.
 								</p>
-								<p>
+								{/* <p>
 									Disliking a previously liked song will remove the song from
 									the destination.
-								</p>
+								</p> */}
 							</div>
 
 							<div className="flex flex-col gap-2">

@@ -12,7 +12,7 @@ export default function SelectDestinationForm() {
 
 	function onSelectCheckbox() {
 		if (selectedDestination === "SAVE") {
-			setData({ selectedDestination: null });
+			setData({ selectedDestination: "" });
 		} else {
 			setData({ selectedDestination: "SAVE" });
 		}
@@ -20,7 +20,7 @@ export default function SelectDestinationForm() {
 
 	function onSelectPlaylist(playlist: SimplifiedPlaylist) {
 		if (selectedDestination === playlist.id) {
-			setData({ selectedDestination: null });
+			setData({ selectedDestination: "" });
 		} else {
 			setData({ selectedDestination: playlist.id });
 		}

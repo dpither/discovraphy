@@ -91,10 +91,10 @@ export default function TrackCard({
 				<p className="sub-text text-xs">{position}</p>
 			</div>
 			{/* Track Art */}
-			<div className="aspect-square w-64 text-white dark:text-black">
+			<div className="w-42 text-white md:w-64 dark:text-black">
 				<img
 					alt="Track artwork"
-					className="size-full rounded-sm object-cover lg:rounded-lg"
+					className="aspect-square size-full rounded-sm object-cover lg:rounded-lg"
 					draggable={false}
 					src={track.image}
 				/>

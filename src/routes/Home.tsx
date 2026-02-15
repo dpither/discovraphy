@@ -74,21 +74,25 @@ export default function Home() {
 	return (
 		<div className="flex h-screen flex-col justify-between">
 			<Header />
-			<div className="flex flex-col items-center gap-4 md:flex-row-reverse md:justify-center">
-				<div className="flex h-full w-72 flex-col justify-between gap-4 md:w-96 md:text-left">
+			<div className="flex h-full flex-col items-center gap-4 px-4 md:h-auto md:flex-row-reverse md:justify-center">
+				<div className="flex h-auto w-72 flex-col justify-between gap-4 md:h-full md:w-96 md:text-left">
 					<div className="flex select-none flex-col">
 						<h1 className="text-4xl md:text-5xl">
-							Discover your next <TextCarousel index={index} texts={TEXTS} />
+							Discover your
+							<h1 className="text-4xl md:text-5xl">
+								next <TextCarousel index={index} texts={TEXTS} />
+							</h1>
 						</h1>
 					</div>
 					<p className="md:text-xl">
-						Swipe through an artist's discography and discover something new.
+						Swipe through an artist's discography <br /> and discover something
+						new.
 					</p>
 					<div>
 						<Button onClick={authenticate} text="Get Started" />
 					</div>
 				</div>
-				<div className="flex w-72 max-w-96 select-none justify-center md:w-2/5">
+				<div className="flex h-full w-72 select-none items-center justify-center md:w-96">
 					<DummyCardQueue cards={CARDS} index={index} setIndex={setIndex} />
 				</div>
 			</div>

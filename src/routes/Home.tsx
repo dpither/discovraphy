@@ -1,22 +1,64 @@
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import catJAM from "../assets/catJAM.webp";
+import crabPls from "../assets/crabPls.webp";
+import pugPls from "../assets/pugPls.webp";
+import ratJAM from "../assets/ratJAM.webp";
+import vibe from "../assets/VIBE.webp";
 import Button from "../components/Button";
-import TextCarousel from "../components/TextCarousel";
+import DummyCardQueue from "../features/home/DummyCardQueue";
+import type { DummyTrack } from "../features/home/DummyTrackCard";
+import TextCarousel from "../features/home/TextCarousel";
 import { useSetupStore } from "../hooks/useSetupStore";
 import Header from "../layouts/Header";
 import SpotifyFooter from "../layouts/SpotifyFooter";
 import { getAccessToken, initSpotifyClient } from "../lib/spotifyApi";
 
-const TEXTS = [
-	"earworm",
-	"chill vibe",
-	"club banger",
-	"hype song",
-	"hidden gem",
+const CARDS: DummyTrack[] = [
+	{
+		name: "Earworm",
+		artists: "Cool Cat",
+		image: catJAM,
+		currentTimeMs: 90000,
+		durationMs: 180000,
+	},
+	{
+		name: "Chill Vibe",
+		artists: "Bouncy Bunny",
+		image: vibe,
+		currentTimeMs: 196000,
+		durationMs: 242000,
+	},
+	{
+		name: "Club Banger",
+		artists: "Crazy Crab",
+		image: crabPls,
+		currentTimeMs: 83000,
+		durationMs: 201000,
+	},
+	{
+		name: "Hype Song",
+		artists: "Rowdy Rat",
+		image: ratJAM,
+		currentTimeMs: 32000,
+		durationMs: 168000,
+	},
+	{
+		name: "Hidden Gem",
+		artists: "Playful Pug",
+		image: pugPls,
+		currentTimeMs: 100200,
+		durationMs: 220200,
+	},
 ];
+
+const TEXTS = CARDS.map((track) => {
+	return track.name.toLowerCase();
+});
 
 export default function Home() {
 	const navigate = useNavigate();
+	const [index, setIndex] = useState(0);
 
 	const { reset } = useSetupStore();
 
@@ -36,12 +78,7 @@ export default function Home() {
 				<div className="flex h-full w-72 flex-col justify-between gap-4 md:w-96 md:text-left">
 					<div className="flex select-none flex-col">
 						<h1 className="text-4xl md:text-5xl">
-							Discover your next{" "}
-							<TextCarousel
-								stopDuration={3000}
-								texts={TEXTS}
-								transitionDuration={0.5}
-							/>
+							Discover your next <TextCarousel index={index} texts={TEXTS} />
 						</h1>
 					</div>
 					<p className="md:text-xl">
@@ -51,13 +88,8 @@ export default function Home() {
 						<Button onClick={authenticate} text="Get Started" />
 					</div>
 				</div>
-				<div className="flex w-72 max-w-96 select-none md:w-2/5">
-					<img
-						alt="catJAM"
-						className="aspect-square w-full rounded-sm object-cover text-white lg:rounded-lg dark:text-black"
-						draggable={false}
-						src={catJAM}
-					/>
+				<div className="flex w-72 max-w-96 select-none justify-center md:w-2/5">
+					<DummyCardQueue cards={CARDS} index={index} setIndex={setIndex} />
 				</div>
 			</div>
 			<SpotifyFooter />

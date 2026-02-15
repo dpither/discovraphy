@@ -52,6 +52,7 @@ export default function DummyCardQueue({
 		<AnimatePresence mode="wait">
 			<motion.div
 				animate={{ y: 0, opacity: 1 }}
+				className="flex"
 				initial={{ y: "5%", opacity: 0 }}
 				key={index}
 				transition={{ duration: 0.5, ease: "easeInOut", bounce: 0 }}

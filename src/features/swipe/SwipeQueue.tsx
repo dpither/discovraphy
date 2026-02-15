@@ -11,17 +11,16 @@ import VolumeSlider from "./VolumeSlider";
 export default function SwipeQueue() {
 	const navigate = useNavigate();
 	const { selectedAlbumIds } = useSetupStore();
-	const { isLoading, getTrackQueue, initPlayer, isQueueEnd, reset } =
+	const { isLoading, getTrackQueue, initPlayer, isQueueEnd, disconnectPlayer } =
 		usePlayerStore();
 
-	// Move to track queue?
 	useEffect(() => {
 		initPlayer();
 		getTrackQueue(selectedAlbumIds);
 		return () => {
-			reset();
+			disconnectPlayer();
 		};
-	}, [selectedAlbumIds, getTrackQueue, initPlayer, reset]);
+	}, [selectedAlbumIds, getTrackQueue, initPlayer, disconnectPlayer]);
 	if (isQueueEnd) {
 		navigate(`/swipe/results`);
 	}

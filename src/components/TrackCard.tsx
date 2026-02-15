@@ -84,7 +84,7 @@ export default function TrackCard({ track }: TrackCardProps) {
 			whileDrag={{ scale: 1.05 }}
 		>
 			{/* Header */}
-			<div className="flex justify-between">
+			<div className="flex items-center justify-between">
 				<SpotifyLogo className="w-18" />
 				<p className="sub-text text-xs">{`${currentIndex + 1}/${queue.length}`}</p>
 			</div>

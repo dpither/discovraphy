@@ -13,11 +13,11 @@ export default function TrackQueue() {
 			y: direction === "NEXT" ? "5%" : "-5%",
 			opacity: 0,
 		}),
-		center: { y: 0, scale: 1, opacity: 1 },
+		center: { y: 0, opacity: 1 },
 	};
 
 	return (
-		<AnimatePresence custom={queueDirection} mode="wait">
+		<AnimatePresence mode="wait">
 			{currentTrack && (
 				<motion.div
 					animate="center"

@@ -3,7 +3,6 @@ import { create } from "zustand";
 import {
 	addItemsToPlaylist,
 	getAccessToken,
-	getAlbumTrackIds,
 	removeItemsFromLibrary,
 	removePlaylistItems,
 	saveItemsToLibrary,
@@ -21,7 +20,7 @@ export type QueueTrack = {
 
 export type SwipeDirection = "RIGHT" | "LEFT";
 export type QueueDirection = "NEXT" | "PREV";
-export type TrackStatus = "DISLIKED" | "LIKED";
+export type TrackStatus = "LIKED" | "DISLIKED" | "UNDECIDED";
 
 interface PlayerState {
 	isLoading: boolean;
@@ -70,7 +69,7 @@ interface PlayerState {
 	) => void;
 	swipe: (direction: SwipeDirection, destination: string) => void;
 
-	reset: () => void;
+	disconnectPlayer: () => void;
 }
 
 let script: HTMLScriptElement | null = null;
@@ -89,8 +88,15 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	getTrackQueue: async (albumIds: string[]) => {
 		set({ isLoading: true });
 		try {
-			const res = await getAlbumTrackIds(albumIds);
-			set({ queue: res, isLoading: false });
+			const res = await Promise.all(
+				albumIds.map(async (id) => {
+					const tracks = (await sdk.albums.tracks(id, undefined, 50)).items;
+					const status: TrackStatus = "UNDECIDED";
+					return tracks.map((track) => ({ track, status }));
+				}),
+			);
+
+			set({ queue: res.flat(), isLoading: false });
 		} catch (error) {
 			console.error("Getting queue", error);
 			set({ isLoading: false });
@@ -297,7 +303,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 						saveItemsToLibrary(target.track.uri);
 					} else {
 						// TODO: CHECK IF ALREADY IN PLAYLIST REGARDLESS OF PREVIOUS SESSION INTERACTIONS
-						addItemsToPlaylist(destination, target.track.uri);
+						addItemsToPlaylist(destination, [target.track.uri]);
 					}
 				}
 			}
@@ -326,7 +332,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 		set({ isSwiping: false });
 	},
 
-	reset: () => {
+	disconnectPlayer: () => {
 		const { player, stopTimer } = get();
 		stopTimer();
 		player?.removeListener("ready");
@@ -344,6 +350,19 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 					document.body.removeChild(iframe);
 			}
 		}
-		set(usePlayerStore.getInitialState());
+		set({
+			isLoading: false,
+			currentIndex: -1,
+			deviceId: undefined,
+			isQueueEnd: false,
+			player: undefined,
+			isPaused: false,
+			currentTimeMs: 0,
+			currentTrack: undefined,
+			playbackId: "",
+			_lastTick: Date.now(),
+			_timer: undefined,
+			isSwiping: false,
+		});
 	},
 }));

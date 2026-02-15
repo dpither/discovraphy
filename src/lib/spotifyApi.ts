@@ -66,11 +66,6 @@ export async function getUser(): Promise<UserProfile> {
 	return currentUser;
 }
 
-export async function getArtists(artistQuery: string): Promise<Artist[]> {
-	return (await sdk.search(artistQuery, ["artist"], undefined, 50)).artists
-		.items;
-}
-
 export async function getArtistAlbums(
 	artistId: string,
 ): Promise<SimplifiedAlbum[]> {
@@ -84,16 +79,6 @@ export async function getArtistAlbums(
 		}
 	});
 	return albums;
-}
-
-export async function getOwnedPlaylists(): Promise<SimplifiedPlaylist[]> {
-	if (currentUser === null) {
-		await getUser();
-	}
-	const playlists = (await sdk.currentUser.playlists.playlists(50)).items;
-	return playlists.filter((playlist) => {
-		return playlist.owner.id === currentUser?.id;
-	});
 }
 
 export async function getAlbumTrackIds(
@@ -147,7 +132,7 @@ export function removeItemsFromLibrary(uris: string) {
 	return sdk.makeRequest("DELETE", url);
 }
 
-export function addItemsToPlaylist(playlist_id: string, uris: string) {
+export function addItemsToPlaylist(playlist_id: string, uris: string[]) {
 	const url = `playlists/${playlist_id}/items`;
 	return sdk.makeRequest("POST", url, { uris });
 }

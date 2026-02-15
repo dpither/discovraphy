@@ -26,13 +26,8 @@ export default function VolumeSlider() {
 	// Auto fetch the current volume?
 	return (
 		<div className="flex w-full items-center gap-2">
-			<Tooltip
-				disabled={isQueueEnd}
-				position="TOP"
-				text={volume !== 0 ? "Mute" : "Unmute"}
-			>
+			<Tooltip position="TOP" text={volume !== 0 ? "Mute" : "Unmute"}>
 				<FlatButton
-					disabled={isQueueEnd}
 					onClick={() => {
 						if (volume !== 0) {
 							setPlaybackVolume(0);
@@ -45,7 +40,6 @@ export default function VolumeSlider() {
 				</FlatButton>
 			</Tooltip>
 			<Slider
-				disabled={isQueueEnd}
 				maxValue={MAX_VOLUME}
 				onValueChange={(value) => {
 					setVisualVolume(value);

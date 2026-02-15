@@ -258,7 +258,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			}
 		};
 		// Update every 250ms
-		const timer = window.setInterval(tick, 250);
+		const timer = setInterval(tick, 250);
 		set({ _timer: timer, _lastTick: Date.now() });
 	},
 

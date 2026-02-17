@@ -21,6 +21,7 @@ export default function SwipeControls() {
 		isFirstTrack,
 		isQueueEnd,
 		playSwipe,
+		setQueueDecision,
 	} = usePlayerStore();
 
 	useEffect(() => {
@@ -61,7 +62,13 @@ export default function SwipeControls() {
 			<div>
 				{/* PREV */}
 				<Tooltip disabled={isFirstTrack} position="TOP" text="Previous">
-					<FlatButton disabled={isFirstTrack} onClick={prev}>
+					<FlatButton
+						disabled={isFirstTrack}
+						onClick={() => {
+							setQueueDecision("PREV");
+							prev();
+						}}
+					>
 						<SkipPrevIcon className="flat-icon" />
 					</FlatButton>
 				</Tooltip>
@@ -86,7 +93,13 @@ export default function SwipeControls() {
 				)}
 				{/* NEXT */}
 				<Tooltip disabled={isQueueEnd} position="TOP" text="Next">
-					<FlatButton disabled={isQueueEnd} onClick={next}>
+					<FlatButton
+						disabled={isQueueEnd}
+						onClick={() => {
+							setQueueDecision("NEXT");
+							next();
+						}}
+					>
 						<SkipNextIcon className="flat-icon" />
 					</FlatButton>
 				</Tooltip>

@@ -8,16 +8,20 @@ import { formatTimeMs } from "../lib/util";
 import Slider from "./Slider";
 
 interface TrackCardProps {
+	currentTimeMs: number;
+	index: number;
 	track: Spotify.Track;
 }
 
 const X_BOUND = 125;
 
-export default function TrackCard({ track }: TrackCardProps) {
+export default function TrackCard({
+	currentTimeMs,
+	index,
+	track,
+}: TrackCardProps) {
 	const {
-		currentIndex,
 		queue,
-		currentTimeMs,
 		setVisualTimeMs,
 		seek,
 		startTimer,
@@ -40,7 +44,7 @@ export default function TrackCard({ track }: TrackCardProps) {
 				await animate(
 					scope.current,
 					{ x: targetX, scale: 1.05 },
-					{ duration: 0.3, ease: "easeInOut", bounce: 0 },
+					{ duration: 0.5, ease: "easeInOut", bounce: 0 },
 				);
 			}
 		},
@@ -86,7 +90,7 @@ export default function TrackCard({ track }: TrackCardProps) {
 			{/* Header */}
 			<div className="flex items-center justify-between">
 				<SpotifyLogo className="w-18" />
-				<p className="sub-text text-xs">{`${currentIndex + 1}/${queue.length}`}</p>
+				<p className="sub-text text-xs">{`${index + 1}/${queue.length}`}</p>
 			</div>
 			{/* Track Art */}
 			<div className="aspect-square w-64 text-white dark:text-black">

@@ -19,7 +19,7 @@ export type QueueTrack = {
 };
 
 export type SwipeDirection = "RIGHT" | "LEFT";
-export type QueueDirection = "NEXT" | "PREV";
+export type QueueDecision = "NEXT" | "PREV" | "SWIPED";
 export type TrackStatus = "LIKED" | "DISLIKED" | "UNDECIDED";
 
 interface PlayerState {
@@ -27,13 +27,16 @@ interface PlayerState {
 	queue: QueueTrack[];
 	currentIndex: number;
 	deviceId: string;
-	queueDirection: QueueDirection;
 	isQueueEnd: boolean;
 
 	getTrackQueue: (albumIds: string[]) => void;
 	setPaused: (isPaused: boolean) => void;
 	setVisualTimeMs: (timeMs: number) => void;
 	setVisualVolume: (volume: number) => void;
+
+	// ANIMATION
+	queueDecision: QueueDecision;
+	setQueueDecision: (decision: QueueDecision) => void;
 
 	// SPOTIFY PLAYER
 	player?: Spotify.Player;
@@ -51,6 +54,7 @@ interface PlayerState {
 	prev: () => Promise<void>;
 	seek: (timeMs: number) => Promise<void>;
 	setPlaybackVolume: (volume: number) => Promise<void>;
+	disconnectPlayer: () => void;
 
 	//TIMER
 	_lastTick: number;
@@ -68,8 +72,6 @@ interface PlayerState {
 		handler: (direction: SwipeDirection) => void,
 	) => void;
 	swipe: (direction: SwipeDirection, destination: string) => void;
-
-	disconnectPlayer: () => void;
 }
 
 let script: HTMLScriptElement | null = null;
@@ -80,7 +82,6 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	queue: [],
 	deviceId: "",
 	currentIndex: -1,
-	queueDirection: "NEXT",
 	playbackIdCache: new Set<string>(), //REMOVE?
 	currentPlaybackId: "",
 	isQueueEnd: false,
@@ -110,6 +111,11 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	setVisualTimeMs: (timeMs: number) => set({ currentTimeMs: timeMs }),
 
 	setVisualVolume: (volume: number) => set({ volume: volume }),
+
+	// ANIMATION
+	queueDecision: "NEXT",
+	setQueueDecision: (decision: QueueDecision) =>
+		set({ queueDecision: decision }),
 
 	// SPOTIFY PLAYER
 	// Just save entire state?
@@ -218,12 +224,10 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	},
 
 	next: async () => {
-		set({ queueDirection: "NEXT" });
 		await get().player?.nextTrack();
 	},
 
 	prev: async () => {
-		set({ queueDirection: "PREV" });
 		await get().player?.previousTrack();
 	},
 
@@ -280,7 +284,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	onPlaySwipe: null,
 	registerPlaySwipeHandler: (handler) => set({ onPlaySwipe: handler }),
 	swipe: async (direction: SwipeDirection, destination: string) => {
-		set({ isSwiping: true });
+		set({ isSwiping: true, queueDecision: "SWIPED" });
 		const { next, currentIndex, queue } = get();
 		if (currentIndex < -1) {
 			console.log(`CURRENT INDEX -1`);

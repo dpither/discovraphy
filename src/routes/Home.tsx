@@ -79,9 +79,8 @@ export default function Home() {
 					<div className="flex select-none flex-col">
 						<h1 className="text-4xl md:text-5xl">
 							Discover your
-							<h1 className="text-4xl md:text-5xl">
-								next <TextCarousel index={index} texts={TEXTS} />
-							</h1>
+							<br />
+							next <TextCarousel index={index} texts={TEXTS} />
 						</h1>
 					</div>
 					<p className="md:text-xl">

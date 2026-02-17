@@ -41,7 +41,15 @@ export default function AlbumCard({
 				/>
 			</div>
 			<div className="flex flex-col text-left">
-				<p className="line-clamp-2">{album.name}</p>
+				<span className="line-clamp-2">
+					<a
+						href={album.external_urls.spotify}
+						onClick={(e) => e.stopPropagation()}
+						target="_blank"
+					>
+						{album.name}
+					</a>
+				</span>
 				<p className="sub-text text-xs">
 					{album.release_date.substring(0, 4)} • {album.album_type}
 					<span className="hidden md:inline"> • {getNumSongs()}</span>

@@ -37,7 +37,15 @@ export default function PlaylistCard({
 				/>
 			</div>
 			<div className="flex flex-col text-left">
-				<p className="line-clamp-2">{playlist.name}</p>
+				<span className="line-clamp-2">
+					<a
+						href={playlist.external_urls.spotify}
+						onClick={(e) => e.stopPropagation()}
+						target="_blank"
+					>
+						{playlist.name}
+					</a>
+				</span>
 				<p className="sub-text text-xs">
 					{playlist.public ? "Public" : "Private"} • {getNumSongs()}
 				</p>

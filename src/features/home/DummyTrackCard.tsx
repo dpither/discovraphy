@@ -1,5 +1,5 @@
 import { motion, useAnimate, useMotionValue, useTransform } from "motion/react";
-import { useImperativeHandle } from "react";
+import { useImperativeHandle, useState } from "react";
 import Slider from "../../components/Slider";
 import type { SwipeDirection } from "../../hooks/usePlayerStore";
 import { formatTimeMs } from "../../lib/util";
@@ -39,10 +39,12 @@ export default function TrackCard({
 	const x = useMotionValue(0);
 	const rotate = useTransform(x, [-X_BOUND, X_BOUND], [-11.25, 11.25]);
 	const opacity = useTransform(x, [-X_BOUND, 0, X_BOUND], [0, 1, 0]);
+	const [drag, setDrag] = useState<"x" | "y" | boolean>("x");
 
 	useImperativeHandle(ref, () => {
 		return {
 			async playSwipe(direction: SwipeDirection) {
+				setDrag(false);
 				const targetX = direction === "LEFT" ? -X_BOUND : X_BOUND;
 				if (scope.current) {
 					await animate(
@@ -58,7 +60,7 @@ export default function TrackCard({
 	return (
 		<motion.div
 			className="z-10 flex origin-bottom select-none flex-col gap-2 rounded-sm border border-black bg-white p-4 hover:cursor-grab hover:active:cursor-grabbing lg:rounded-lg dark:border-white dark:bg-black"
-			drag="x"
+			drag={drag}
 			dragElastic={0}
 			dragMomentum={false}
 			onDragEnd={(_event, info) => {

@@ -12,8 +12,7 @@ import {
 } from "../../hooks/usePlayerStore";
 
 export default function VolumeSlider() {
-	const { volume, setVisualVolume, setPlaybackVolume, isQueueEnd } =
-		usePlayerStore();
+	const { volume, setVisualVolume, setPlaybackVolume } = usePlayerStore();
 	const [prevVolume, setPrevVolume] = useState(DEFAULT_VOLUME);
 
 	function getVolumeIcon() {

@@ -1,6 +1,5 @@
 import {
 	type AccessToken,
-	type Artist,
 	DefaultResponseValidator,
 	DocumentLocationRedirectionStrategy,
 	InMemoryCachingStrategy,
@@ -9,7 +8,6 @@ import {
 	Scopes,
 	type SdkConfiguration,
 	type SimplifiedAlbum,
-	type SimplifiedPlaylist,
 	SpotifyApi,
 	type UserProfile,
 } from "@spotify/web-api-ts-sdk";

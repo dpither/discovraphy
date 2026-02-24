@@ -3,9 +3,11 @@ import { useNavigate } from "react-router";
 import Button from "../components/Button";
 import Spinner from "../components/Spinner";
 import Header from "../layouts/Header";
-import { getUser, initSpotifyClient } from "../lib/spotifyApi";
+import { sdk } from "../lib/spotifyApi";
 
 type CallbackStatus = "LOADING" | "ACCESS_DENIED" | "NON_PREMIUM";
+
+// TODO: Handle deprecation of user.product
 
 function StatusContent({ status }: { status: CallbackStatus }) {
 	switch (status) {
@@ -24,7 +26,7 @@ function StatusContent({ status }: { status: CallbackStatus }) {
 						playlist data to perform actions on your behalf to streamline your
 						music discovery experience.
 					</p>
-					<Button onClick={initSpotifyClient} text="Retry"></Button>
+					<Button onClick={sdk.authenticate} text="Retry"></Button>
 				</div>
 			);
 		case "NON_PREMIUM":
@@ -56,13 +58,13 @@ export default function Callback() {
 
 		// MOVE TO SETUP STORE TO HANDLE INVALID
 		const validateUser = async () => {
-			const user = await getUser();
+			const user = await sdk.currentUser.profile();
 			if (user.product !== "premium") {
 				setStatus("NON_PREMIUM");
 				console.log(user);
 				return;
 			}
-			navigate("/setup");
+			navigate("/setup/select-artist");
 		};
 		validateUser();
 	}, [navigate]);

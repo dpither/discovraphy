@@ -1,15 +1,15 @@
 interface TooltipProps {
 	text: string;
-	position?: "TOP" | "BOTTOM";
-	disabled?: boolean;
 	children: React.ReactNode;
+	disabled?: boolean;
+	position?: "TOP" | "BOTTOM";
 }
 
 export default function Tooltip({
 	text,
-	position = "BOTTOM",
-	disabled = false,
 	children,
+	disabled = false,
+	position = "BOTTOM",
 }: TooltipProps) {
 	if (disabled) {
 		return <>{children}</>;

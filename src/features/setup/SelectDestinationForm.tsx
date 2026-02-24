@@ -4,13 +4,13 @@ import ResultContainer from "../../components/ResultContainer";
 import Spinner from "../../components/Spinner";
 import { useSetupStore } from "../../hooks/useSetupStore";
 
-// TODO: Add refresh or create new playlist method/checkbox
+// TODO: Add create new playlist as an option
 
 export default function SelectDestinationForm() {
-	const { isLoading, setData, ownedPlaylists, selectedDestination } =
+	const { isLoading, ownedPlaylists, selectedDestination, setData } =
 		useSetupStore();
 
-	function onSelectCheckbox() {
+	function handleSelectCheckbox() {
 		if (selectedDestination === "SAVE") {
 			setData({ selectedDestination: "" });
 		} else {
@@ -18,7 +18,7 @@ export default function SelectDestinationForm() {
 		}
 	}
 
-	function onSelectPlaylist(playlist: SimplifiedPlaylist) {
+	function handleSelectPlaylist(playlist: SimplifiedPlaylist) {
 		if (selectedDestination === playlist.id) {
 			setData({ selectedDestination: "" });
 		} else {
@@ -34,7 +34,7 @@ export default function SelectDestinationForm() {
 					checked={selectedDestination === "SAVE"}
 					className="accent-blue outline-blue outline-offset-2 focus-visible:outline-2"
 					name="checkbox"
-					onChange={onSelectCheckbox}
+					onChange={handleSelectCheckbox}
 					type="checkbox"
 				/>
 				<label htmlFor="checkbox">Save to liked songs</label>
@@ -49,7 +49,7 @@ export default function SelectDestinationForm() {
 									isSelected={selectedDestination === playlist.id}
 									key={playlist.id}
 									onClick={() => {
-										onSelectPlaylist(playlist);
+										handleSelectPlaylist(playlist);
 									}}
 									playlist={playlist}
 								/>

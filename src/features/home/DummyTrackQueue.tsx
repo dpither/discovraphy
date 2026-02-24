@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef } from "react";
-
 import type { DummyTrack, DummyTrackHandle } from "./DummyTrackCard";
 import DummyTrackCard from "./DummyTrackCard";
 

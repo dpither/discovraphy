@@ -11,7 +11,7 @@ import VolumeSlider from "./VolumeSlider";
 export default function SwipeQueue() {
 	const navigate = useNavigate();
 	const { selectedAlbumIds } = useSetupStore();
-	const { isLoading, getTrackQueue, initPlayer, isQueueEnd, disconnectPlayer } =
+	const { isLoading, isQueueEnd, initPlayer, disconnectPlayer, getTrackQueue } =
 		usePlayerStore();
 
 	useEffect(() => {
@@ -21,14 +21,17 @@ export default function SwipeQueue() {
 			disconnectPlayer();
 		};
 	}, [selectedAlbumIds, getTrackQueue, initPlayer, disconnectPlayer]);
-	if (isQueueEnd) {
-		navigate(`/swipe/results`);
-	}
+
+	useEffect(() => {
+		if (isQueueEnd) {
+			navigate(`/swipe/results`);
+		}
+	}, [isQueueEnd, navigate]);
+
 	return (
 		<div className="flex h-full flex-col">
 			<div className="flex h-full items-center justify-center">
-				{isLoading && <Spinner />}
-				{!isLoading && <TrackQueue />}
+				{isLoading ? <Spinner /> : <TrackQueue />}
 			</div>
 			<div className="flex w-full justify-center pb-2.5">
 				<div className="flex w-full max-w-72 flex-col gap-2 px-4">

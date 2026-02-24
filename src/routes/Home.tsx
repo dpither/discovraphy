@@ -6,13 +6,13 @@ import pugPls from "../assets/pugPls.webp";
 import ratJAM from "../assets/ratJAM.webp";
 import vibe from "../assets/VIBE.webp";
 import Button from "../components/Button";
-import DummyCardQueue from "../features/home/DummyCardQueue";
 import type { DummyTrack } from "../features/home/DummyTrackCard";
+import DummyCardQueue from "../features/home/DummyTrackQueue";
 import TextCarousel from "../features/home/TextCarousel";
 import { useSetupStore } from "../hooks/useSetupStore";
 import Header from "../layouts/Header";
 import SpotifyFooter from "../layouts/SpotifyFooter";
-import { getAccessToken, initSpotifyClient } from "../lib/spotifyApi";
+import { sdk } from "../lib/spotifyApi";
 
 const CARDS: DummyTrack[] = [
 	{
@@ -64,10 +64,10 @@ export default function Home() {
 
 	async function authenticate() {
 		reset();
-		if ((await getAccessToken()) == null) {
-			await initSpotifyClient();
+		if ((await sdk.getAccessToken()) == null) {
+			await sdk.authenticate();
 		} else {
-			navigate("/setup");
+			navigate("/setup/select-artist");
 		}
 	}
 

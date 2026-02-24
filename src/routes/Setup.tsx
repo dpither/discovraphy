@@ -1,4 +1,3 @@
-import type { FormEvent } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router";
 import Button from "../components/Button";
 import {
@@ -23,14 +22,9 @@ export default function Setup() {
 	const isStepValid =
 		currentStepIndex !== -1 ? stepValid[currentStep](setupStore) : false;
 
-	function onSubmit(e: FormEvent) {
-		e.preventDefault();
-	}
-
 	if (currentStepIndex !== -1) {
 		for (let i = 0; i < currentStepIndex; i++) {
 			const step = stepOrder[i];
-			// Navigate to a step if it is invalid and less than our current step
 			if (!stepValid[step](setupStore)) {
 				return <Navigate replace to={`/setup/${stepToPath[step]}`} />;
 			}
@@ -42,7 +36,9 @@ export default function Setup() {
 			<Header />
 			<form
 				className="mx-2 my-4 flex min-h-0 flex-1 flex-col gap-4 lg:mx-32"
-				onSubmit={onSubmit}
+				onSubmit={(e) => {
+					e.preventDefault();
+				}}
 			>
 				<Outlet />
 				<div className="flex items-center justify-end gap-4 place-self-center md:place-self-end">
@@ -69,19 +65,14 @@ export default function Setup() {
 
 							switch (currentStep) {
 								case SetupStep.SelectArtist:
-									// Fetch albums
 									getAlbums();
 									navigate(`/setup/${stepToPath[SetupStep.BuildQueue]}`);
 									return;
 								case SetupStep.BuildQueue:
-									// Fetch playlists
 									getPlaylists();
-									// We build queue when swipe is rendered atm, figure out prefetching later, maybe needs to be store in persistent storage?
-									// getTrackQueue(selectedAlbumIds);
 									navigate(`/setup/${stepToPath[SetupStep.SelectDestination]}`);
 									return;
 								case SetupStep.SelectDestination:
-									// Start queue
 									navigate("/swipe");
 									return;
 								default:

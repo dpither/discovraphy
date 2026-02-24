@@ -8,24 +8,25 @@ import { useSetupStore } from "../../hooks/useSetupStore";
 
 export default function BuildQueueForm() {
 	const {
-		setData,
+		isLoading,
+		albumResults,
 		albumFilters,
 		selectedAlbumIds,
 		numTracks,
-		isLoading,
-		albumResults,
+		setData,
 	} = useSetupStore();
 
 	const filteredAlbums = useMemo(() => {
 		if (albumFilters.length === 0) {
 			return albumResults;
+		} else {
+			return albumResults.filter((album) =>
+				albumFilters.includes(album.album_type),
+			);
 		}
-		return albumResults.filter((album) =>
-			albumFilters.includes(album.album_type),
-		);
 	}, [albumResults, albumFilters]);
 
-	function onSelectAlbum(album: SimplifiedAlbum) {
+	function handleSelectAlbum(album: SimplifiedAlbum) {
 		if (selectedAlbumIds.includes(album.id)) {
 			setData({
 				selectedAlbumIds: selectedAlbumIds.filter((id) => id !== album.id),
@@ -39,7 +40,7 @@ export default function BuildQueueForm() {
 		}
 	}
 
-	function onToggleFilter(name: string) {
+	function handleToggleFilter(name: string) {
 		if (albumFilters.includes(name)) {
 			setData({ albumFilters: albumFilters.filter((item) => item !== name) });
 		} else {
@@ -56,28 +57,27 @@ export default function BuildQueueForm() {
 						<FilterChip
 							isSelected={albumFilters.includes("Album")}
 							onClick={() => {
-								onToggleFilter("Album");
+								handleToggleFilter("Album");
 							}}
 							text="Albums"
 						/>
 						<FilterChip
 							isSelected={albumFilters.includes("EP")}
 							onClick={() => {
-								onToggleFilter("EP");
+								handleToggleFilter("EP");
 							}}
 							text="EPs"
 						/>
 						<FilterChip
 							isSelected={albumFilters.includes("Single")}
 							onClick={() => {
-								onToggleFilter("Single");
+								handleToggleFilter("Single");
 							}}
 							text="Singles"
 						/>
 					</div>
 					<p className="flex">
-						{" "}
-						{numTracks} track{numTracks !== 1 ? "s" : ""} selected
+						{`${numTracks} track${numTracks !== 1 ? "s" : ""} selected`}
 					</p>
 				</div>
 				<div className="flex min-h-0 flex-1 items-center justify-center">
@@ -88,7 +88,7 @@ export default function BuildQueueForm() {
 								<AlbumCard
 									album={album}
 									key={album.id}
-									onClick={() => onSelectAlbum(album)}
+									onClick={() => handleSelectAlbum(album)}
 									queuePosition={selectedAlbumIds.indexOf(album.id)}
 								/>
 							))}

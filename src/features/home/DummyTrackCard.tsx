@@ -17,18 +17,18 @@ export type DummyTrackHandle = {
 };
 
 interface DummyTrackCardProps {
-	onDragEnd?: () => void;
-	onDragStart?: () => void;
-	onSwipe?: () => void;
+	track: DummyTrack;
 	position: string;
 	ref?: React.Ref<DummyTrackHandle>;
-	track: DummyTrack;
+	onDragStart?: () => void;
+	onDragEnd?: () => void;
+	onSwipe?: () => void;
 }
 
 const X_BOUND = 125;
 
 export default function TrackCard({
-	onDragEnd: onDragEndCallback,
+	onDragEnd,
 	onDragStart,
 	onSwipe,
 	position,
@@ -65,8 +65,6 @@ export default function TrackCard({
 			dragMomentum={false}
 			onDragEnd={(_event, info) => {
 				const offset = info.offset.x;
-				// const velocity = info.velocity.x; TUNE LATER MAYBE?
-
 				if (offset >= X_BOUND) {
 					onSwipe?.();
 				} else if (offset <= -X_BOUND) {
@@ -77,7 +75,7 @@ export default function TrackCard({
 					{ x: 0 },
 					{ duration: 0.3, ease: "easeInOut", bounce: 0 },
 				);
-				onDragEndCallback?.();
+				onDragEnd?.();
 			}}
 			onDragStart={onDragStart}
 			ref={scope}

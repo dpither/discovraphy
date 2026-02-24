@@ -2,12 +2,10 @@ import type { SimplifiedTrack } from "@spotify/web-api-ts-sdk";
 import { create } from "zustand";
 import {
 	addItemsToPlaylist,
-	getAccessToken,
 	removeItemsFromLibrary,
 	removePlaylistItems,
 	saveItemsToLibrary,
 	sdk,
-	startQueue,
 } from "../lib/spotifyApi";
 
 export const MAX_VOLUME = 100;
@@ -26,11 +24,9 @@ interface PlayerState {
 	isLoading: boolean;
 	queue: QueueTrack[];
 	currentIndex: number;
-	deviceId: string;
 	isQueueEnd: boolean;
 
 	getTrackQueue: (albumIds: string[]) => void;
-	setPaused: (isPaused: boolean) => void;
 	setVisualTimeMs: (timeMs: number) => void;
 	setVisualVolume: (volume: number) => void;
 
@@ -77,17 +73,15 @@ interface PlayerState {
 let script: HTMLScriptElement | null = null;
 
 export const usePlayerStore = create<PlayerState>((set, get) => ({
-	// Player State
 	isLoading: false,
 	queue: [],
-	deviceId: "",
 	currentIndex: -1,
-	playbackIdCache: new Set<string>(), //REMOVE?
 	currentPlaybackId: "",
 	isQueueEnd: false,
 
 	getTrackQueue: async (albumIds: string[]) => {
 		set({ isLoading: true });
+
 		try {
 			const res = await Promise.all(
 				albumIds.map(async (id) => {
@@ -96,20 +90,13 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 					return tracks.map((track) => ({ track, status }));
 				}),
 			);
-
 			set({ queue: res.flat(), isLoading: false });
 		} catch (error) {
-			console.error("Getting queue", error);
+			console.error("Error getting queue", error);
 			set({ isLoading: false });
 		}
 	},
-
-	setDeviceId: (deviceId: string) => set({ deviceId: deviceId }),
-
-	setPaused: (isPaused: boolean) => set({ isPaused: isPaused }),
-
 	setVisualTimeMs: (timeMs: number) => set({ currentTimeMs: timeMs }),
-
 	setVisualVolume: (volume: number) => set({ volume: volume }),
 
 	// ANIMATION
@@ -118,7 +105,6 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 		set({ queueDecision: decision }),
 
 	// SPOTIFY PLAYER
-	// Just save entire state?
 	player: undefined,
 	currentTrack: undefined,
 	isFirstTrack: true,
@@ -128,6 +114,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	isPaused: true,
 	initPlayer: () => {
 		if (get().player) return;
+
 		script = document.createElement("script");
 		script.src = "https://sdk.scdn.co/spotify-player.js";
 		script.async = true;
@@ -137,7 +124,8 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			const player = new window.Spotify.Player({
 				name: "Discovraphy Web Player",
 				getOAuthToken: async (cb) => {
-					const access_token = (await getAccessToken())?.access_token;
+					const access_token = (await sdk.getAccessToken())?.access_token;
+
 					if (access_token) {
 						cb(access_token);
 					} else {
@@ -148,21 +136,23 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			});
 
 			player.addListener("ready", ({ device_id }) => {
-				console.log("Ready with device id", device_id);
-				set({ deviceId: device_id });
+				console.log(`${device_id} ready`);
 				player.getVolume().then((volume) => {
 					set({ volume: volume * 100 });
 				});
+
 				if (get().queue.length <= 0) return;
+
 				get().startTimer();
-				startQueue(
+				sdk.player.startResumePlayback(
 					device_id,
+					undefined,
 					get().queue.map((albumTrack) => albumTrack.track.uri),
 				);
 			});
 
 			player.addListener("not_ready", ({ device_id }) => {
-				console.log("Device ID has gone offline", device_id);
+				console.log(`${device_id} not ready`);
 				set({ player: undefined });
 				get().stopTimer();
 			});
@@ -177,11 +167,13 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 
 			player.addListener("player_state_changed", (state) => {
 				if (!state) return;
+
 				const { playback_id, paused, position, track_window } = state;
-				const { currentIndex, queue, playbackId } = get();
+				const { queue, currentIndex, playbackId } = get();
 				const queueIndex = queue.findIndex(
 					(item) => item.track.id === track_window.current_track.id,
 				);
+
 				// Reached end of queue
 				if (
 					currentIndex === queue.length - 1 &&
@@ -191,6 +183,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 				) {
 					set({ isQueueEnd: true });
 				}
+
 				set({
 					isPaused: paused,
 					playbackId: playback_id,
@@ -200,9 +193,9 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 					isFirstTrack: track_window.previous_tracks.length === 0,
 					isLastTrack: track_window.next_tracks.length === 0,
 				});
-				console.log(
-					`${state.playback_id} ${state.track_window.current_track.name} ${state.track_window.current_track.id} ${queueIndex}`,
-				);
+				// console.log(
+				// 	`${state.playback_id} ${state.track_window.current_track.name} ${state.track_window.current_track.id} ${queueIndex}`,
+				// );
 			});
 
 			player.connect();
@@ -212,29 +205,25 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	playbackId: "",
 	play: async () => {
 		const { currentTrack, currentTimeMs } = get();
+
 		if (currentTimeMs === currentTrack?.duration_ms) {
 			await get().next();
 		} else {
 			await get().player?.resume();
 		}
 	},
-
 	pause: async () => {
 		await get().player?.pause();
 	},
-
 	next: async () => {
 		await get().player?.nextTrack();
 	},
-
 	prev: async () => {
 		await get().player?.previousTrack();
 	},
-
 	seek: async (timeMs: number) => {
 		await get().player?.seek(timeMs);
 	},
-
 	setPlaybackVolume: async (volume: number) => {
 		set({ volume: volume });
 		await get().player?.setVolume(volume / 100);
@@ -251,6 +240,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			const { isPaused, currentTimeMs, _lastTick, currentTrack } = get();
 			const now = Date.now();
 			const delta = now - _lastTick;
+
 			if (!isPaused) {
 				const nextTime = Math.min(
 					currentTimeMs + delta,
@@ -265,10 +255,11 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 		const timer = setInterval(tick, 250);
 		set({ _timer: timer, _lastTick: Date.now() });
 	},
-
 	stopTimer: () => {
 		const { _timer } = get();
+
 		if (_timer) clearInterval(_timer);
+
 		set({ _timer: undefined });
 	},
 
@@ -278,7 +269,9 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	endSwipe: () => set({ isSwiping: false }),
 	playSwipe: (direction: SwipeDirection) => {
 		const { onPlaySwipe, isQueueEnd, isSwiping } = get();
+
 		if (isQueueEnd || isSwiping) return;
+
 		if (onPlaySwipe) onPlaySwipe(direction);
 	},
 	onPlaySwipe: null,
@@ -290,8 +283,9 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			console.log(`CURRENT INDEX -1`);
 			return;
 		}
+
 		const target = queue[currentIndex];
-		// Liked
+		// LIKED
 		try {
 			if (direction === "RIGHT") {
 				console.log(`SWIPED RIGHT ON: ${target.track.name}`);
@@ -303,6 +297,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 							i === currentIndex ? { ...item, status: "LIKED" } : item,
 						),
 					});
+
 					if (destination === "SAVE") {
 						saveItemsToLibrary(target.track.uri);
 					} else {
@@ -311,7 +306,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 					}
 				}
 			}
-			// Disliked
+			// DISLIKED
 			else {
 				console.log(`SWIPED LEFT ON: ${target.track.name}`);
 				console.log(`REMOVING ${target.track.name} FROM ${destination}`);
@@ -321,6 +316,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 						i === currentIndex ? { ...item, status: "DISLIKED" } : item,
 					),
 				});
+
 				if (destination === "SAVE") {
 					removeItemsFromLibrary(target.track.uri);
 				} else {
@@ -331,7 +327,6 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			// TODO: HANDLE ERRORS AND RETRY ON RATE LIMITED
 			console.error(err);
 		}
-		console.log(get().queue);
 		await next();
 		set({ isSwiping: false });
 	},
@@ -343,6 +338,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 		player?.removeListener("not_ready");
 		player?.removeListener("player_state_changed");
 		player?.disconnect();
+
 		if (script) {
 			document.body.removeChild(script);
 			const iframes = document.getElementsByTagName("iframe");
@@ -354,10 +350,10 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 					document.body.removeChild(iframe);
 			}
 		}
+
 		set({
 			isLoading: false,
 			currentIndex: -1,
-			deviceId: undefined,
 			isQueueEnd: false,
 			player: undefined,
 			isPaused: false,

@@ -22,7 +22,6 @@ export default function VolumeSlider() {
 		return <VolumeHighIcon className="flat-icon" />;
 	}
 
-	// Auto fetch the current volume?
 	return (
 		<div className="flex w-full items-center gap-2">
 			<Tooltip position="TOP" text={volume !== 0 ? "Mute" : "Unmute"}>

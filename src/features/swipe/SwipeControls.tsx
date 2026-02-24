@@ -13,20 +13,19 @@ import { usePlayerStore } from "../../hooks/usePlayerStore";
 export default function SwipeControls() {
 	const {
 		isPaused,
+		isFirstTrack,
+		isQueueEnd,
 		isSwiping,
 		play,
 		pause,
 		next,
 		prev,
-		isFirstTrack,
-		isQueueEnd,
 		playSwipe,
 		setQueueDecision,
 	} = usePlayerStore();
 
+	// TODO: Improve rate limiting
 	useEffect(() => {
-		// TODO: LOCKOUT/COOLDOWN/WAIT MECHANISM TO PREVENT CONFUSION
-		// Keyboard Listener
 		const handleKeyDown = (e: KeyboardEvent) => {
 			const { isSwiping, playSwipe } = usePlayerStore.getState();
 			if (e.repeat || isSwiping) return;

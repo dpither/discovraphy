@@ -1,24 +1,27 @@
 import { motion, useAnimate, useMotionValue, useTransform } from "motion/react";
 import { useCallback, useEffect } from "react";
-import placeholder from "../assets/artist_placeholder.png";
-import SpotifyLogo from "../assets/spotify_logo.svg?react";
-import { type SwipeDirection, usePlayerStore } from "../hooks/usePlayerStore";
-import { useSetupStore } from "../hooks/useSetupStore";
-import { formatTimeMs } from "../lib/util";
-import Slider from "./Slider";
+import placeholder from "../../assets/artist_placeholder.svg";
+import SpotifyLogo from "../../assets/spotify_logo.svg?react";
+import Slider from "../../components/Slider";
+import {
+	type SwipeDirection,
+	usePlayerStore,
+} from "../../hooks/usePlayerStore";
+import { useSetupStore } from "../../hooks/useSetupStore";
+import { formatTimeMs } from "../../lib/util";
 
 interface TrackCardProps {
-	currentTimeMs: number;
-	index: number;
 	track: Spotify.Track;
+	currentTimeMs: number;
+	queuePosition: number;
 }
 
 const X_BOUND = 125;
 
 export default function TrackCard({
-	currentTimeMs,
-	index,
 	track,
+	currentTimeMs,
+	queuePosition,
 }: TrackCardProps) {
 	const {
 		queue,
@@ -26,11 +29,10 @@ export default function TrackCard({
 		seek,
 		startTimer,
 		stopTimer,
-		swipe,
 		registerPlaySwipeHandler,
+		swipe,
 	} = usePlayerStore();
 	const { selectedDestination } = useSetupStore();
-
 	const [scope, animate] = useAnimate();
 	const x = useMotionValue(0);
 	const rotate = useTransform(x, [-X_BOUND, X_BOUND], [-11.25, 11.25]);
@@ -90,7 +92,7 @@ export default function TrackCard({
 			{/* Header */}
 			<div className="flex items-center justify-between">
 				<SpotifyLogo className="w-18" />
-				<p className="sub-text text-xs">{`${index + 1}/${queue.length}`}</p>
+				<p className="sub-text text-xs">{`${queuePosition + 1}/${queue.length}`}</p>
 			</div>
 			{/* Track Art */}
 			<div className="aspect-square w-64 text-white dark:text-black">

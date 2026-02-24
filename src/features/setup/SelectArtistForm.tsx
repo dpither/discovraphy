@@ -7,17 +7,19 @@ import Spinner from "../../components/Spinner";
 import Tooltip from "../../components/Tooltip";
 import { useSetupStore } from "../../hooks/useSetupStore";
 
+// TODO: Pagination for artist queries (maximum value will be reduced from 50 to 10)
+
 export default function SelectArtistForm() {
 	const {
-		setData,
-		artistQuery,
-		selectedArtistId,
 		isLoading,
+		artistQuery,
 		artistResults,
+		selectedArtistId,
 		getArtists,
+		setData,
 	} = useSetupStore();
 
-	function onSelectArtist(artist: Artist) {
+	function handleSelectArtist(artist: Artist) {
 		if (artist.id === selectedArtistId) {
 			setData({ selectedArtistId: "" });
 		} else {
@@ -56,7 +58,7 @@ export default function SelectArtistForm() {
 									artist={artist}
 									isSelected={artist.id === selectedArtistId}
 									key={artist.id}
-									onClick={() => onSelectArtist(artist)}
+									onClick={() => handleSelectArtist(artist)}
 								/>
 							))}
 						</ResultContainer>

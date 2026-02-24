@@ -1,14 +1,10 @@
 import { AnimatePresence, motion } from "motion/react";
-import TrackCard from "../../components/TrackCard";
 import { type QueueDecision, usePlayerStore } from "../../hooks/usePlayerStore";
+import TrackCard from "./TrackCard";
 
 export default function TrackQueue() {
-	const {
-		currentTrack,
-		currentIndex,
-		queueDecision: queueDirection,
-		currentTimeMs,
-	} = usePlayerStore();
+	const { currentTrack, currentIndex, currentTimeMs, queueDecision } =
+		usePlayerStore();
 
 	const variants = {
 		initial: (direction: QueueDecision) => ({
@@ -28,7 +24,7 @@ export default function TrackQueue() {
 				<motion.div
 					animate="center"
 					className="origin-bottom"
-					custom={queueDirection}
+					custom={queueDecision}
 					exit="exit"
 					initial="initial"
 					key={currentTrack.uri}
@@ -37,7 +33,7 @@ export default function TrackQueue() {
 				>
 					<TrackCard
 						currentTimeMs={currentTimeMs}
-						index={currentIndex}
+						queuePosition={currentIndex}
 						track={currentTrack}
 					/>
 				</motion.div>

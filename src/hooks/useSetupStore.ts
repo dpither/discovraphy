@@ -41,6 +41,7 @@ export const useSetupStore = create<SetupState>()(
 			selectedAlbumIds: [],
 			numTracks: 0,
 			selectedDestination: "SAVE",
+
 			setData: (data) => set(data),
 
 			// API REQUESTS
@@ -62,8 +63,8 @@ export const useSetupStore = create<SetupState>()(
 			albumResults: [],
 			getAlbums: async () => {
 				const { selectedArtistId } = get();
-				// Error out? how are we here with no selected artist
 				if (selectedArtistId === "") return;
+
 				set({ numTracks: 0, selectedAlbumIds: [], isLoading: true });
 				try {
 					const res = await sdk.artists.albums(

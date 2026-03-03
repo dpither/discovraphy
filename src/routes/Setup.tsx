@@ -42,9 +42,9 @@ export default function Setup() {
 			>
 				<Outlet />
 				<div className="relative flex w-full items-center justify-between">
-					<div className="absolute z-0 h-2 w-full rounded-full bg-sub-text-light dark:bg-sub-text-dark"></div>
+					<div className="absolute z-0 h-1 w-full rounded-full bg-sub-text-light dark:bg-sub-text-dark"></div>
 					<div
-						className="absolute h-2 w-full rounded-full bg-blue transition-all"
+						className="absolute h-1 w-full rounded-full bg-blue transition-all"
 						style={{
 							width: `${(currentStepIndex / (stepOrder.length - 1)) * 100}%`,
 						}}
@@ -54,7 +54,7 @@ export default function Setup() {
 						const isActive = index === currentStepIndex;
 						return (
 							<div
-								className={`z-10 size-4 rounded-full border-1 transition-all ${isCompleted ? "border-blue bg-blue" : isActive ? "border-black bg-blue dark:border-white" : "border-sub-text-light bg-sub-text-light dark:border-sub-text-dark dark:bg-sub-text-dark"}`}
+								className={`z-10 size-2 rounded-full border transition-all ${isCompleted ? "border-blue bg-blue" : isActive ? "border-black bg-blue dark:border-white" : "border-sub-text-light bg-sub-text-light dark:border-sub-text-dark dark:bg-sub-text-dark"}`}
 								key={step}
 							></div>
 						);
@@ -74,9 +74,6 @@ export default function Setup() {
 							type="button"
 						/>
 					)}
-					{/* <p className="flex">
-						{currentStepIndex + 1}/{stepOrder.length}
-					</p> */}
 					<Button
 						disabled={!isStepValid}
 						onClick={() => {

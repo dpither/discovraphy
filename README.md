@@ -9,7 +9,10 @@ While listening to new releases or exploring an artist's catalog on Spotify, I f
 
 
 ## Preview
-<img src="preview.gif">
+<video width ="100%" controls>
+<source src="https://github.com/dpither/discovraphy/releases/download/v1.0/preview.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video>
 
 ## Features
 - Responsive layout

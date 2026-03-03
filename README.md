@@ -1,4 +1,4 @@
-<h1 align="center"><img src="src/assets/banner.png"></h1>
+<h1 align="center"><img src="banner.png"></h1>
 
 Discovraphy is a web application that lets you browse and discover new music by swiping through an artist's discography. It streamlines the process of listening to a series of tracks and adding the ones you like to your library or a playlist by using the swipe-based interface inspired by modern dating apps.
 
@@ -9,7 +9,7 @@ While listening to new releases or exploring an artist's catalog on Spotify, I f
 
 
 ## Preview
-<img src="src/assets/preview.gif">
+<img src="preview.gif">
 
 ## Features
 - Responsive layout

@@ -16,13 +16,13 @@ export default function ArtistCard({
 	const [loaded, setLoaded] = useState(false);
 	return (
 		<button
-			className={`${isSelected ? "border-black dark:border-white" : "border-transparent hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex h-fit cursor-pointer select-none flex-col gap-2 rounded-sm border p-2 outline-blue outline-offset-2 transition-colors focus-visible:outline-2 lg:rounded-lg`}
+			className={`${isSelected ? "border-black dark:border-white" : "border-transparent hover:border-sub-text-light dark:hover:border-sub-text-dark"} relative flex h-full cursor-pointer select-none flex-col gap-2 rounded-sm border p-2 outline-blue outline-offset-2 transition-colors focus-visible:outline-2 lg:rounded-lg`}
 			onClick={onClick}
 			type="button"
 		>
 			<img
 				alt="Artist portrait"
-				className={`aspect-square size-full rounded-sm object-cover transition lg:rounded-lg ${loaded ? "opacity-100" : "opacity-0"}`}
+				className={`aspect-square rounded-sm object-cover transition lg:rounded-lg ${loaded ? "opacity-100" : "opacity-0"}`}
 				draggable={false}
 				onLoad={() => {
 					setLoaded(true);

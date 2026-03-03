@@ -67,7 +67,7 @@ export default function Home() {
 		if ((await sdk.getAccessToken()) == null) {
 			await sdk.authenticate();
 		} else {
-			navigate("/setup/select-artist");
+			navigate("/callback");
 		}
 	}
 

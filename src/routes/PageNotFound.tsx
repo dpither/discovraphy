@@ -12,17 +12,12 @@ export default function PageNotFound() {
 					<div>Error 404</div>
 					<div>Page not found</div>
 				</h1>
-				<p className="max-w-md md:max-w-xl md:text-2xl">
+				<p className="max-w-96">
 					The page you were looking for could not be discovered. Return home to
 					get back on track.
 				</p>
 				<Link to={`/`}>
-					<Button
-						onClick={() => {
-							console.log("Pressed go home");
-						}}
-						text="Go Home"
-					></Button>
+					<Button text="Go Home"></Button>
 				</Link>
 			</div>
 			<SpotifyFooter />

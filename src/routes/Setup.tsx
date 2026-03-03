@@ -13,8 +13,15 @@ import Header from "../layouts/Header";
 export default function Setup() {
 	const navigate = useNavigate();
 	const setupStore = useSetupStore();
-	const { getAlbums, getPlaylists } = setupStore;
+	const { userAuthenticated } = setupStore;
 
+	if (!userAuthenticated) {
+		return <Navigate replace to={`/callback`} />;
+	}
+
+	const firstInvalidIndex = stepOrder.findIndex(
+		(step) => !stepValid[step](setupStore),
+	);
 	const currentStep = pathToStep[location.pathname.split("/").slice(-1)[0]];
 	const currentStepIndex = stepOrder.indexOf(currentStep);
 	const isFirstStep = currentStepIndex === 0;
@@ -22,13 +29,13 @@ export default function Setup() {
 	const isStepValid =
 		currentStepIndex !== -1 ? stepValid[currentStep](setupStore) : false;
 
-	if (currentStepIndex !== -1) {
-		for (let i = 0; i < currentStepIndex; i++) {
-			const step = stepOrder[i];
-			if (!stepValid[step](setupStore)) {
-				return <Navigate replace to={`/setup/${stepToPath[step]}`} />;
-			}
-		}
+	if (firstInvalidIndex !== -1 && currentStepIndex > firstInvalidIndex) {
+		return (
+			<Navigate
+				replace
+				to={`/setup/${stepToPath[stepOrder[firstInvalidIndex]]}`}
+			/>
+		);
 	}
 
 	return (
@@ -78,14 +85,11 @@ export default function Setup() {
 						disabled={!isStepValid}
 						onClick={() => {
 							if (!isStepValid) return;
-
 							switch (currentStep) {
 								case SetupStep.SelectArtist:
-									getAlbums();
 									navigate(`/setup/${stepToPath[SetupStep.BuildQueue]}`);
 									return;
 								case SetupStep.BuildQueue:
-									getPlaylists();
 									navigate(`/setup/${stepToPath[SetupStep.SelectDestination]}`);
 									return;
 								case SetupStep.SelectDestination:

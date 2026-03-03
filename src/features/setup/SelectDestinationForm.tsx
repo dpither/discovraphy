@@ -1,4 +1,5 @@
 import type { SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
+import { useEffect } from "react";
 import PlaylistCard from "../../components/PlaylistCard";
 import ResultContainer from "../../components/ResultContainer";
 import Spinner from "../../components/Spinner";
@@ -7,8 +8,13 @@ import { useSetupStore } from "../../hooks/useSetupStore";
 // TODO: Add create new playlist as an option
 
 export default function SelectDestinationForm() {
-	const { isLoading, ownedPlaylists, selectedDestination, setData } =
-		useSetupStore();
+	const {
+		isLoading,
+		ownedPlaylists,
+		selectedDestination,
+		getPlaylists,
+		setData,
+	} = useSetupStore();
 
 	function handleSelectCheckbox() {
 		if (selectedDestination === "SAVE") {
@@ -25,6 +31,10 @@ export default function SelectDestinationForm() {
 			setData({ selectedDestination: playlist.id });
 		}
 	}
+
+	useEffect(() => {
+		getPlaylists();
+	}, [getPlaylists]);
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col gap-4">

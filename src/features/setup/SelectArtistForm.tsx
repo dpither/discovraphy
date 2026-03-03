@@ -21,9 +21,9 @@ export default function SelectArtistForm() {
 
 	function handleSelectArtist(artist: Artist) {
 		if (artist.id === selectedArtistId) {
-			setData({ selectedArtistId: "" });
+			setData({ selectedArtistId: "", selectedAlbumIds: [] });
 		} else {
-			setData({ selectedArtistId: artist.id });
+			setData({ selectedArtistId: artist.id, selectedAlbumIds: [] });
 		}
 	}
 
@@ -41,7 +41,7 @@ export default function SelectArtistForm() {
 							value={artistQuery}
 						/>
 					</p>
-					<div className="absolute inset-y-0 end-0 place-content-center">
+					<div className="absolute inset-e-0 inset-y-0 place-content-center">
 						<Tooltip text="Search">
 							<FlatButton onClick={getArtists}>
 								<DiscovraphyIcon className="flat-icon" />

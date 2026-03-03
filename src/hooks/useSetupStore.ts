@@ -9,6 +9,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { sdk } from "../lib/spotifyApi";
 
 export interface SetupData {
+	userAuthenticated: boolean;
 	artistQuery: string;
 	selectedArtistId: string;
 	albumFilters: string[];
@@ -35,6 +36,7 @@ export const useSetupStore = create<SetupState>()(
 	persist(
 		(set, get) => ({
 			// DATA
+			userAuthenticated: false,
 			artistQuery: "",
 			selectedArtistId: "",
 			albumFilters: [],

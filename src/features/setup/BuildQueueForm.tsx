@@ -1,5 +1,5 @@
 import type { SimplifiedAlbum } from "@spotify/web-api-ts-sdk";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import AlbumCard from "../../components/AlbumCard";
 import FilterChip from "../../components/FilterChip";
 import ResultContainer from "../../components/ResultContainer";
@@ -13,6 +13,7 @@ export default function BuildQueueForm() {
 		albumFilters,
 		selectedAlbumIds,
 		numTracks,
+		getAlbums,
 		setData,
 	} = useSetupStore();
 
@@ -47,6 +48,13 @@ export default function BuildQueueForm() {
 			setData({ albumFilters: [...albumFilters, name] });
 		}
 	}
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Only want to run on render
+	useEffect(() => {
+		if (selectedAlbumIds.length === 0) {
+			getAlbums();
+		}
+	}, [getAlbums]);
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col gap-4">

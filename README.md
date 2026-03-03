@@ -7,13 +7,11 @@ While listening to new releases or exploring an artist's catalog on Spotify, I f
 >[!NOTE]
 > Spotify Premium is required to use Discovraphy.
 
-
 ## Preview
-<video autoplay muted controls loop>
-<source src="https://github.com/dpither/discovraphy/releases/download/v1.0/preview.mp4" type="video/mp4">
-Your browser does not support the video tag.
-</video>
-
+<p align="center"> 
+    <img src="https://github.com/user-attachments/assets/f29f1dc5-fdad-4861-b885-f0cfbc80f1ec" /> 
+</p>
+    
 ## Features
 - Responsive layout
 - Dark/light mode

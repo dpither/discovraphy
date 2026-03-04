@@ -4,9 +4,6 @@ Discovraphy is a web application that lets you browse and discover new music by 
 
 While listening to new releases or exploring an artist's catalog on Spotify, I frequently find new tracks that pique my interest, which I add to my "Trial" playlist for further consideration. But I found right-clicking, selecting "Add to playlist" and then searching for the correct playlist to be mildly disruptive to my listening experience. I thought to myself, this doesn't need to be so hard (and I wanted an excuse to learn some frontend development and React), so I created Discovraphy.
 
->[!NOTE]
-> Spotify Premium is required to use Discovraphy.
-
 ## Preview
 <p align="center"> 
     <img src="https://github.com/user-attachments/assets/f29f1dc5-fdad-4861-b885-f0cfbc80f1ec" /> 
@@ -23,7 +20,11 @@ While listening to new releases or exploring an artist's catalog on Spotify, I f
 - Playback controls: play, pause, next, previous, seek, adjust volume
 
 ## Getting Started
+>[!NOTE]
+> Spotify Premium is required to use Discovraphy.
+
 If you want to try out Discovraphy you have two options:
+
 ### Option 1: Request Access
 To interact with Spotify, Discovraphy relies on the [Spotify Web API](https://developer.spotify.com/documentation/web-api) and [Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk) and is in [development mode](https://developer.spotify.com/documentation/web-api/concepts/quota-modes) with no plans to move to extended quota mode. As of February 2026, development mode allows a maximum of 5 Spotify users to authenticate with Discovraphy.
 

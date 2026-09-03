@@ -9,7 +9,7 @@ export default function SwipeResults() {
 		<div className="flex h-full items-center justify-center">
 			<motion.div
 				animate={{ y: 0, opacity: 1 }}
-				className="flex rounded-sm border-1 border-black p-4 lg:rounded-lg dark:border-white"
+				className="flex rounded-sm border border-black p-4 lg:rounded-lg dark:border-white"
 				initial={{ y: "5%", opacity: 0 }}
 				transition={{ duration: 0.5, ease: "easeInOut", bounce: 0 }}
 			>

@@ -46,7 +46,7 @@ export default function HelpModal() {
 						{/* MODAL */}
 						<motion.div
 							animate={{ opacity: 1 }}
-							className="relative flex w-80 flex-col gap-4 rounded-sm border-1 border-black bg-white p-4 text-left lg:rounded-lg dark:border-white dark:bg-black"
+							className="relative flex w-80 flex-col gap-4 rounded-sm border border-black bg-white p-4 text-left lg:rounded-lg dark:border-white dark:bg-black"
 							exit={{ opacity: 0 }}
 							initial={{ opacity: 0 }}
 							onKeyUp={(e) => e.stopPropagation()}
